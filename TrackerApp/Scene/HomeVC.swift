@@ -6,21 +6,14 @@ class HomeVC: UITabBarController {
         tabsSetup()
     }
 
-
     func tabsSetup() {
-
-        // Setup Tabs
-        let firstVC = TrackerVC()
-        let secondVC = StatisticVC()
-        self.viewControllers = [firstVC, secondVC]
-
         tabBar.backgroundColor = .colorYP(.whiteYP)
 
-        // Cast shadow
-        self.tabBar.layer.shadowColor = UIColor.black.cgColor
-        self.tabBar.layer.shadowOpacity = 0.3
-        self.tabBar.layer.shadowOffset = .init(width: 0, height: -0.5)
-        self.tabBar.layer.masksToBounds = false
+        // Setup Tabs
+        let firstVC = UINavigationController(rootViewController: TrackerVC())
+        let secondVC = StatisticVC()
+
+        self.viewControllers = [firstVC, secondVC]
 
         // Titles Style
         let font = FontYP.medium10
@@ -32,9 +25,24 @@ class HomeVC: UITabBarController {
         secondVC.tabBarItem.setTitleTextAttributes(textAttributes, for: .normal)
         secondVC.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "statisticIcon28x28"), selectedImage: nil)
 
+        // Cast shadow
+        self.tabBar.layer.shadowColor = UIColor.black.cgColor
+        self.tabBar.layer.shadowOpacity = 0.3
+        self.tabBar.layer.shadowOffset = .init(width: 0, height: -0.5)
+    self.tabBar.layer.masksToBounds = false
+
+        prepare(firstVC)
+    }
+}
+
+extension HomeVC {
+
+    func prepare(_ navigationController: UINavigationController) {
+        navigationController.navigationBar.prefersLargeTitles = true
 
     }
 }
+
 
 
 // MARK: - SHOW PREVIEW

@@ -6,19 +6,49 @@ final class TrackerVC: UIViewController, UICollectionViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // view.backgroundColor = UIColor.colorYP(.grayYP)
         setup()
+        setupNavBar()
+    }
+
+    @objc
+    private func addNewTracker() {
+
     }
 
     private func setup() {
+
+        view.backgroundColor = .colorYP(.grayYP)
+
         registerClassesForReuse()
+
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(collectionView)
+
         setConstraints()
+        collectionView.backgroundColor = .colorYP(.whiteYP)
+
         collectionView.dataSource = self
         collectionView.delegate = self
+    }
 
-        collectionView.backgroundColor = .colorYP(.whiteYP)
+    private func setupNavBar() {
+
+
+        if let navBar = navigationController?.navigationBar {
+
+            let leftButton = UIBarButtonItem(
+                image: UIImage(named: "addTrackerIcon42x42"),
+                style: .plain,
+                target: self,
+                action: #selector(addNewTracker)
+            )
+            leftButton.tintColor = .black
+            navigationController?.navigationItem.leftBarButtonItem = leftButton
+
+
+            navBar.topItem?.setLeftBarButton(leftButton, animated: true)
+        }
     }
 
     private func registerClassesForReuse() {
