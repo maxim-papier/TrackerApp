@@ -24,6 +24,8 @@
 		8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A62997283500B7D148 /* TrackerHeader.swift */; };
 		8DF313AA2997507900B7D148 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A92997507900B7D148 /* TrackerCategory.swift */; };
 		8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */; };
+		8DF313AE29976BD100B7D148 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AD29976BD100B7D148 /* HomeVC.swift */; };
+		8DF313B0299774C600B7D148 /* StatisticVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AF299774C600B7D148 /* StatisticVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		8DF313A62997283500B7D148 /* TrackerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerHeader.swift; sourceTree = "<group>"; };
 		8DF313A92997507900B7D148 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
+		8DF313AD29976BD100B7D148 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
+		8DF313AF299774C600B7D148 /* StatisticVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +132,8 @@
 				8DBA052F2993873E00E3604E /* TrackerVС.swift */,
 				8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */,
 				8DF313A62997283500B7D148 /* TrackerHeader.swift */,
+				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
+				8DF313AF299774C600B7D148 /* StatisticVC.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -206,9 +212,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DB392B02994D5230031D2E1 /* ShowPreviewUI.swift in Sources */,
+				8DF313B0299774C600B7D148 /* StatisticVC.swift in Sources */,
 				8DDE29BE2993BB7200D4A4DD /* ColorsYP.swift in Sources */,
 				8DBA05302993873E00E3604E /* TrackerVС.swift in Sources */,
 				8DB392B429952DA90031D2E1 /* Tracker.swift in Sources */,
+				8DF313AE29976BD100B7D148 /* HomeVC.swift in Sources */,
 				8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */,
 				8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,

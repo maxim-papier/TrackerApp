@@ -38,7 +38,7 @@ final class TrackerCell: UICollectionViewCell {
     let daysLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = .white
+        label.textColor = .colorYP(.blackYP)
         label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         label.font = FontYP.medium12

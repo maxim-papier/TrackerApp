@@ -6,11 +6,11 @@ final class TrackerVC: UIViewController, UICollectionViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.colorYP(.grayYP)
-        setUp()
+        // view.backgroundColor = UIColor.colorYP(.grayYP)
+        setup()
     }
 
-    private func setUp() {
+    private func setup() {
         registerClassesForReuse()
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
@@ -18,7 +18,7 @@ final class TrackerVC: UIViewController, UICollectionViewDataSource {
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.backgroundColor = .darkGray
+        collectionView.backgroundColor = .colorYP(.whiteYP)
     }
 
     private func registerClassesForReuse() {

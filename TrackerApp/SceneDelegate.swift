@@ -9,7 +9,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        let vc = TrackerVC()
+        // let vc = TrackerVC()
+        let vc = HomeVC()
         window.rootViewController = vc
         window.makeKeyAndVisible()
 
