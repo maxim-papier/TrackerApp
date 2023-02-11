@@ -22,16 +22,16 @@ final class TrackerVC: UIViewController, UICollectionViewDataSource {
     }
 
     private func registerClassesForReuse() {
-
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: TrackerCell.identifier)
+        collectionView.register(TrackerHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerHeader.identifier)
     }
 
     private func setConstraints() {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
 }
@@ -45,6 +45,7 @@ extension TrackerVC: UICollectionViewDelegate {
         return 6
     }
 
+    // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(
@@ -58,8 +59,16 @@ extension TrackerVC: UICollectionViewDelegate {
         cell.emojiLabel.text = Tracker.mockCase.emoji
         cell.daysLabel.text = "XX дней"
 
-
         return cell
+    }
+
+    // Header
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.identifier, for: indexPath) as? TrackerHeader
+
+        header?.categoryLabel.text = TrackerCategory.mockHome.title
+
+        return header!
     }
 }
 
@@ -68,16 +77,30 @@ extension TrackerVC: UICollectionViewDelegate {
 
 extension TrackerVC: UICollectionViewDelegateFlowLayout {
 
+    // Section
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .init(top: 12, left: 16, bottom: 16, right: 16)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return .init(9)
+    }
+
+
+    // Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        return .init(width: (collectionView.frame.width - 9) / 2, height: 148)
+        return .init(width: (collectionView.frame.width - (16 * 2) - 9) / 2, height: 148)
+    }
+
+    // Header
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return .init(width: collectionView.frame.width, height: 18 + 12)
     }
 }
 
 
-
 // MARK: - SHOW PREVIEW
-
 
 import SwiftUI
 struct ViewControllerProvider: PreviewProvider {

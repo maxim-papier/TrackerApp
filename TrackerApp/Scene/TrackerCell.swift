@@ -57,19 +57,15 @@ final class TrackerCell: UICollectionViewCell {
     }()
 
 
-
     override init(frame: CGRect) {
         super .init(frame: frame)
         super.layoutSubviews()
-
-
 
         contentView.addSubview(backgroundShape)
         contentView.addSubview(doneButton)
         contentView.addSubview(daysLabel)
         backgroundShape.addSubview(titleLabel)
         backgroundShape.addSubview(emojiLabel)
-
 
         NSLayoutConstraint.activate([
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -87,7 +83,7 @@ final class TrackerCell: UICollectionViewCell {
             titleLabel.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -12),
 
             daysLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            daysLabel.widthAnchor.constraint(equalToConstant: 101),
+            daysLabel.trailingAnchor.constraint(equalTo: doneButton.leadingAnchor, constant: -8),
             daysLabel.centerYAnchor.constraint(equalTo: doneButton.centerYAnchor),
 
             doneButton.topAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: 8),
@@ -100,6 +96,4 @@ final class TrackerCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init has not been implemented")
     }
-
 }
-

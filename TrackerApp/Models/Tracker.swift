@@ -8,16 +8,12 @@ struct Tracker {
     let day: WeekDay
 }
 
-
 extension Tracker {
     static var mockCase: Self {
         Tracker.init(
-            title: "Do the Kegel exercises daily",
-            emoji: "🧘🏼‍♀️",
+            title: "Don't skip the leg's day",
+            emoji: "🏋️",
             color: .colorYP(.selection18)!,
             day: WeekDay.sunday)
     }
 }
-
-
-
