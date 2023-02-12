@@ -14,6 +14,10 @@ struct TrackerCategory {
 
 extension TrackerCategory {
     static var mockHome: Self {
-        .init(title: "Спорт", trackers: [.mockCase])
+        .init(title: "Спорт", trackers: [
+            .mockCase1,
+            .mockCase2,
+            .mockCase3
+        ])
     }
 }

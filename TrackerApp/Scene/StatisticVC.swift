@@ -2,7 +2,7 @@ import UIKit
 
 class StatisticVC: UIViewController {
 
-    let placeholder = PlaceholderType.noCategories.placeholder
+    let placeholder = PlaceholderType.noStats.placeholder
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +23,7 @@ class StatisticVC: UIViewController {
     }
     
     private func setupNavBar() {
-        let title = "Статистика"
-        navigationItem.title = title
+        title = "Статистика"
     }
 }
 

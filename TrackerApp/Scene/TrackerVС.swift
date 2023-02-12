@@ -2,9 +2,35 @@ import UIKit
 
 final class TrackerVC: UIViewController {
 
+
+    var trackers: [Tracker] = TrackerCategory.mockHome.trackers
+
+
     let searchController = UISearchController(searchResultsController: nil)
+    var isSearchBarEmpty: Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    var isFiltering: Bool {
+        return searchController.isActive && !isSearchBarEmpty
+    }
+
+    var filteredTrackers: [Tracker] = []
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = true
+        searchController.searchBar.searchTextField.textColor = .colorYP(.grayYP)
+        searchController.searchBar.placeholder = "Поиск"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -12,52 +38,43 @@ final class TrackerVC: UIViewController {
     }
 
     private func setup() {
-        registerClassesForReuse()
-        setSearchBar()
-        setConstraints()
+        collectionView.register(
+            TrackerCell.self,
+            forCellWithReuseIdentifier: TrackerCell.identifier
+        )
+        collectionView.register(
+            TrackerHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: TrackerHeader.identifier
+        )
+
         setupNavBar()
+        setConstraints()
+
         collectionView.dataSource = self
         collectionView.delegate = self
+
         searchController.searchResultsUpdater = self
     }
 
+    private func setupNavBar() {
 
-    func registerClassesForReuse() {
-        collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: TrackerCell.identifier)
-        collectionView.register(TrackerHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerHeader.identifier)
-    }
+        let addNewTrackerButton = UIBarButtonItem(
+            image: UIImage(named: "addTrackerIcon42x42"),
+            style: .plain,
+            target: self,
+            action: #selector(addNewTracker)
+        )
+        addNewTrackerButton.tintColor = .colorYP(.blackYP)
 
-
-    // Navbar
-    func setupNavBar() {
-
-        let addNewTrackerButton: UIBarButtonItem = {
-            let image = UIImage(named: "addTrackerIcon42x42")
-            let button = UIBarButtonItem(
-                image: image,
-                style: .plain,
-                target: self,
-                action: #selector(addNewTracker)
-            )
-            button.tintColor = .colorYP(.blackYP)
-            return button
-        }()
-
-        let datePickerButton: UIDatePicker = {
-            let picker = UIDatePicker()
-            picker.datePickerMode = .date
-            picker.preferredDatePickerStyle = .compact
-            picker.addTarget(TrackerVC.self, action: #selector (didTapDatePickerButton), for: .valueChanged)
-            picker.translatesAutoresizingMaskIntoConstraints = false
-            return picker
-        }()
-
-        let title = "Трекеры"
-
-        navigationItem.title = title
+        title = "Трекеры"
         navigationItem.leftBarButtonItem = addNewTrackerButton
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePickerButton)
-        navigationItem.searchController = searchController
+
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
 
     @objc
@@ -66,13 +83,6 @@ final class TrackerVC: UIViewController {
 
     @objc func didTapDatePickerButton() {
     }
-
-    func setSearchBar() {
-        searchController.obscuresBackgroundDuringPresentation = true
-        //searchController.searchBar.text = "Поиск"
-        searchController.searchBar.searchTextField.textColor = .colorYP(.grayYP)
-    }
-
 
     private func setConstraints() {
 
@@ -92,18 +102,13 @@ final class TrackerVC: UIViewController {
 }
 
 
-// MARK: - Setup UI
-
-extension TrackerVC: UICollectionViewDataSource {
-}
-
-
 // MARK: - DataSource
 
-extension TrackerVC: UICollectionViewDelegate {
+extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+
+        return isFiltering ? filteredTrackers.count : trackers.count
     }
 
     // Cell
@@ -114,10 +119,18 @@ extension TrackerVC: UICollectionViewDelegate {
             for: indexPath
         ) as? TrackerCell else { return .init() }
 
-        cell.backgroundShape.backgroundColor = Tracker.mockCase.color
-        cell.doneButton.backgroundColor = Tracker.mockCase.color
-        cell.titleLabel.text = Tracker.mockCase.title
-        cell.emojiLabel.text = Tracker.mockCase.emoji
+        let show: Tracker
+
+        if isFiltering {
+            show = filteredTrackers[indexPath.row]
+        } else {
+            show = trackers[indexPath.row]
+        }
+
+        cell.backgroundShape.backgroundColor = show.color
+        cell.doneButton.backgroundColor = show.color
+        cell.titleLabel.text = show.title
+        cell.emojiLabel.text = show.emoji
         cell.daysLabel.text = "XX дней"
 
         return cell
@@ -165,11 +178,24 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
+
+// MARK: - Setting up search
+
 extension TrackerVC: UISearchResultsUpdating {
 
     func updateSearchResults(for searchController: UISearchController) {
-
+        guard let searchText = searchController.searchBar.text else { return }
+        filteringContentForSearchText(searchText)
     }
+
+    func filteringContentForSearchText(_ searchText: String) {
+        print("LOOKING FOR :::: \(searchText)")
+        filteredTrackers = trackers.filter { (tracker: Tracker) -> Bool in
+            return tracker.title.lowercased().contains(searchText.lowercased())
+        }
+        collectionView.reloadData()
+    }
+
 }
 
 
