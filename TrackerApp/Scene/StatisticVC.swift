@@ -2,6 +2,8 @@ import UIKit
 
 class StatisticVC: UIViewController {
 
+    let placeholder = PlaceholderType.noCategories.placeholder
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -10,13 +12,20 @@ class StatisticVC: UIViewController {
     private func setup() {
         view.backgroundColor = .colorYP(.whiteYP)
         setupNavBar()
-    }
+        view.addSubview(placeholder)
 
+        placeholder.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            placeholder.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholder.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
     private func setupNavBar() {
         let title = "Статистика"
         navigationItem.title = title
     }
-
 }
 
 
@@ -25,6 +34,6 @@ class StatisticVC: UIViewController {
 import SwiftUI
 struct StatisticVCProvider: PreviewProvider {
     static var previews: some View {
-        TrackerVC().showPreview()
+        StatisticVC().showPreview()
     }
 }

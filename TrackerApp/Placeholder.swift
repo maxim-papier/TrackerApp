@@ -1,6 +1,5 @@
 import UIKit
 
-
 class Placeholder: UIView {
 
     let imageView: UIImageView = {
@@ -14,24 +13,37 @@ class Placeholder: UIView {
         label.font = FontYP.medium12
         label.textColor = .colorYP(.blackYP)
         label.textAlignment = .center
+        label.numberOfLines = 2
+        label.lineBreakMode = .byTruncatingTail
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     init(image: UIImage, text: String) {
         super.init(frame: .zero)
-
         self.imageView.image = image
         self.textLabel.text = text
 
         let stack = UIStackView()
+
+        self.addSubview(stack)
+
         stack.alignment = .center
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addSubview(self.imageView)
-        stack.addSubview(self.textLabel)
+        stack.addArrangedSubview(self.imageView)
+        stack.addArrangedSubview(self.textLabel)
+
         stack.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 80),
+            imageView.heightAnchor.constraint(equalToConstant: 80)
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -66,11 +78,9 @@ enum PlaceholderType {
         case .noTrackers:
             return .init(image: noTrackersImage, text: "Что будем отслеживать?")
         case .noCategories:
-            return .init(image: noCategoriesImage, text: "Привычки и события можно объединить по смыслу")
+            return .init(image: noCategoriesImage, text: "Привычки и события\n можно объединить по смыслу")
         case .noStats:
             return .init(image: noStatsImage, text: "Анализировать пока нечего")
         }
     }
 }
-
-
