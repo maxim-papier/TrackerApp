@@ -26,6 +26,7 @@
 		8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */; };
 		8DF313AE29976BD100B7D148 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AD29976BD100B7D148 /* HomeVC.swift */; };
 		8DF313B0299774C600B7D148 /* StatisticVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AF299774C600B7D148 /* StatisticVC.swift */; };
+		8DF313B22998AB5800B7D148 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313B12998AB5800B7D148 /* Placeholder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
 		8DF313AD29976BD100B7D148 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		8DF313AF299774C600B7D148 /* StatisticVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticVC.swift; sourceTree = "<group>"; };
+		8DF313B12998AB5800B7D148 /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				8DB392A829941B680031D2E1 /* Fonts */,
 				8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */,
 				8DB392B5299536B40031D2E1 /* Models */,
+				8DF313B12998AB5800B7D148 /* Placeholder.swift */,
 			);
 			path = TrackerApp;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
 				8DB392B229952B340031D2E1 /* DayOfTheWeek.swift in Sources */,
+				8DF313B22998AB5800B7D148 /* Placeholder.swift in Sources */,
 				8DDE29C02993C1AC00D4A4DD /* FontsYP.swift in Sources */,
 				8DBA052E2993873E00E3604E /* SceneDelegate.swift in Sources */,
 				8DF313AA2997507900B7D148 /* TrackerCategory.swift in Sources */,

@@ -1,62 +1,87 @@
 import UIKit
 
-final class TrackerVC: UIViewController, UICollectionViewDataSource {
+final class TrackerVC: UIViewController {
+
+    let searchController = UISearchController(searchResultsController: nil)
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        setupNavBar()
-    }
-
-    @objc
-    private func addNewTracker() {
-
     }
 
     private func setup() {
-
-        view.backgroundColor = .colorYP(.grayYP)
-
         registerClassesForReuse()
-
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(collectionView)
-
+        setSearchBar()
         setConstraints()
-        collectionView.backgroundColor = .colorYP(.whiteYP)
-
+        setupNavBar()
         collectionView.dataSource = self
         collectionView.delegate = self
+        searchController.searchResultsUpdater = self
     }
 
-    private func setupNavBar() {
 
-
-        if let navBar = navigationController?.navigationBar {
-
-            let leftButton = UIBarButtonItem(
-                image: UIImage(named: "addTrackerIcon42x42"),
-                style: .plain,
-                target: self,
-                action: #selector(addNewTracker)
-            )
-            leftButton.tintColor = .black
-            navigationController?.navigationItem.leftBarButtonItem = leftButton
-
-
-            navBar.topItem?.setLeftBarButton(leftButton, animated: true)
-        }
-    }
-
-    private func registerClassesForReuse() {
+    func registerClassesForReuse() {
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: TrackerCell.identifier)
         collectionView.register(TrackerHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerHeader.identifier)
     }
 
+
+    // Navbar
+    func setupNavBar() {
+
+        let addNewTrackerButton: UIBarButtonItem = {
+            let image = UIImage(named: "addTrackerIcon42x42")
+            let button = UIBarButtonItem(
+                image: image,
+                style: .plain,
+                target: self,
+                action: #selector(addNewTracker)
+            )
+            button.tintColor = .colorYP(.blackYP)
+            return button
+        }()
+
+        let datePickerButton: UIDatePicker = {
+            let picker = UIDatePicker()
+            picker.datePickerMode = .date
+            picker.preferredDatePickerStyle = .compact
+            picker.addTarget(TrackerVC.self, action: #selector (didTapDatePickerButton), for: .valueChanged)
+            picker.translatesAutoresizingMaskIntoConstraints = false
+            return picker
+        }()
+
+        let title = "Трекеры"
+
+        navigationItem.title = title
+        navigationItem.leftBarButtonItem = addNewTrackerButton
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePickerButton)
+        navigationItem.searchController = searchController
+    }
+
+    @objc
+    private func addNewTracker() {
+    }
+
+    @objc func didTapDatePickerButton() {
+    }
+
+    func setSearchBar() {
+        searchController.obscuresBackgroundDuringPresentation = true
+        //searchController.searchBar.text = "Поиск"
+        searchController.searchBar.searchTextField.textColor = .colorYP(.grayYP)
+    }
+
+
     private func setConstraints() {
+
+        view.backgroundColor = .colorYP(.whiteYP)
+        collectionView.backgroundColor = .colorYP(.whiteYP)
+
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -64,6 +89,12 @@ final class TrackerVC: UIViewController, UICollectionViewDataSource {
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
+}
+
+
+// MARK: - Setup UI
+
+extension TrackerVC: UICollectionViewDataSource {
 }
 
 
@@ -94,11 +125,16 @@ extension TrackerVC: UICollectionViewDelegate {
 
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.identifier, for: indexPath) as? TrackerHeader
 
-        header?.categoryLabel.text = TrackerCategory.mockHome.title
+        guard let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: TrackerHeader.identifier,
+            for: indexPath
+        ) as? TrackerHeader else { return .init() }
 
-        return header!
+        header.categoryLabel.text = TrackerCategory.mockHome.title
+
+        return header
     }
 }
 
@@ -129,11 +165,18 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
+extension TrackerVC: UISearchResultsUpdating {
+
+    func updateSearchResults(for searchController: UISearchController) {
+
+    }
+}
+
 
 // MARK: - SHOW PREVIEW
 
 import SwiftUI
-struct ViewControllerProvider: PreviewProvider {
+struct TrackerVCProvider: PreviewProvider {
     static var previews: some View {
         TrackerVC().showPreview()
     }

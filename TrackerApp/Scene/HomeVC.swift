@@ -3,47 +3,48 @@ import UIKit
 class HomeVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        tabsSetup()
+        setupTabs()
     }
 
-    func tabsSetup() {
+    private func setupTabs() {
         tabBar.backgroundColor = .colorYP(.whiteYP)
 
         // Setup Tabs
         let firstVC = UINavigationController(rootViewController: TrackerVC())
-        let secondVC = StatisticVC()
-
-        self.viewControllers = [firstVC, secondVC]
+        let secondVC = UINavigationController(rootViewController: StatisticVC())
+        let controllers = [firstVC, secondVC]
+        viewControllers = controllers
 
         // Titles Style
         let font = FontYP.medium10
         let textAttributes = [NSAttributedString.Key.font: font]
 
         firstVC.tabBarItem.setTitleTextAttributes(textAttributes, for: .normal)
-        firstVC.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "trackersIcon28x28"), selectedImage: nil)
+        firstVC.tabBarItem = UITabBarItem(title: "Trackers", image: UIImage(named: "trackersIcon28x28"), selectedImage: nil)
 
         secondVC.tabBarItem.setTitleTextAttributes(textAttributes, for: .normal)
-        secondVC.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "statisticIcon28x28"), selectedImage: nil)
+        secondVC.tabBarItem = UITabBarItem(title: "Statistics", image: UIImage(named: "statisticIcon28x28"), selectedImage: nil)
 
         // Cast shadow
-        self.tabBar.layer.shadowColor = UIColor.black.cgColor
-        self.tabBar.layer.shadowOpacity = 0.3
-        self.tabBar.layer.shadowOffset = .init(width: 0, height: -0.5)
-    self.tabBar.layer.masksToBounds = false
+        tabBar.layer.shadowColor = UIColor.black.cgColor
+        tabBar.layer.shadowOpacity = 0.3
+        tabBar.layer.shadowOffset = .init(width: 0, height: -0.5)
+        tabBar.layer.masksToBounds = false
 
-        prepare(firstVC)
+        controllers.forEach(prepare)
     }
 }
 
 extension HomeVC {
-
-    func prepare(_ navigationController: UINavigationController) {
+    private func prepare(_ navigationController: UINavigationController) {
         navigationController.navigationBar.prefersLargeTitles = true
 
+        let font = FontYP.bold34
+        let textAttributes = [NSAttributedString.Key.font: font]
+
+        navigationController.navigationBar.standardAppearance.largeTitleTextAttributes = textAttributes
     }
 }
-
-
 
 // MARK: - SHOW PREVIEW
 
