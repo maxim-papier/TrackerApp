@@ -22,7 +22,7 @@ extension Tracker {
         Tracker.init(
             title: "Kiss your wife",
             emoji: "😘",
-            color: .colorYP(.selection17)!,
+            color: .colorYP(.selection18)!,
             day: WeekDay.monday)
     }
 
@@ -30,8 +30,24 @@ extension Tracker {
         Tracker.init(
             title: "Hug your kids",
             emoji: "🤗",
-            color: .colorYP(.selection13)!,
+            color: .colorYP(.selection18)!,
             day: WeekDay.thursday)
+    }
+
+    static var mockCase4: Self {
+        Tracker.init(
+            title: "Tidy up",
+            emoji: "🧹",
+            color: .colorYP(.selection17)!,
+            day: .monday)
+    }
+
+    static var mockCase5: Self {
+        Tracker.init(
+            title: "Plumb the kitchen sink",
+            emoji: "🪠",
+            color: .colorYP(.selection17)!,
+            day: .monday)
     }
 
 }

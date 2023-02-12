@@ -13,11 +13,10 @@ struct TrackerCategory {
 
 
 extension TrackerCategory {
-    static var mockHome: Self {
-        .init(title: "Спорт", trackers: [
-            .mockCase1,
-            .mockCase2,
-            .mockCase3
-        ])
+    static var mockCategory1: Self {
+        .init(title: "Спорт", trackers: [.mockCase1, .mockCase2,.mockCase3])
+    }
+    static var mockCategory2: Self {
+        .init(title: "Дом", trackers: [.mockCase4, .mockCase5])
     }
 }

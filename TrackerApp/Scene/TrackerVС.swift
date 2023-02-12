@@ -2,8 +2,9 @@ import UIKit
 
 final class TrackerVC: UIViewController {
 
-
-    var trackers: [Tracker] = TrackerCategory.mockHome.trackers
+    let trackers: [Tracker] = TrackerCategory.mockCategory1.trackers
+    var filteredTrackers: [Tracker] = []
+    let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
 
 
     let searchController = UISearchController(searchResultsController: nil)
@@ -14,7 +15,6 @@ final class TrackerVC: UIViewController {
         return searchController.isActive && !isSearchBarEmpty
     }
 
-    var filteredTrackers: [Tracker] = []
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
@@ -106,9 +106,14 @@ final class TrackerVC: UIViewController {
 
 extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return categories.count
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        return isFiltering ? filteredTrackers.count : trackers.count
+        return isFiltering ? filteredTrackers.count : categories[section].trackers.count
     }
 
     // Cell
@@ -124,7 +129,9 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
         if isFiltering {
             show = filteredTrackers[indexPath.row]
         } else {
-            show = trackers[indexPath.row]
+            show = categories[indexPath.section].trackers[indexPath.item]
+            print("SECTION :::: \(categories[indexPath.section])")
+            print("ROW :::: \(trackers[indexPath.row])")
         }
 
         cell.backgroundShape.backgroundColor = show.color
@@ -145,7 +152,8 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath
         ) as? TrackerHeader else { return .init() }
 
-        header.categoryLabel.text = TrackerCategory.mockHome.title
+        header.categoryLabel.text = categories[indexPath.section].title
+        print(categories[indexPath.section].title)
 
         return header
     }
