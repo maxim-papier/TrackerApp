@@ -65,6 +65,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8DA0CB59299A6377004BFE73 /* ObjectsUI */ = {
+			isa = PBXGroup;
+			children = (
+				8DF313B12998AB5800B7D148 /* Placeholder.swift */,
+			);
+			path = ObjectsUI;
+			sourceTree = "<group>";
+		};
 		8DB392A829941B680031D2E1 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -113,9 +121,8 @@
 				8DBA052B2993873E00E3604E /* AppDelegate.swift */,
 				8DBA052D2993873E00E3604E /* SceneDelegate.swift */,
 				8DB392A829941B680031D2E1 /* Fonts */,
-				8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */,
 				8DB392B5299536B40031D2E1 /* Models */,
-				8DF313B12998AB5800B7D148 /* Placeholder.swift */,
+				8DA0CB59299A6377004BFE73 /* ObjectsUI */,
 			);
 			path = TrackerApp;
 			sourceTree = "<group>";
@@ -123,6 +130,7 @@
 		8DDE29BA2993B8EA00D4A4DD /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */,
 				8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */,
 				8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */,
 			);

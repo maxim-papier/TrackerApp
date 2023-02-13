@@ -5,7 +5,7 @@ struct Tracker {
     let title: String
     let emoji: String
     let color: UIColor
-    let day: WeekDay
+    let day: Set<WeekDay>?
 }
 
 extension Tracker {
@@ -15,7 +15,7 @@ extension Tracker {
             title: "Don't skip the leg's day",
             emoji: "🏋️",
             color: .colorYP(.selection18)!,
-            day: WeekDay.sunday)
+            day: WeekDay.mock01)
     }
 
     static var mockCase2: Self {
@@ -23,7 +23,7 @@ extension Tracker {
             title: "Kiss your wife",
             emoji: "😘",
             color: .colorYP(.selection18)!,
-            day: WeekDay.monday)
+            day: WeekDay.mock02)
     }
 
     static var mockCase3: Self {
@@ -31,7 +31,7 @@ extension Tracker {
             title: "Hug your kids",
             emoji: "🤗",
             color: .colorYP(.selection18)!,
-            day: WeekDay.thursday)
+            day: WeekDay.mock01)
     }
 
     static var mockCase4: Self {
@@ -39,7 +39,7 @@ extension Tracker {
             title: "Tidy up",
             emoji: "🧹",
             color: .colorYP(.selection17)!,
-            day: .monday)
+            day: WeekDay.mock02)
     }
 
     static var mockCase5: Self {
@@ -47,7 +47,7 @@ extension Tracker {
             title: "Plumb the kitchen sink",
             emoji: "🪠",
             color: .colorYP(.selection17)!,
-            day: .monday)
+            day: WeekDay.mock03)
     }
 
 }

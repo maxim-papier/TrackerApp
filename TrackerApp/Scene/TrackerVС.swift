@@ -2,23 +2,18 @@ import UIKit
 
 final class TrackerVC: UIViewController {
     
-    // let trackers: [Tracker] = TrackerCategory.mockCategory1.trackers
     let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
-    // var filteredTrackers: [Tracker] = []
     var filteredCategories: [TrackerCategory] = []
     
-    
     let searchController = UISearchController(searchResultsController: nil)
-    var isSearchBarEmpty: Bool {
-        return searchController.searchBar.text?.isEmpty ?? true
-    }
-    var isFiltering: Bool {
-        return searchController.isActive && !isSearchBarEmpty
-    }
-    
-    
+    var isSearchBarEmpty: Bool { return searchController.searchBar.text?.isEmpty ?? true }
+    var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty }
+
+    private var selectedDate = Date()
+
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
+
+
     init() {
         super.init(nibName: nil, bundle: nil)
         searchController.searchResultsUpdater = self
@@ -74,7 +69,7 @@ final class TrackerVC: UIViewController {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        
+        datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
     
@@ -82,9 +77,11 @@ final class TrackerVC: UIViewController {
     private func addNewTracker() {
     }
     
-    @objc func didTapDatePickerButton() {
+    @objc func didTapDatePickerButton(_ date: UIDatePicker) {
+        selectedDate = date.date
+        filterTrackersByDate(selectedDate)
     }
-    
+
     private func setConstraints() {
         
         view.backgroundColor = .colorYP(.whiteYP)
@@ -176,7 +173,6 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         return .init(width: (collectionView.frame.width - (16 * 2) - 9) / 2, height: 148)
     }
     
@@ -216,11 +212,41 @@ extension TrackerVC: UISearchResultsUpdating {
             // we add this "category" to the "filteredCategories" array
             if filteredTrackers.count > 0 {
                 filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+                
             }
+            print("filteredTrackers ::: \(filteredTrackers)")
+
+        }
+        
+
+        collectionView.reloadData()
+    }
+
+    func filterTrackersByDate(_ date: Date) {
+
+        filteredCategories = []
+
+        let selectedWeekDay = Calendar.current.component(.weekday, from: date)
+        guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else { return }
+
+        for category in categories {
+            var filteredTrackers: [Tracker] = []
+            for tracker in category.trackers {
+                if let day = tracker.day, day.contains(selectedWeekDayEnum) {
+                    filteredTrackers.append(tracker)
+                }
+            }
+
+            if filteredTrackers.count > 0 {
+                filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+            }
+
+            print("filteredTrackers ::: \(filteredTrackers)")
         }
 
         collectionView.reloadData()
     }
+
 }
 
 
