@@ -1,12 +1,13 @@
 import UIKit
 
 final class TrackerVC: UIViewController {
-
-    let trackers: [Tracker] = TrackerCategory.mockCategory1.trackers
-    var filteredTrackers: [Tracker] = []
+    
+    // let trackers: [Tracker] = TrackerCategory.mockCategory1.trackers
     let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
-
-
+    // var filteredTrackers: [Tracker] = []
+    var filteredCategories: [TrackerCategory] = []
+    
+    
     let searchController = UISearchController(searchResultsController: nil)
     var isSearchBarEmpty: Bool {
         return searchController.searchBar.text?.isEmpty ?? true
@@ -14,10 +15,10 @@ final class TrackerVC: UIViewController {
     var isFiltering: Bool {
         return searchController.isActive && !isSearchBarEmpty
     }
-
-
+    
+    
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         searchController.searchResultsUpdater = self
@@ -27,16 +28,16 @@ final class TrackerVC: UIViewController {
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
     }
-
+    
     private func setup() {
         collectionView.register(
             TrackerCell.self,
@@ -47,18 +48,18 @@ final class TrackerVC: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TrackerHeader.identifier
         )
-
+        
         setupNavBar()
         setConstraints()
-
+        
         collectionView.dataSource = self
         collectionView.delegate = self
-
+        
         searchController.searchResultsUpdater = self
     }
-
+    
     private func setupNavBar() {
-
+        
         let addNewTrackerButton = UIBarButtonItem(
             image: UIImage(named: "addTrackerIcon42x42"),
             style: .plain,
@@ -66,32 +67,32 @@ final class TrackerVC: UIViewController {
             action: #selector(addNewTracker)
         )
         addNewTrackerButton.tintColor = .colorYP(.blackYP)
-
+        
         title = "Трекеры"
         navigationItem.leftBarButtonItem = addNewTrackerButton
-
+        
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
-
+    
     @objc
     private func addNewTracker() {
     }
-
+    
     @objc func didTapDatePickerButton() {
     }
-
+    
     private func setConstraints() {
-
+        
         view.backgroundColor = .colorYP(.whiteYP)
         collectionView.backgroundColor = .colorYP(.whiteYP)
-
+        
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -105,56 +106,55 @@ final class TrackerVC: UIViewController {
 // MARK: - DataSource
 
 extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
-
-
+    
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return categories.count
+        return isFiltering && !filteredCategories.isEmpty ? filteredCategories.count : categories.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        return isFiltering ? filteredTrackers.count : categories[section].trackers.count
+        if isFiltering {
+            return filteredCategories.indices.contains(section) ? filteredCategories[section].trackers.count : 0
+        } else {
+            return categories[section].trackers.count
+        }
     }
-
+    
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
+        
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: TrackerCell.identifier,
             for: indexPath
         ) as? TrackerCell else { return .init() }
-
+        
         let show: Tracker
-
+        
         if isFiltering {
-            show = filteredTrackers[indexPath.row]
+            show = filteredCategories[indexPath.section].trackers[indexPath.item]
         } else {
             show = categories[indexPath.section].trackers[indexPath.item]
-            print("SECTION :::: \(categories[indexPath.section])")
-            print("ROW :::: \(trackers[indexPath.row])")
         }
-
+        
         cell.backgroundShape.backgroundColor = show.color
         cell.doneButton.backgroundColor = show.color
         cell.titleLabel.text = show.title
         cell.emojiLabel.text = show.emoji
         cell.daysLabel.text = "XX дней"
-
+        
         return cell
     }
-
+    
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
+        
         guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: TrackerHeader.identifier,
             for: indexPath
         ) as? TrackerHeader else { return .init() }
-
+        
         header.categoryLabel.text = categories[indexPath.section].title
-        print(categories[indexPath.section].title)
-
         return header
     }
 }
@@ -163,23 +163,23 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
 // MARK: - Layout
 
 extension TrackerVC: UICollectionViewDelegateFlowLayout {
-
+    
     // Section
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return .init(top: 12, left: 16, bottom: 16, right: 16)
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return .init(9)
     }
-
-
+    
+    
     // Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
+        
         return .init(width: (collectionView.frame.width - (16 * 2) - 9) / 2, height: 148)
     }
-
+    
     // Header
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return .init(width: collectionView.frame.width, height: 18 + 12)
@@ -190,20 +190,37 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
 // MARK: - Setting up search
 
 extension TrackerVC: UISearchResultsUpdating {
-
+    
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
         filteringContentForSearchText(searchText)
     }
-
+    
     func filteringContentForSearchText(_ searchText: String) {
-        print("LOOKING FOR :::: \(searchText)")
-        filteredTrackers = trackers.filter { (tracker: Tracker) -> Bool in
-            return tracker.title.lowercased().contains(searchText.lowercased())
+        
+        // Reset array to be empty
+        filteredCategories = []
+        
+        for category in categories {
+            
+            // Store the relevant trackers
+            var filteredTrackers: [Tracker] = []
+            
+            for tracker in category.trackers {
+                if tracker.title.lowercased().contains(searchText.lowercased()) {
+                    filteredTrackers.append(tracker)
+                }
+            }
+            
+            // If there are any "filteredTrackers" in this "category",
+            // we add this "category" to the "filteredCategories" array
+            if filteredTrackers.count > 0 {
+                filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+            }
         }
+
         collectionView.reloadData()
     }
-
 }
 
 
