@@ -1,6 +1,6 @@
 import UIKit
 
-class HomeVC: UITabBarController {
+final class HomeVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()

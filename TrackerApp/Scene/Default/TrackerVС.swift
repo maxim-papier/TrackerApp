@@ -78,6 +78,8 @@ final class TrackerVC: UIViewController {
     
     @objc
     private func addNewTracker() {
+        let vc = NewTrackerVC()
+        present(vc, animated: true)
     }
     
     @objc func didTapDatePickerButton(_ date: UIDatePicker) {

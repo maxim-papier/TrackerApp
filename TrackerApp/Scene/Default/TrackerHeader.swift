@@ -1,6 +1,6 @@
 import UIKit
 
-class TrackerHeader: UICollectionReusableView {
+final class TrackerHeader: UICollectionReusableView {
 
     static let identifier = "TrackerHeader"
 
