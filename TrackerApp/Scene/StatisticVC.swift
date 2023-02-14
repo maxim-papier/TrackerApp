@@ -20,6 +20,9 @@ class StatisticVC: UIViewController {
             placeholder.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             placeholder.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+
+        //placeholder.isHidden = true
+
     }
     
     private func setupNavBar() {

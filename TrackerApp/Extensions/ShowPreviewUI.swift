@@ -1,8 +1,6 @@
 import SwiftUI
 
-
 extension UIViewController {
-
 
     private struct Preview: UIViewControllerRepresentable {
         let vc: UIViewController
@@ -14,6 +12,4 @@ extension UIViewController {
     func showPreview() -> some View {
         Preview(vc: self).edgesIgnoringSafeArea(.all)
     }
-
-
 }

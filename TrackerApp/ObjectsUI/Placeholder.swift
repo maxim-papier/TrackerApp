@@ -84,3 +84,8 @@ enum PlaceholderType {
         }
     }
 }
+
+enum PlaceholderState {
+    case show
+    case hide
+}

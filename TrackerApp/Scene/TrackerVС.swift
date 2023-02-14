@@ -2,23 +2,20 @@ import UIKit
 
 final class TrackerVC: UIViewController {
     
-    // let trackers: [Tracker] = TrackerCategory.mockCategory1.trackers
-    let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
-    // var filteredTrackers: [Tracker] = []
-    var filteredCategories: [TrackerCategory] = []
+    private let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
+    private var filteredCategories: [TrackerCategory] = []
     
-    
-    let searchController = UISearchController(searchResultsController: nil)
-    var isSearchBarEmpty: Bool {
-        return searchController.searchBar.text?.isEmpty ?? true
-    }
-    var isFiltering: Bool {
-        return searchController.isActive && !isSearchBarEmpty
-    }
-    
-    
+    private let searchController = UISearchController(searchResultsController: nil)
+    private var isSearchBarEmpty: Bool { return searchController.searchBar.text?.isEmpty ?? true } //
+    var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty } //
+
+    private var searchText = ""
+    private var selectedDate = Date()
+
+    private let placeholder = PlaceholderType.noSearchResults.placeholder
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
+
+
     init() {
         super.init(nibName: nil, bundle: nil)
         searchController.searchResultsUpdater = self
@@ -35,6 +32,7 @@ final class TrackerVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        filterTrackersByDate(selectedDate)
         setup()
     }
     
@@ -50,7 +48,7 @@ final class TrackerVC: UIViewController {
         )
         
         setupNavBar()
-        setConstraints()
+        setUIAndConstraints()
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -74,7 +72,7 @@ final class TrackerVC: UIViewController {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        
+        datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
     
@@ -82,22 +80,29 @@ final class TrackerVC: UIViewController {
     private func addNewTracker() {
     }
     
-    @objc func didTapDatePickerButton() {
+    @objc func didTapDatePickerButton(_ date: UIDatePicker) {
+        selectedDate = date.date
+        filterTrackersByDate(selectedDate)
     }
-    
-    private func setConstraints() {
-        
+
+    private func setUIAndConstraints() {
+
         view.backgroundColor = .colorYP(.whiteYP)
         collectionView.backgroundColor = .colorYP(.whiteYP)
         
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+
+        collectionView.addSubview(placeholder)
+        placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            placeholder.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholder.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
 }
@@ -109,15 +114,12 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return isFiltering && !filteredCategories.isEmpty ? filteredCategories.count : categories.count
+        return filteredCategories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if isFiltering {
-            return filteredCategories.indices.contains(section) ? filteredCategories[section].trackers.count : 0
-        } else {
-            return categories[section].trackers.count
-        }
+        return filteredCategories.indices.contains(section) ? filteredCategories[section].trackers.count : 0
+
     }
     
     // Cell
@@ -130,12 +132,8 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         let show: Tracker
         
-        if isFiltering {
-            show = filteredCategories[indexPath.section].trackers[indexPath.item]
-        } else {
-            show = categories[indexPath.section].trackers[indexPath.item]
-        }
-        
+        show = filteredCategories[indexPath.section].trackers[indexPath.item]
+
         cell.backgroundShape.backgroundColor = show.color
         cell.doneButton.backgroundColor = show.color
         cell.titleLabel.text = show.title
@@ -176,7 +174,6 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         return .init(width: (collectionView.frame.width - (16 * 2) - 9) / 2, height: 148)
     }
     
@@ -191,12 +188,17 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
 
 extension TrackerVC: UISearchResultsUpdating {
     
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-        filteringContentForSearchText(searchText)
+    internal func updateSearchResults(for searchController: UISearchController) {
+        guard let textInput = searchController.searchBar.text else { return }
+        searchText = textInput
+
+        switch searchText.isEmpty {
+        case true: break
+        case false: filteringContentForSearchText(searchText)
+        }
     }
     
-    func filteringContentForSearchText(_ searchText: String) {
+    private func filteringContentForSearchText(_ searchText: String) {
         
         // Reset array to be empty
         filteredCategories = []
@@ -211,14 +213,42 @@ extension TrackerVC: UISearchResultsUpdating {
                     filteredTrackers.append(tracker)
                 }
             }
-            
             // If there are any "filteredTrackers" in this "category",
             // we add this "category" to the "filteredCategories" array
             if filteredTrackers.count > 0 {
                 filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
             }
         }
+        reloadCollection()
+    }
 
+    private func filterTrackersByDate(_ date: Date) {
+
+        filteredCategories = []
+
+        let selectedWeekDay = Calendar.current.component(.weekday, from: date)
+        guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else { return }
+
+        for category in categories {
+            var filteredTrackers: [Tracker] = []
+            for tracker in category.trackers {
+                if let day = tracker.day, day.contains(selectedWeekDayEnum) {
+                    filteredTrackers.append(tracker)
+                }
+            }
+            if filteredTrackers.count > 0 {
+                filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+            }
+        }
+        reloadCollection()
+    }
+
+    private func reloadCollection() {
+
+        switch filteredCategories.isEmpty {
+        case true: placeholder.isHidden = false
+        case false: placeholder.isHidden = true
+        }
         collectionView.reloadData()
     }
 }
