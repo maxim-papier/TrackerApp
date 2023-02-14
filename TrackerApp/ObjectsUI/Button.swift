@@ -19,13 +19,18 @@ final class Button: UIButton {
 
         translatesAutoresizingMaskIntoConstraints = false
 
-
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 60)
         ])
+
+        print(tapHandler)
     }
 
-    @objc private func buttonTapped() { tapHandler?() }
+    @objc private func buttonTapped() {
+        print("buttonTapped")
+        guard let tapHandler else { return }
+        tapHandler()
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

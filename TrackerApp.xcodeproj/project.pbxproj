@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8DA0CB5C299B383F004BFE73 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB5B299B383F004BFE73 /* Button.swift */; };
 		8DA0CB5E299B4C70004BFE73 /* NewTrackerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */; };
+		8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */; };
 		8DB392AC29941B680031D2E1 /* YSDisplay-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8DB392A929941B680031D2E1 /* YSDisplay-Medium.ttf */; };
 		8DB392AD29941B680031D2E1 /* YSDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8DB392AA29941B680031D2E1 /* YSDisplay-Regular.ttf */; };
 		8DB392AE29941B680031D2E1 /* YSDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8DB392AB29941B680031D2E1 /* YSDisplay-Bold.ttf */; };
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		8DA0CB5B299B383F004BFE73 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerVC.swift; sourceTree = "<group>"; };
+		8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerVC.swift; sourceTree = "<group>"; };
 		8DB392A929941B680031D2E1 /* YSDisplay-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YSDisplay-Medium.ttf"; sourceTree = "<group>"; };
 		8DB392AA29941B680031D2E1 /* YSDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YSDisplay-Regular.ttf"; sourceTree = "<group>"; };
 		8DB392AB29941B680031D2E1 /* YSDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YSDisplay-Bold.ttf"; sourceTree = "<group>"; };
@@ -86,6 +88,15 @@
 				8DF313A62997283500B7D148 /* TrackerHeader.swift */,
 			);
 			path = Default;
+			sourceTree = "<group>";
+		};
+		8DA0CB5F299B9C28004BFE73 /* AddTrackers */ = {
+			isa = PBXGroup;
+			children = (
+				8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */,
+				8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */,
+			);
+			path = AddTrackers;
 			sourceTree = "<group>";
 		};
 		8DB392A829941B680031D2E1 /* Fonts */ = {
@@ -158,7 +169,7 @@
 				8DA0CB5A299B377F004BFE73 /* Default */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
 				8DF313AF299774C600B7D148 /* StatisticVC.swift */,
-				8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */,
+				8DA0CB5F299B9C28004BFE73 /* AddTrackers */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -245,6 +256,7 @@
 				8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */,
 				8DA0CB5C299B383F004BFE73 /* Button.swift in Sources */,
 				8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */,
+				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
 				8DA0CB5E299B4C70004BFE73 /* NewTrackerVC.swift in Sources */,

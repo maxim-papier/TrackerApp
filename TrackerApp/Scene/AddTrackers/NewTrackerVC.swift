@@ -7,6 +7,11 @@ final class NewTrackerVC: UIViewController {
         setup()
     }
 
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        setup()
+//    }
+
     private func setup() {
 
         let title: UILabel = {
@@ -18,20 +23,22 @@ final class NewTrackerVC: UIViewController {
             return label
         }()
 
+        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка")
+        habitButton.tapHandler = {
+            let vc = CreateTrackerVC()
+            self.present(vc, animated: true)
+        }
+
+        let eventButton = ButtonType.primary(isActive: true).button(withText: "Нерегулярное событие")
+        eventButton.tapHandler = { }
+
         let vStack: UIStackView = {
             let stack = UIStackView()
             stack.axis = .vertical
-            //stack.distribution = .fill
             stack.spacing = 8
             stack.translatesAutoresizingMaskIntoConstraints = false
             return stack
         }()
-
-        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка")
-        habitButton.tapHandler = { }
-
-        let eventButton = ButtonType.primary(isActive: true).button(withText: "Нерегулярное событие")
-        eventButton.tapHandler = { }
 
         view.backgroundColor = .colorYP(.whiteYP)
         view.addSubview(title)
