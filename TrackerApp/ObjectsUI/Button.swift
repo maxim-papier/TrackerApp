@@ -2,9 +2,17 @@ import UIKit
 
 final class Button: UIButton {
 
-    var tapHandler: (() -> Void)?
+    var tapHandler: (() -> Void) = { }
 
-    init(_ fillColor: UIColor, _ textColor: UIColor, _ borderColor: UIColor,  _ borderWidth: CGFloat, _ text: String) {
+    init(
+        _ fillColor: UIColor,
+        _ textColor: UIColor,
+        _ borderColor: UIColor,
+        _ borderWidth: CGFloat,
+        _ text: String,
+        _ tapHandler: @escaping (() -> Void) = { }
+    ){
+
         super.init(frame: .zero)
 
         titleLabel?.font = FontYP.medium16
@@ -23,12 +31,11 @@ final class Button: UIButton {
             heightAnchor.constraint(equalToConstant: 60)
         ])
 
-        print(tapHandler)
+        self.tapHandler = tapHandler
+        addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
 
     @objc private func buttonTapped() {
-        print("buttonTapped")
-        guard let tapHandler else { return }
         tapHandler()
     }
 
@@ -42,7 +49,7 @@ enum ButtonType {
     case primary(isActive: Bool)
     case secondary
 
-    func button(withText text: String) -> Button {
+    func button(withText text: String, tapHandler: @escaping (() -> Void) = { } ) -> Button {
 
         switch self {
 
@@ -51,14 +58,14 @@ enum ButtonType {
             let textColor = UIColor.colorYP(.whiteYP)!
             let borderColor = UIColor.clear
             let borderWidth: CGFloat = 0
-            return .init(fillColor, textColor, borderColor, borderWidth, text)
+            return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)
 
         case .secondary:
             let fillColor = UIColor.colorYP(.whiteYP)!
             let textColor = UIColor.colorYP(.blackYP)!
             let borderColor = textColor
             let borderWidth: CGFloat = 1
-            return .init(fillColor, textColor, borderColor, borderWidth, text)
+            return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)
         }
     }
 }

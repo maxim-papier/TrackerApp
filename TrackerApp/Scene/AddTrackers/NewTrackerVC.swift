@@ -7,11 +7,6 @@ final class NewTrackerVC: UIViewController {
         setup()
     }
 
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        setup()
-//    }
-
     private func setup() {
 
         let title: UILabel = {
@@ -23,11 +18,11 @@ final class NewTrackerVC: UIViewController {
             return label
         }()
 
-        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка")
-        habitButton.tapHandler = {
+        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка") {
             let vc = CreateTrackerVC()
             self.present(vc, animated: true)
         }
+
 
         let eventButton = ButtonType.primary(isActive: true).button(withText: "Нерегулярное событие")
         eventButton.tapHandler = { }
@@ -56,7 +51,6 @@ final class NewTrackerVC: UIViewController {
         ])
     }
 }
-
 
 
 // MARK: - SHOW PREVIEW

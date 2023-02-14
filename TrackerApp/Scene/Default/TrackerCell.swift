@@ -4,7 +4,6 @@ final class TrackerCell: UICollectionViewCell {
 
     static let identifier = "TrackerCell"
 
-
     let backgroundShape: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
