@@ -1,8 +1,8 @@
 import UIKit
 
-class EmojiHeader: UICollectionReusableView {
+class Header: UICollectionReusableView {
 
-    static let identifier = "EmojiHeader"
+    static let identifier = "Header"
 
     let sectionLabel: UILabel = {
         let label = UILabel()

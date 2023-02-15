@@ -10,19 +10,11 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     var selectedEmoji: IndexPath?
     var selectedColor: IndexPath?
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .mainColorYP(.whiteYP)
         configureCollectionView()
     }
-
-
-    @objc func labelMenuTapped() {
-        // Выполняем действия, которые необходимо выполнить при нажатии на labelMenu
-        print("labelMenu tapped")
-    }
-
 
     func configureCollectionView() {
 
@@ -31,9 +23,25 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: generateLayout())
 
         // Register
-        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
-        collectionView.register(EmojiHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmojiHeader.identifier)
-        collectionView.register(ListCell.self, forCellWithReuseIdentifier: ListCell.identifier)
+        collectionView.register(
+            Header.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: Header.identifier
+        )
+        collectionView.register(
+            EmojiCell.self,
+            forCellWithReuseIdentifier: EmojiCell.identifier
+        )
+        collectionView.register(
+            ListCell.self,
+            forCellWithReuseIdentifier: ListCell.identifier
+        )
+        collectionView.register(
+            InputCell.self,
+            forCellWithReuseIdentifier: InputCell.identifier)
+        collectionView.register(
+            ColorCell.self,
+            forCellWithReuseIdentifier: ColorCell.identifier)
 
         // Setup UI
         collectionView.backgroundColor = UIColor.mainColorYP(.whiteYP)
@@ -47,31 +55,11 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             return label
         }()
 
-        let backgroundShape: UIView = {
-            let view = UIView()
-            view.layer.cornerRadius = 16
-            view.clipsToBounds = true
-            view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
-            view.translatesAutoresizingMaskIntoConstraints = false
-            return view
-        }()
-
-        let userInputField: UITextField = {
-            let textField = UITextField()
-            textField.placeholder = "Введите название трекера"
-            textField.textAlignment = .left
-            textField.translatesAutoresizingMaskIntoConstraints = false
-            return textField
-        }()
-
         collectionView.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(collectionView)
         view.addSubview(title)
-        view.addSubview(backgroundShape)
-        backgroundShape.addSubview(userInputField)
 
-        let hInset: CGFloat = 16
         let vInset: CGFloat = 38
 
         NSLayoutConstraint.activate([
@@ -79,16 +67,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
-            backgroundShape.topAnchor.constraint(equalTo: title.bottomAnchor, constant: vInset),
-            backgroundShape.heightAnchor.constraint(equalToConstant: 75),
-            backgroundShape.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            backgroundShape.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-
-            userInputField.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
-            userInputField.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
-            userInputField.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: hInset),
-
-            collectionView.topAnchor.constraint(equalTo: userInputField.bottomAnchor, constant: vInset),
+            collectionView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: vInset),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
@@ -105,7 +84,27 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
             switch sectionNumber {
 
-            case 0: // ListCell
+            case 0: // Input
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(75))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+                let groupSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(75))
+
+                let group = NSCollectionLayoutGroup.vertical(
+                    layoutSize: groupSize,
+                    subitems: [item])
+
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+
+                return section
+
+
+            case 1: // ListCell
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
                     heightDimension: .absolute(75))
@@ -114,30 +113,17 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
                     heightDimension: .absolute(75+75))
-                let group: NSCollectionLayoutGroup
 
-                let itemsCount = 2
-
-                if #available(iOS 16.0, *) {
-                    group = NSCollectionLayoutGroup.vertical(
-                        layoutSize: groupSize,
-                        repeatingSubitem: item,
-                        count: itemsCount)
-                } else {
-                    group = NSCollectionLayoutGroup.vertical(
-                        layoutSize: groupSize,
-                        subitem: item,
-                        count: itemsCount)
-                }
-
-                group.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+                let group = NSCollectionLayoutGroup.vertical(
+                    layoutSize: groupSize,
+                    subitems: [item])
 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 16, bottom: 32, trailing: 16)
 
                 return section
 
-            case 1, 2:
+            case 2: // Emojis
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1/6),
                     heightDimension: .fractionalWidth(1/6))
@@ -146,39 +132,59 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
                     heightDimension: .fractionalWidth(1/6))
-                let group: NSCollectionLayoutGroup
 
-                let itemsCount = self.emojis.count
+                let group = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: groupSize,
+                    subitems: [item])
 
-                if #available(iOS 16.0, *) {
-                    group = NSCollectionLayoutGroup.horizontal(
-                        layoutSize: groupSize,
-                        repeatingSubitem: item,
-                        count: itemsCount / 3)
-                } else {
-                    group = NSCollectionLayoutGroup.horizontal(
-                        layoutSize: groupSize,
-                        subitem: item,
-                        count: itemsCount / 3)
-                }
-
-                group.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
 
                 let headerSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(18)
-                )
+                    heightDimension: .absolute(18))
 
                 let header = NSCollectionLayoutBoundarySupplementaryItem(
                     layoutSize: headerSize,
                     elementKind: UICollectionView.elementKindSectionHeader,
-                    alignment: .top
-                )
+                    alignment: .top)
 
                 section.boundarySupplementaryItems = [header]
+                return section
+
+            case 3: // Colors
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1/6),
+                    heightDimension: .fractionalWidth(1/6))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+                item.contentInsets = NSDirectionalEdgeInsets(
+                    top: 0, leading: 0, bottom: 5, trailing: 5)
+
+                let groupSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .estimated(46))
+
+                let group = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: groupSize,
+                    subitems: [item])
+
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
+
+                let headerSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1.0),
+                    heightDimension: .absolute(18))
+
+                let header = NSCollectionLayoutBoundarySupplementaryItem(
+                    layoutSize: headerSize,
+                    elementKind: UICollectionView.elementKindSectionHeader,
+                    alignment: .top)
+
+                section.boundarySupplementaryItems = [header]
+                
+
                 return section
 
             default:
@@ -190,66 +196,68 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
 extension CreateTrackerVC: UICollectionViewDataSource {
 
-    func numberOfSections(in collectionView: UICollectionView) -> Int { 3 }
+    func numberOfSections(in collectionView: UICollectionView) -> Int { 4 }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
-        case 0: return 2
-        case 1: return emojis.count
-        case 2: return SelectionColorStyle.allCases.count
+        case 0: return 1
+        case 1: return 2
+        case 2: return emojis.count
+        case 3: return SelectionColorStyle.allCases.count
         default: fatalError("Unsupported section in numberOfItemsInSection")
         }
     }
 
-
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let cellEmoji = collectionView.dequeueReusableCell(
-            withReuseIdentifier: EmojiCell.identifier,
-            for: indexPath
-        ) as? EmojiCell else { return .init() }
-
-        guard let cellList = collectionView.dequeueReusableCell(
-            withReuseIdentifier: ListCell.identifier,
-            for: indexPath
-        ) as? ListCell else { return .init() }
+        let cell: UICollectionViewCell
 
         switch indexPath.section {
 
         case 0:
-#warning("Доделать логику: ячейка одна, ячейка первая, ячейка средняя, ячейка последняя")
-            // Feed cell
-            if indexPath.item == 0 {
-                cellList.labelMenu.text = "Категория"
-                cellList.layer.masksToBounds = true
-                cellList.layer.cornerRadius = 16
-                cellList.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-            }
-            // Настроить скругление углов для последней ячейки
-            else if indexPath.item == 1 {
-                cellList.labelMenu.text = "Расписание"
-                cellList.layer.masksToBounds = true
-                cellList.layer.cornerRadius = 16
-                cellList.separator.isHidden = true
-                cellList.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            }
-            return cellList
+            let inputCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: InputCell.identifier,
+                for: indexPath) as! InputCell
+            inputCell.userInputField.placeholder = "Введите название трекера"
+            cell = inputCell
 
         case 1:
-            cellEmoji.emojiLabel.text = emojis[indexPath.row]
-            cellEmoji.backgroundShape.layer.cornerRadius = 16
-            return cellEmoji
+            let listCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: ListCell.identifier,
+                for: indexPath) as! ListCell
+            if indexPath.item == 0 {
+                listCell.labelMenu.text = "Категория"
+                listCell.layer.masksToBounds = true
+                listCell.layer.cornerRadius = 16
+                listCell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            } else if indexPath.item == 1 {
+                listCell.labelMenu.text = "Расписание"
+                listCell.layer.masksToBounds = true
+                listCell.layer.cornerRadius = 16
+                listCell.separator.isHidden = true
+                listCell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            }
+            cell = listCell
 
         case 2:
-            cellEmoji.backgroundShape.layer.cornerRadius = 8
-            cellEmoji.backgroundShape.layer.borderWidth = 3
-            cellEmoji.backgroundShape.layer.borderColor = UIColor.clear.cgColor
-            return cellEmoji
+            let emojiCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmojiCell.identifier,
+                for: indexPath) as! EmojiCell
+            emojiCell.emojiLabel.text = emojis[indexPath.row]
+            emojiCell.backgroundShape.layer.cornerRadius = 16
+            cell = emojiCell
+
+        case 3:
+            let colorCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: ColorCell.identifier,
+                for: indexPath) as! ColorCell
+            cell = colorCell
 
         default:
             fatalError("Unsupported section in cellForItemAt")
         }
+        return cell
     }
 
     // Header
@@ -257,10 +265,9 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
         guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: EmojiHeader.identifier,
+            withReuseIdentifier: Header.identifier,
             for: indexPath
-        ) as? EmojiHeader else { return .init() }
-
+        ) as? Header else { return .init() }
 
         switch indexPath.section {
 
@@ -268,9 +275,12 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             header.isHidden = true
             return header
         case 1:
-            header.sectionLabel.text = "Emoji"
+            header.isHidden = true
             return header
         case 2:
+            header.sectionLabel.text = "Emoji"
+            return header
+        case 3:
             header.sectionLabel.text = "Цвет"
             return header
         default:
@@ -285,21 +295,23 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     // Set colors for Colors section
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        if indexPath.section == 2 {
-
-            if let selectionCell = cell as? EmojiCell {
-
+        if indexPath.section == 3 {
+            if let selectionCell = cell as? ColorCell {
                 let selectionColor = SelectionColorStyle.allCases[
-                    indexPath.row % SelectionColorStyle.allCases.count
-                ]
-                selectionCell.emojiLabel.backgroundColor = UIColor.selectionColorYP(selectionColor)
+                    indexPath.row % SelectionColorStyle.allCases.count]
+                selectionCell.innerShape.backgroundColor = UIColor.selectionColorYP(selectionColor)
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
         switch indexPath.section {
+
         case 0:
+            print("PPP")
+
+        case 1:
             if indexPath.row == 0 {
                 let vc = AddCategory()
                 present(vc, animated: true, completion: nil)
@@ -309,7 +321,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
             }
             collectionView.deselectItem(at: indexPath, animated: false)
 
-        case 1:
+        case 2:
             if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
                 if let selectedCell = collectionView.cellForItem(at: selectedEmoji ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
                     selectedCell.backgroundShape.backgroundColor = UIColor.clear
@@ -318,15 +330,14 @@ extension CreateTrackerVC: UICollectionViewDelegate {
                 selectedEmoji = indexPath
             }
 
-        case 2:
-            if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
+        case 3:
+            if let cell = collectionView.cellForItem(at: indexPath) as? ColorCell {
                 let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
                 let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-                if let selectedColor = collectionView.cellForItem(at: selectedColor ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
-                    selectedColor.backgroundShape.backgroundColor = UIColor.clear
+                if let selectedColor = collectionView.cellForItem(at: selectedColor ?? IndexPath(item: -1, section: 0)) as? ColorCell {
                     selectedColor.backgroundShape.layer.borderColor = UIColor.clear.cgColor
                 }
-                cell.backgroundShape.layer.borderColor = color?.cgColor
+                cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
                 selectedColor = indexPath
             }
 

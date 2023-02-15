@@ -1,6 +1,7 @@
 import UIKit
 
 class ListCell: UICollectionViewCell {
+
     static let identifier = "ListCell"
 
     let backgroundShape: UIView = {
@@ -54,7 +55,6 @@ extension ListCell {
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-
 
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
