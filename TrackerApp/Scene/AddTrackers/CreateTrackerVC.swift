@@ -7,11 +7,22 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
 
+    var selectedEmoji: IndexPath?
+    var selectedColor: IndexPath?
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .mainColorYP(.whiteYP)
         configureCollectionView()
     }
+
+
+    @objc func labelMenuTapped() {
+        // Выполняем действия, которые необходимо выполнить при нажатии на labelMenu
+        print("labelMenu tapped")
+    }
+
 
     func configureCollectionView() {
 
@@ -61,13 +72,14 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         backgroundShape.addSubview(userInputField)
 
         let hInset: CGFloat = 16
+        let vInset: CGFloat = 38
 
         NSLayoutConstraint.activate([
 
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
-            backgroundShape.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 38),
+            backgroundShape.topAnchor.constraint(equalTo: title.bottomAnchor, constant: vInset),
             backgroundShape.heightAnchor.constraint(equalToConstant: 75),
             backgroundShape.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             backgroundShape.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
@@ -76,7 +88,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             userInputField.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
             userInputField.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: hInset),
 
-            collectionView.topAnchor.constraint(equalTo: userInputField.bottomAnchor, constant: 38),
+            collectionView.topAnchor.constraint(equalTo: userInputField.bottomAnchor, constant: vInset),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
@@ -167,7 +179,6 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
                 )
 
                 section.boundarySupplementaryItems = [header]
-
                 return section
 
             default:
@@ -179,21 +190,14 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
 extension CreateTrackerVC: UICollectionViewDataSource {
 
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        3
-    }
+    func numberOfSections(in collectionView: UICollectionView) -> Int { 3 }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
         switch section {
-        case 0:
-            return 2
-        case 1:
-            return emojis.count
-        case 2:
-            return SelectionColorStyle.allCases.count
-        default:
-            fatalError("Unsupported section in numberOfItemsInSection")
+        case 0: return 2
+        case 1: return emojis.count
+        case 2: return SelectionColorStyle.allCases.count
+        default: fatalError("Unsupported section in numberOfItemsInSection")
         }
     }
 
@@ -211,11 +215,10 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             for: indexPath
         ) as? ListCell else { return .init() }
 
-
         switch indexPath.section {
-        case 0:
 
-            #warning("Доделать логику: ячейка одна, ячейка первая, ячейка средняя, ячейка последняя")
+        case 0:
+#warning("Доделать логику: ячейка одна, ячейка первая, ячейка средняя, ячейка последняя")
             // Feed cell
             if indexPath.item == 0 {
                 cellList.labelMenu.text = "Категория"
@@ -231,18 +234,22 @@ extension CreateTrackerVC: UICollectionViewDataSource {
                 cellList.separator.isHidden = true
                 cellList.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             }
-
-
             return cellList
+
         case 1:
             cellEmoji.emojiLabel.text = emojis[indexPath.row]
+            cellEmoji.backgroundShape.layer.cornerRadius = 16
             return cellEmoji
+
         case 2:
+            cellEmoji.backgroundShape.layer.cornerRadius = 8
+            cellEmoji.backgroundShape.layer.borderWidth = 3
+            cellEmoji.backgroundShape.layer.borderColor = UIColor.clear.cgColor
             return cellEmoji
+
         default:
             fatalError("Unsupported section in cellForItemAt")
         }
-
     }
 
     // Header
@@ -278,7 +285,6 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     // Set colors for Colors section
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-
         if indexPath.section == 2 {
 
             if let selectionCell = cell as? EmojiCell {
@@ -288,6 +294,44 @@ extension CreateTrackerVC: UICollectionViewDelegate {
                 ]
                 selectionCell.emojiLabel.backgroundColor = UIColor.selectionColorYP(selectionColor)
             }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            if indexPath.row == 0 {
+                let vc = AddCategory()
+                present(vc, animated: true, completion: nil)
+            } else if indexPath.row == 1 {
+                let vc = AddScheduler()
+                present(vc, animated: true, completion: nil)
+            }
+            collectionView.deselectItem(at: indexPath, animated: false)
+
+        case 1:
+            if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
+                if let selectedCell = collectionView.cellForItem(at: selectedEmoji ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
+                    selectedCell.backgroundShape.backgroundColor = UIColor.clear
+                }
+                cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
+                selectedEmoji = indexPath
+            }
+
+        case 2:
+            if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
+                let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
+                let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
+                if let selectedColor = collectionView.cellForItem(at: selectedColor ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
+                    selectedColor.backgroundShape.backgroundColor = UIColor.clear
+                    selectedColor.backgroundShape.layer.borderColor = UIColor.clear.cgColor
+                }
+                cell.backgroundShape.layer.borderColor = color?.cgColor
+                selectedColor = indexPath
+            }
+
+        default:
+            break
         }
     }
 }

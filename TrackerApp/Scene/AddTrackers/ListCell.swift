@@ -58,6 +58,7 @@ extension ListCell {
 
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
+        
         NSLayoutConstraint.activate([
             labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
             labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),

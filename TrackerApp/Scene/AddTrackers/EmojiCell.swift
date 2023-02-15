@@ -4,12 +4,18 @@ class EmojiCell: UICollectionViewCell {
 
     static let identifier = "EmojiCell"
 
+    let backgroundShape: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 0
+        view.clipsToBounds = true
+        view.backgroundColor = UIColor.mainColorYP(.whiteYP)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     let emojiLabel: UILabel = {
         let label = UILabel()
-        // label.backgroundColor = .mainColorYP(.blackYP)
-        label.layer.cornerRadius = 16
-        label.layer.masksToBounds = true
-        label.font = FontYP.bold32
+        label.font = UIFont.systemFont(ofSize: 32)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -18,14 +24,18 @@ class EmojiCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         super.layoutSubviews()
-
-        contentView.addSubview(emojiLabel)
+        contentView.addSubview(backgroundShape)
+        backgroundShape.addSubview(emojiLabel)
 
         NSLayoutConstraint.activate([
-            emojiLabel.widthAnchor.constraint(equalToConstant: 52),
-            emojiLabel.heightAnchor.constraint(equalToConstant: 52),
-            emojiLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            emojiLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+
+            backgroundShape.widthAnchor.constraint(equalToConstant: 52),
+            backgroundShape.heightAnchor.constraint(equalToConstant: 52),
+
+            emojiLabel.widthAnchor.constraint(equalToConstant: 40),
+            emojiLabel.heightAnchor.constraint(equalToConstant: 40),
+            emojiLabel.centerXAnchor.constraint(equalTo: backgroundShape.centerXAnchor),
+            emojiLabel.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor)
         ])
     }
 

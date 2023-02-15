@@ -17,12 +17,13 @@ class EmojiHeader: UICollectionReusableView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         addSubview(sectionLabel)
 
+        let hInset: CGFloat = 12
+
         NSLayoutConstraint.activate([
-            sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
-            sectionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: hInset),
+            sectionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -hInset),
             sectionLabel.topAnchor.constraint(equalTo: topAnchor),
             sectionLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
@@ -31,5 +32,4 @@ class EmojiHeader: UICollectionReusableView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
