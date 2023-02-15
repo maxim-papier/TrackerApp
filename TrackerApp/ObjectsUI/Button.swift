@@ -54,15 +54,15 @@ enum ButtonType {
         switch self {
 
         case .primary(let isActive):
-            let fillColor = isActive ? UIColor.colorYP(.blackYP)! : UIColor.colorYP(.grayYP)!
-            let textColor = UIColor.colorYP(.whiteYP)!
+            let fillColor = isActive ? UIColor.mainColorYP(.blackYP)! : UIColor.mainColorYP(.grayYP)!
+            let textColor = UIColor.mainColorYP(.whiteYP)!
             let borderColor = UIColor.clear
             let borderWidth: CGFloat = 0
             return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)
 
         case .secondary:
-            let fillColor = UIColor.colorYP(.whiteYP)!
-            let textColor = UIColor.colorYP(.blackYP)!
+            let fillColor = UIColor.mainColorYP(.whiteYP)!
+            let textColor = UIColor.mainColorYP(.blackYP)!
             let borderColor = textColor
             let borderWidth: CGFloat = 1
             return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)

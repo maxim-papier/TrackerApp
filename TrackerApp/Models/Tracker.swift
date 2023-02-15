@@ -14,7 +14,7 @@ extension Tracker {
         Tracker.init(
             title: "Don't skip the leg's day",
             emoji: "🏋️",
-            color: .colorYP(.selection18)!,
+            color: .selectionColorYP(.selection18)!,
             day: WeekDay.mock01)
     }
 
@@ -22,7 +22,7 @@ extension Tracker {
         Tracker.init(
             title: "Kiss your wife",
             emoji: "😘",
-            color: .colorYP(.selection18)!,
+            color: .selectionColorYP(.selection18)!,
             day: WeekDay.mock02)
     }
 
@@ -30,7 +30,7 @@ extension Tracker {
         Tracker.init(
             title: "Hug your kids",
             emoji: "🤗",
-            color: .colorYP(.selection18)!,
+            color: .selectionColorYP(.selection18)!,
             day: WeekDay.mock01)
     }
 
@@ -38,7 +38,7 @@ extension Tracker {
         Tracker.init(
             title: "Tidy up",
             emoji: "🧹",
-            color: .colorYP(.selection17)!,
+            color: .selectionColorYP(.selection17)!,
             day: WeekDay.mock02)
     }
 
@@ -46,7 +46,7 @@ extension Tracker {
         Tracker.init(
             title: "Plumb the kitchen sink",
             emoji: "🪠",
-            color: .colorYP(.selection17)!,
+            color: .selectionColorYP(.selection17)!,
             day: WeekDay.mock03)
     }
 

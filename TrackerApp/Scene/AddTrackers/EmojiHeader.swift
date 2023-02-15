@@ -1,10 +1,10 @@
 import UIKit
 
-final class TrackerHeader: UICollectionReusableView {
+class EmojiHeader: UICollectionReusableView {
 
-    static let identifier = "TrackerHeader"
+    static let identifier = "EmojiHeader"
 
-    let categoryLabel: UILabel = {
+    let sectionLabel: UILabel = {
         let label = UILabel()
         label.textColor = .mainColorYP(.blackYP)
         label.font = FontYP.bold19
@@ -18,17 +18,18 @@ final class TrackerHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        addSubview(categoryLabel)
+        addSubview(sectionLabel)
 
         NSLayoutConstraint.activate([
-            categoryLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
-            categoryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -28),
-            categoryLabel.topAnchor.constraint(equalTo: topAnchor),
-            categoryLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
+            sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            sectionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            sectionLabel.topAnchor.constraint(equalTo: topAnchor),
+            sectionLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
 }

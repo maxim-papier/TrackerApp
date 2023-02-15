@@ -37,7 +37,7 @@ final class TrackerCell: UICollectionViewCell {
     let daysLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = .colorYP(.blackYP)
+        label.textColor = .mainColorYP(.blackYP)
         label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         label.font = FontYP.medium12
@@ -48,7 +48,7 @@ final class TrackerCell: UICollectionViewCell {
     let doneButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "plus"), for: .normal)
-        button.tintColor = .colorYP(.whiteYP)
+        button.tintColor = .mainColorYP(.whiteYP)
         button.layer.cornerRadius = 17
         button.layer.masksToBounds = true
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +57,7 @@ final class TrackerCell: UICollectionViewCell {
 
 
     override init(frame: CGRect) {
-        super .init(frame: frame)
+        super.init(frame: frame)
         super.layoutSubviews()
 
         contentView.addSubview(backgroundShape)

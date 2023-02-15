@@ -1,6 +1,6 @@
 import UIKit
 
-enum ColorStyle: String {
+enum MainColorStyle: String {
     case blackYP = "black"
     case whiteYP = "white"
     case grayYP = "gray"
@@ -8,6 +8,9 @@ enum ColorStyle: String {
     case redYP = "red"
     case blueYP = "blue"
     case backgroundYP = "background"
+}
+
+enum SelectionColorStyle: String, CaseIterable {
     case selection01 = "selection-01"
     case selection02 = "selection-02"
     case selection03 = "selection-03"
@@ -29,7 +32,11 @@ enum ColorStyle: String {
 }
 
 extension UIColor {
-    static func colorYP(_ color: ColorStyle) -> UIColor? {
+    static func mainColorYP(_ color: MainColorStyle) -> UIColor? {
+        return UIColor(named: color.rawValue)
+    }
+
+    static func selectionColorYP(_ color: SelectionColorStyle) -> UIColor? {
         return UIColor(named: color.rawValue)
     }
 }

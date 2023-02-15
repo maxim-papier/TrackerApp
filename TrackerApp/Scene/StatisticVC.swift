@@ -10,7 +10,7 @@ final class StatisticVC: UIViewController {
     }
 
     private func setup() {
-        view.backgroundColor = .colorYP(.whiteYP)
+        view.backgroundColor = .mainColorYP(.whiteYP)
         setupNavBar()
         view.addSubview(placeholder)
 

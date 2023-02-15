@@ -11,7 +11,7 @@ class Placeholder: UIView {
     let textLabel: UILabel = {
         let label = UILabel()
         label.font = FontYP.medium12
-        label.textColor = .colorYP(.blackYP)
+        label.textColor = .mainColorYP(.blackYP)
         label.textAlignment = .center
         label.numberOfLines = 2
         label.lineBreakMode = .byTruncatingTail

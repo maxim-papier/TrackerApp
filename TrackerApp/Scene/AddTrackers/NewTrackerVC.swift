@@ -12,17 +12,16 @@ final class NewTrackerVC: UIViewController {
         let title: UILabel = {
             let label = UILabel()
             label.text = "Создание трекера"
-            label.textColor = UIColor.colorYP(.blackYP)
+            label.textColor = UIColor.mainColorYP(.blackYP)
             label.font = FontYP.medium16
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
 
-        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка") {
+        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка") { [weak self] in
             let vc = CreateTrackerVC()
-            self.present(vc, animated: true)
+            self?.present(vc, animated: true)
         }
-
 
         let eventButton = ButtonType.primary(isActive: true).button(withText: "Нерегулярное событие")
         eventButton.tapHandler = { }
@@ -35,12 +34,11 @@ final class NewTrackerVC: UIViewController {
             return stack
         }()
 
-        view.backgroundColor = .colorYP(.whiteYP)
+        view.backgroundColor = .mainColorYP(.whiteYP)
         view.addSubview(title)
         view.addSubview(vStack)
         vStack.addArrangedSubview(habitButton)
         vStack.addArrangedSubview(eventButton)
-
 
         NSLayoutConstraint.activate([
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),

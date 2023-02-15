@@ -7,7 +7,7 @@ final class HomeVC: UITabBarController {
     }
 
     private func setupTabs() {
-        tabBar.backgroundColor = .colorYP(.whiteYP)
+        tabBar.backgroundColor = .mainColorYP(.whiteYP)
 
         // Setup Tabs
         let firstVC = UINavigationController(rootViewController: TrackerVC())

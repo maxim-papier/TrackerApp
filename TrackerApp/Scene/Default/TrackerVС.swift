@@ -20,7 +20,7 @@ final class TrackerVC: UIViewController {
         super.init(nibName: nil, bundle: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = true
-        searchController.searchBar.searchTextField.textColor = .colorYP(.grayYP)
+        searchController.searchBar.searchTextField.textColor = .mainColorYP(.grayYP)
         searchController.searchBar.placeholder = "Поиск"
         navigationItem.searchController = searchController
         definesPresentationContext = true
@@ -64,7 +64,7 @@ final class TrackerVC: UIViewController {
             target: self,
             action: #selector(addNewTracker)
         )
-        addNewTrackerButton.tintColor = .colorYP(.blackYP)
+        addNewTrackerButton.tintColor = .mainColorYP(.blackYP)
         
         title = "Трекеры"
         navigationItem.leftBarButtonItem = addNewTrackerButton
@@ -89,8 +89,8 @@ final class TrackerVC: UIViewController {
 
     private func setUIAndConstraints() {
 
-        view.backgroundColor = .colorYP(.whiteYP)
-        collectionView.backgroundColor = .colorYP(.whiteYP)
+        view.backgroundColor = .mainColorYP(.whiteYP)
+        collectionView.backgroundColor = .mainColorYP(.whiteYP)
         
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
