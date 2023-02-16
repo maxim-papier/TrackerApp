@@ -1,16 +1,21 @@
-enum ListButtonPosition {
+enum SchedulerButtonPosition {
     case first, middle, last, single
 }
 
 
 import UIKit
 
-final class ListCell: UICollectionViewCell {
+final class SchedulerCell: UITableViewCell {
 
-    static let identifier = "ListCell"
+    static let identifier = "SchedulerCell"
 
-    var buttonPosition: ListButtonPosition = .middle {
+    var buttonPosition: SchedulerButtonPosition = .middle {
         didSet { updateAppearance() }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
     }
 
     let backgroundShape: UIView = {
@@ -35,14 +40,17 @@ final class ListCell: UICollectionViewCell {
         return imageView
     }()
 
-    let separator: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.mainColorYP(.grayYP)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    let toggleView: UISwitch = {
+        let toggle = UISwitch()
+        toggle.onTintColor = UIColor.mainColorYP(.blueYP)
+        toggle.translatesAutoresizingMaskIntoConstraints = false
+        return toggle
     }()
 
+
     private func updateAppearance() {
+
+
 
         switch buttonPosition {
         case .first:
@@ -55,32 +63,30 @@ final class ListCell: UICollectionViewCell {
             backgroundShape.layer.cornerRadius = 16
             backgroundShape.layer.masksToBounds = true
             backgroundShape.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            separator.isHidden = true
+            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+
         case .single:
             backgroundShape.layer.cornerRadius = 16
             backgroundShape.layer.masksToBounds = true
-            separator.isHidden = true
+            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         }
     }
 
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         configure()
     }
+
     required init?(coder: NSCoder) {
-        fatalError("No Country for Old Men")
+        fatalError("Old folks")
     }
 }
 
-
-
-extension ListCell {
+extension SchedulerCell {
     func configure() {
-        contentView.addSubview(separator)
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(labelMenu)
-        backgroundShape.addSubview(accessoryImage)
+        backgroundShape.addSubview(toggleView)
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
@@ -92,20 +98,13 @@ extension ListCell {
             labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
             labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),
             labelMenu.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
-            labelMenu.trailingAnchor.constraint(equalTo: accessoryImage.leadingAnchor, constant: -hInset),
+            labelMenu.trailingAnchor.constraint(equalTo: toggleView.leadingAnchor, constant: -hInset),
 
-            accessoryImage.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
-            accessoryImage.widthAnchor.constraint(equalToConstant: 13),
-            accessoryImage.heightAnchor.constraint(equalToConstant: 20),
-            accessoryImage.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
+            toggleView.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
+            toggleView.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
 
-            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
-            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),
-            separator.heightAnchor.constraint(equalToConstant: 0.5),
-
-            backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
+            backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),
             backgroundShape.topAnchor.constraint(equalTo: contentView.topAnchor),
             backgroundShape.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])

@@ -7,6 +7,8 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
 
+    private let listCellItemName: [String] = ["Категория", "Расписание"]
+
     var selectedEmoji: IndexPath?
     var selectedColor: IndexPath?
 
@@ -226,17 +228,15 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             let listCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ListCell.identifier,
                 for: indexPath) as! ListCell
+
+
             if indexPath.item == 0 {
-                listCell.labelMenu.text = "Категория"
-                listCell.layer.masksToBounds = true
-                listCell.layer.cornerRadius = 16
-                listCell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                listCell.labelMenu.text = listCellItemName[indexPath.item]
+                listCell.buttonPosition = .first
+
             } else if indexPath.item == 1 {
-                listCell.labelMenu.text = "Расписание"
-                listCell.layer.masksToBounds = true
-                listCell.layer.cornerRadius = 16
-                listCell.separator.isHidden = true
-                listCell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                listCell.labelMenu.text = listCellItemName[indexPath.item]
+                listCell.buttonPosition = .last
             }
             cell = listCell
 
