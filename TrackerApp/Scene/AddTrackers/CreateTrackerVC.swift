@@ -9,6 +9,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
     private let listCellItemName: [String] = ["Категория", "Расписание"]
 
+    var schedule = [WeekDay]()
     var selectedEmoji: IndexPath?
     var selectedColor: IndexPath?
 
@@ -196,6 +197,10 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     }
 }
 
+
+
+// MARK: - EXTENTIONS
+
 extension CreateTrackerVC: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int { 4 }
@@ -309,14 +314,15 @@ extension CreateTrackerVC: UICollectionViewDelegate {
         switch indexPath.section {
 
         case 0:
-            print("PPP")
+            print("Ready")
 
         case 1:
             if indexPath.row == 0 {
                 let vc = AddCategory()
                 present(vc, animated: true, completion: nil)
             } else if indexPath.row == 1 {
-                let vc = AddScheduler()
+                let vc = AddScheduler(selectedDays: schedule)
+                vc.delegate = self
                 present(vc, animated: true, completion: nil)
             }
             collectionView.deselectItem(at: indexPath, animated: false)
@@ -344,6 +350,13 @@ extension CreateTrackerVC: UICollectionViewDelegate {
         default:
             break
         }
+    }
+}
+
+extension CreateTrackerVC: AddSchedulerDelegate {
+    func didUpdateSelectedDays(selectedDays: [WeekDay]) {
+        self.schedule = selectedDays
+        print("CreateTrackerVC: Look, mate, what i've got:\n \(selectedDays.map { "\($0)" + "\n" }.joined())")
     }
 }
 
