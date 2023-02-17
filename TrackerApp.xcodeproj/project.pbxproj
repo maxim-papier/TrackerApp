@@ -10,11 +10,11 @@
 		8D2A1C08299BC6C000213C8D /* EmojiCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C07299BC6C000213C8D /* EmojiCell.swift */; };
 		8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C09299C8AE100213C8D /* Header.swift */; };
 		8D2A1C0C299CB29A00213C8D /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0B299CB29A00213C8D /* ListCell.swift */; };
-		8D2A1C10299D0BE700213C8D /* AddSchedulerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0F299D0BE700213C8D /* AddSchedulerVC.swift */; };
-		8D2A1C12299D0CB500213C8D /* AddCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C11299D0CB500213C8D /* AddCategory.swift */; };
+		8D2A1C10299D0BE700213C8D /* SchedulerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */; };
+		8D2A1C12299D0CB500213C8D /* CategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C11299D0CB500213C8D /* CategoryVC.swift */; };
 		8D9FF56A299E490A009E91A8 /* SchedulerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9FF569299E490A009E91A8 /* SchedulerCell.swift */; };
 		8DA0CB5C299B383F004BFE73 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB5B299B383F004BFE73 /* Button.swift */; };
-		8DA0CB5E299B4C70004BFE73 /* NewTrackerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */; };
+		8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */; };
 		8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */; };
 		8DADE0B1299D3184005942E2 /* InputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DADE0B0299D3184005942E2 /* InputCell.swift */; };
 		8DADE0B3299D5530005942E2 /* ColorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DADE0B2299D5530005942E2 /* ColorCell.swift */; };
@@ -44,11 +44,11 @@
 		8D2A1C07299BC6C000213C8D /* EmojiCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCell.swift; sourceTree = "<group>"; };
 		8D2A1C09299C8AE100213C8D /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		8D2A1C0B299CB29A00213C8D /* ListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
-		8D2A1C0F299D0BE700213C8D /* AddSchedulerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSchedulerVC.swift; sourceTree = "<group>"; };
-		8D2A1C11299D0CB500213C8D /* AddCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategory.swift; sourceTree = "<group>"; };
+		8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerVC.swift; sourceTree = "<group>"; };
+		8D2A1C11299D0CB500213C8D /* CategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryVC.swift; sourceTree = "<group>"; };
 		8D9FF569299E490A009E91A8 /* SchedulerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerCell.swift; sourceTree = "<group>"; };
 		8DA0CB5B299B383F004BFE73 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
-		8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackerVC.swift; sourceTree = "<group>"; };
+		8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerOrEventVC.swift; sourceTree = "<group>"; };
 		8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerVC.swift; sourceTree = "<group>"; };
 		8DADE0B0299D3184005942E2 /* InputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCell.swift; sourceTree = "<group>"; };
 		8DADE0B2299D5530005942E2 /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
@@ -109,16 +109,11 @@
 		8DA0CB5F299B9C28004BFE73 /* AddTrackers */ = {
 			isa = PBXGroup;
 			children = (
-				8DA0CB5D299B4C70004BFE73 /* NewTrackerVC.swift */,
+				8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */,
 				8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */,
-				8D2A1C07299BC6C000213C8D /* EmojiCell.swift */,
-				8D2A1C0B299CB29A00213C8D /* ListCell.swift */,
-				8D2A1C09299C8AE100213C8D /* Header.swift */,
-				8D2A1C0F299D0BE700213C8D /* AddSchedulerVC.swift */,
-				8D9FF569299E490A009E91A8 /* SchedulerCell.swift */,
-				8D2A1C11299D0CB500213C8D /* AddCategory.swift */,
-				8DADE0B0299D3184005942E2 /* InputCell.swift */,
-				8DADE0B2299D5530005942E2 /* ColorCell.swift */,
+				8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */,
+				8D2A1C11299D0CB500213C8D /* CategoryVC.swift */,
+				8DC07966299F639F00AC6C10 /* Cells */,
 			);
 			path = AddTrackers;
 			sourceTree = "<group>";
@@ -175,6 +170,19 @@
 				8DA0CB59299A6377004BFE73 /* ObjectsUI */,
 			);
 			path = TrackerApp;
+			sourceTree = "<group>";
+		};
+		8DC07966299F639F00AC6C10 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				8DADE0B0299D3184005942E2 /* InputCell.swift */,
+				8D2A1C0B299CB29A00213C8D /* ListCell.swift */,
+				8D2A1C07299BC6C000213C8D /* EmojiCell.swift */,
+				8DADE0B2299D5530005942E2 /* ColorCell.swift */,
+				8D2A1C09299C8AE100213C8D /* Header.swift */,
+				8D9FF569299E490A009E91A8 /* SchedulerCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		8DDE29BA2993B8EA00D4A4DD /* Extensions */ = {
@@ -275,8 +283,8 @@
 				8DF313B0299774C600B7D148 /* StatisticVC.swift in Sources */,
 				8DDE29BE2993BB7200D4A4DD /* ColorsYP.swift in Sources */,
 				8D2A1C0C299CB29A00213C8D /* ListCell.swift in Sources */,
-				8D2A1C10299D0BE700213C8D /* AddSchedulerVC.swift in Sources */,
-				8D2A1C12299D0CB500213C8D /* AddCategory.swift in Sources */,
+				8D2A1C10299D0BE700213C8D /* SchedulerVC.swift in Sources */,
+				8D2A1C12299D0CB500213C8D /* CategoryVC.swift in Sources */,
 				8DBA05302993873E00E3604E /* TrackerVС.swift in Sources */,
 				8DB392B429952DA90031D2E1 /* Tracker.swift in Sources */,
 				8DF313AE29976BD100B7D148 /* HomeVC.swift in Sources */,
@@ -288,7 +296,7 @@
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
-				8DA0CB5E299B4C70004BFE73 /* NewTrackerVC.swift in Sources */,
+				8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */,
 				8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */,
 				8DB392B229952B340031D2E1 /* DayOfTheWeek.swift in Sources */,
 				8DF313B22998AB5800B7D148 /* Placeholder.swift in Sources */,

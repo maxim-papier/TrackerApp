@@ -1,6 +1,6 @@
 import UIKit
 
-final class AddScheduler: UIViewController {
+final class SchedulerVC: UIViewController {
     
     let weekdays = WeekDay.allCases
     var selectedDays = [WeekDay]()
@@ -38,7 +38,7 @@ final class AddScheduler: UIViewController {
         let tableView: UITableView = {
             let table = UITableView()
             table.register(SchedulerCell.self, forCellReuseIdentifier: SchedulerCell.identifier)
-            //table.delegate = self
+            table.delegate = self
             table.dataSource = self
             table.layer.masksToBounds = true
             table.translatesAutoresizingMaskIntoConstraints = false
@@ -74,8 +74,15 @@ final class AddScheduler: UIViewController {
     }
 }
 
+extension SchedulerVC: UITableViewDelegate {
 
-extension AddScheduler: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+}
+
+
+extension SchedulerVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return weekdays.count }

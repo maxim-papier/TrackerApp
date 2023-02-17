@@ -12,18 +12,12 @@ final class TrackerVC: UIViewController {
     private var searchText = ""
     private var selectedDate = Date()
 
-    private let placeholder = PlaceholderType.noSearchResults.placeholder
+    private var placeholder = PlaceholderType.noSearchResults.placeholder
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
 
     init() {
         super.init(nibName: nil, bundle: nil)
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = true
-        searchController.searchBar.searchTextField.textColor = .mainColorYP(.grayYP)
-        searchController.searchBar.placeholder = "Поиск"
-        navigationItem.searchController = searchController
-        definesPresentationContext = true
     }
     
     required init?(coder: NSCoder) {
@@ -35,6 +29,12 @@ final class TrackerVC: UIViewController {
         filterTrackersByDate(selectedDate)
         setup()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.searchController = searchController
+    }
+
     
     private func setup() {
         collectionView.register(
@@ -74,11 +74,20 @@ final class TrackerVC: UIViewController {
         datePicker.preferredDatePickerStyle = .compact
         datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = true
+        searchController.searchBar.searchTextField.textColor = .mainColorYP(.grayYP)
+        searchController.searchBar.placeholder = "Поиск"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.alwaysBounceVertical = true
     }
     
     @objc
     private func addNewTracker() {
-        let vc = NewTrackerVC()
+        let vc = TrackerOrEventVC()
         present(vc, animated: true)
     }
     
@@ -91,11 +100,10 @@ final class TrackerVC: UIViewController {
 
         view.backgroundColor = .mainColorYP(.whiteYP)
         collectionView.backgroundColor = .mainColorYP(.whiteYP)
-        
-        view.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
 
+        view.addSubview(collectionView)
         collectionView.addSubview(placeholder)
+
         placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -121,7 +129,6 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return filteredCategories.indices.contains(section) ? filteredCategories[section].trackers.count : 0
-
     }
     
     // Cell
@@ -154,7 +161,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath
         ) as? TrackerHeader else { return .init() }
         
-        header.categoryLabel.text = categories[indexPath.section].title
+        header.categoryLabel.text = filteredCategories[indexPath.section].title
         return header
     }
 }
@@ -193,7 +200,6 @@ extension TrackerVC: UISearchResultsUpdating {
     internal func updateSearchResults(for searchController: UISearchController) {
         guard let textInput = searchController.searchBar.text else { return }
         searchText = textInput
-
         switch searchText.isEmpty {
         case true: break
         case false: filteringContentForSearchText(searchText)

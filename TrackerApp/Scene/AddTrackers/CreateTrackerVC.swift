@@ -8,8 +8,8 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     ]
 
     private let listCellItemName: [String] = ["Категория", "Расписание"]
-
     var schedule = [WeekDay]()
+
     var selectedEmoji: IndexPath?
     var selectedColor: IndexPath?
 
@@ -19,10 +19,13 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         configureCollectionView()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
     func configureCollectionView() {
 
         var collectionView = UICollectionView(frame: .zero, collectionViewLayout: generateLayout())
-
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: generateLayout())
 
         // Register
@@ -186,8 +189,6 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
                     alignment: .top)
 
                 section.boundarySupplementaryItems = [header]
-                
-
                 return section
 
             default:
@@ -234,15 +235,22 @@ extension CreateTrackerVC: UICollectionViewDataSource {
                 withReuseIdentifier: ListCell.identifier,
                 for: indexPath) as! ListCell
 
-
             if indexPath.item == 0 {
-                listCell.labelMenu.text = listCellItemName[indexPath.item]
                 listCell.buttonPosition = .first
 
             } else if indexPath.item == 1 {
-                listCell.labelMenu.text = listCellItemName[indexPath.item]
                 listCell.buttonPosition = .last
             }
+
+            listCell.titleLabel.text = listCellItemName[indexPath.item]
+
+            if !schedule.isEmpty {
+                let days = schedule.map { $0.shortLabel }
+                print("DAYS \(days)")
+                let daysString = days.joined(separator: ", ")
+                listCell.subtitleLabel.text = daysString
+            }
+
             cell = listCell
 
         case 2:
@@ -318,10 +326,10 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
         case 1:
             if indexPath.row == 0 {
-                let vc = AddCategory()
+                let vc = CategoryVC()
                 present(vc, animated: true, completion: nil)
             } else if indexPath.row == 1 {
-                let vc = AddScheduler(selectedDays: schedule)
+                let vc = SchedulerVC(selectedDays: schedule)
                 vc.delegate = self
                 present(vc, animated: true, completion: nil)
             }
@@ -356,7 +364,8 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 extension CreateTrackerVC: AddSchedulerDelegate {
     func didUpdateSelectedDays(selectedDays: [WeekDay]) {
         self.schedule = selectedDays
-        print("CreateTrackerVC: Look, mate, what i've got:\n \(selectedDays.map { "\($0)" + "\n" }.joined())")
+        print("CreateTrackerVC: Look, mate, what i've got:\n \(schedule.map { "\($0)" + "\n" }.joined())")
+        
     }
 }
 

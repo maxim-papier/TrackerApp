@@ -21,12 +21,30 @@ final class ListCell: UICollectionViewCell {
         return view
     }()
 
-    let labelMenu: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
         label.font = FontYP.regular17
+        label.textColor = .mainColorYP(.blackYP)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+
+    let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.adjustsFontForContentSizeCategory = true
+        label.font = FontYP.regular17
+        label.textColor = .mainColorYP(.grayYP)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    let vStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 2
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
 
     let accessoryImage: UIImageView = {
@@ -79,8 +97,14 @@ extension ListCell {
     func configure() {
         contentView.addSubview(separator)
         contentView.addSubview(backgroundShape)
-        backgroundShape.addSubview(labelMenu)
+
         backgroundShape.addSubview(accessoryImage)
+        backgroundShape.addSubview(vStack)
+
+        vStack.addArrangedSubview(titleLabel)
+        vStack.addArrangedSubview(subtitleLabel)
+
+
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
@@ -89,10 +113,10 @@ extension ListCell {
         let vInset = CGFloat(26)
 
         NSLayoutConstraint.activate([
-            labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
-            labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),
-            labelMenu.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
-            labelMenu.trailingAnchor.constraint(equalTo: accessoryImage.leadingAnchor, constant: -hInset),
+            vStack.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: hInset),
+            vStack.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -hInset),
+            vStack.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
+            vStack.trailingAnchor.constraint(equalTo: accessoryImage.leadingAnchor, constant: -hInset),
 
             accessoryImage.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
             accessoryImage.widthAnchor.constraint(equalToConstant: 13),

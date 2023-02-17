@@ -1,6 +1,6 @@
 import UIKit
 
-class Placeholder: UIView {
+final class Placeholder: UIView {
 
     let imageView: UIImageView = {
         let image = UIImageView()

@@ -1,6 +1,6 @@
 import UIKit
 
-final class NewTrackerVC: UIViewController {
+final class TrackerOrEventVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,6 +56,6 @@ final class NewTrackerVC: UIViewController {
 import SwiftUI
 struct NewTrackerVCProvider: PreviewProvider {
     static var previews: some View {
-        NewTrackerVC().showPreview()
+        TrackerOrEventVC().showPreview()
     }
 }
