@@ -4,6 +4,8 @@ final class InputCell: UICollectionViewCell {
 
     static let identifier = "InputCell"
 
+    var textFieldValueChanged: ((String) -> Void)?
+
     let backgroundShape: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
@@ -16,6 +18,7 @@ final class InputCell: UICollectionViewCell {
     let userInputField: UITextField = {
         let textField = UITextField()
         textField.textAlignment = .left
+        textField.clearButtonMode = .whileEditing
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -29,8 +32,17 @@ final class InputCell: UICollectionViewCell {
         fatalError("No new tricks for an old dog!")
     }
 
+    @objc func textFieldValueDidChange(_ sender: UITextField) {
+        textFieldValueChanged?(sender.text ?? "")
+    }
+}
+
+extension InputCell {
 
     private func setupView() {
+
+        userInputField.addTarget(self, action: #selector(textFieldValueDidChange(_:)), for: .allEditingEvents)
+
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(userInputField)
 
@@ -48,3 +60,4 @@ final class InputCell: UICollectionViewCell {
         ])
     }
 }
+

@@ -44,12 +44,13 @@ final class SchedulerVC: UIViewController {
             table.translatesAutoresizingMaskIntoConstraints = false
             return table
         }()
-        
-        let doneButton = ButtonType.primary(isActive: true).button(withText: "Готово") { [self] in
+
+        let doneButton = Button(type: .primary(isActive: true), title: "Готово") {
+            [self] in
             delegate?.didUpdateSelectedDays(selectedDays: selectedDays)
             dismiss(animated: true)
         }
-        
+                
         view.addSubview(title)
         view.addSubview(tableView)
         view.addSubview(doneButton)

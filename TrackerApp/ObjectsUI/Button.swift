@@ -1,71 +1,62 @@
 import UIKit
 
-final class Button: UIButton {
+class Button: UIButton {
 
-    var tapHandler: (() -> Void) = { }
+    var tapHandler: (() -> Void)
 
-    init(
-        _ fillColor: UIColor,
-        _ textColor: UIColor,
-        _ borderColor: UIColor,
-        _ borderWidth: CGFloat,
-        _ text: String,
-        _ tapHandler: @escaping (() -> Void) = { }
-    ){
+    var isActive: Bool = true {
+        didSet { didSetButtonActivityAndStyle(isActive: isActive) }
+    }
 
+    init(type: TypeOfButton, title: String, tapHandler: @escaping (() -> Void) = { } ) {
+        self.tapHandler = tapHandler
         super.init(frame: .zero)
+        setTitle(title, for: .normal)
 
-        titleLabel?.font = FontYP.medium16
-        backgroundColor = fillColor
-        setTitleColor(textColor, for: .normal)
-        setTitle(text, for: .normal)
+        switch type {
+
+        case .primary(let isActive):
+            self.isActive = isActive
+            setTitleColor(.white, for: .normal)
+            backgroundColor = isActive ? UIColor.mainColorYP(.blackYP) : UIColor.mainColorYP(.grayYP)
+            layer.borderColor = backgroundColor!.cgColor
+
+        case .cancel:
+            setTitleColor(UIColor.mainColorYP(.redYP), for: .normal)
+            backgroundColor = .white
+            isEnabled = true
+            layer.borderColor = UIColor.mainColorYP(.redYP)!.cgColor
+        }
 
         layer.cornerRadius = 16
-        layer.masksToBounds = true
-        layer.borderColor = borderColor.cgColor
-        layer.borderWidth = borderWidth
+        layer.borderWidth = 1
 
         translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 60)
-        ])
-
-        self.tapHandler = tapHandler
+        heightAnchor.constraint(equalToConstant: 60).isActive = true
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+    }
+
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc private func buttonTapped() {
         tapHandler()
     }
+}
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+extension Button {
+
+    private func didSetButtonActivityAndStyle(isActive: Bool) {
+        let backgroundColor = isActive ? UIColor.mainColorYP(.blackYP) : UIColor.mainColorYP(.grayYP)
+        self.backgroundColor = backgroundColor
+        layer.borderColor = backgroundColor!.cgColor
+        isEnabled = isActive
     }
 }
 
-enum ButtonType {
-
+enum TypeOfButton {
     case primary(isActive: Bool)
-    case secondary
-
-    func button(withText text: String, tapHandler: @escaping (() -> Void) = { } ) -> Button {
-
-        switch self {
-
-        case .primary(let isActive):
-            let fillColor = isActive ? UIColor.mainColorYP(.blackYP)! : UIColor.mainColorYP(.grayYP)!
-            let textColor = UIColor.mainColorYP(.whiteYP)!
-            let borderColor = UIColor.clear
-            let borderWidth: CGFloat = 0
-            return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)
-
-        case .secondary:
-            let fillColor = UIColor.mainColorYP(.whiteYP)!
-            let textColor = UIColor.mainColorYP(.blackYP)!
-            let borderColor = textColor
-            let borderWidth: CGFloat = 1
-            return Button(fillColor, textColor, borderColor, borderWidth, text, tapHandler)
-        }
-    }
+    case cancel
 }

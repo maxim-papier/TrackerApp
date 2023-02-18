@@ -18,13 +18,14 @@ final class TrackerOrEventVC: UIViewController {
             return label
         }()
 
-        let habitButton = ButtonType.primary(isActive: true).button(withText: "Привычка") { [weak self] in
+        let habitButton = Button(type: .primary(isActive: true), title: "Привычка") { [weak self] in
             let vc = CreateTrackerVC()
             self?.present(vc, animated: true)
         }
 
-        let eventButton = ButtonType.primary(isActive: true).button(withText: "Нерегулярное событие")
-        eventButton.tapHandler = { }
+        let eventButton = Button(type: .primary(isActive: true), title: "Нерегулярное событие") { [weak self] in
+            self?.dismiss(animated: true)
+        }
 
         let vStack: UIStackView = {
             let stack = UIStackView()
@@ -40,11 +41,13 @@ final class TrackerOrEventVC: UIViewController {
         vStack.addArrangedSubview(habitButton)
         vStack.addArrangedSubview(eventButton)
 
+        let hInset: CGFloat = 16
+
         NSLayoutConstraint.activate([
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
-            vStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            vStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            vStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hInset),
+            vStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hInset),
             vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }

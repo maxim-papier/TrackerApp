@@ -110,7 +110,6 @@ extension ListCell {
         selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
 
         let hInset = CGFloat(16)
-        let vInset = CGFloat(26)
 
         NSLayoutConstraint.activate([
             vStack.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: hInset),

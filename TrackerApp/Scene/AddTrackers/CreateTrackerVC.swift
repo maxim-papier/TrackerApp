@@ -2,16 +2,26 @@ import UIKit
 
 final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout {
 
+    var collectionView: UICollectionView! = nil
+
     private let emojis = [
         "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶",
         "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
 
     private let listCellItemName: [String] = ["Категория", "Расписание"]
-    var schedule = [WeekDay]()
 
-    var selectedEmoji: IndexPath?
-    var selectedColor: IndexPath?
+    var selectedTitle: String?
+    var selectedCategory = TrackerCategory.mockCategory1
+    var selectedSchedule = [WeekDay]()
+    var selectedEmoji: String?
+    var selectedColor: SelectionColorStyle?
+
+    var selectedEmojiIndexPath: IndexPath?
+    var selectedColorIndexPath: IndexPath?
+
+    var readyButton: Button?
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,13 +29,9 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         configureCollectionView()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
 
     func configureCollectionView() {
 
-        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: generateLayout())
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: generateLayout())
 
         // Register
@@ -61,12 +67,38 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             return label
         }()
 
+        let cancelButton = Button(type: .cancel, title: "Отменить") {
+            print("CANCEL is tapped")
+            self.dismiss(animated: true)
+        }
+
+        readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
+            print("readyButton is ready")
+        })
+
+        let hStack: UIStackView = {
+            let stack = UIStackView()
+            stack.backgroundColor = .mainColorYP(.whiteYP)
+            stack.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+            stack.isLayoutMarginsRelativeArrangement = true
+            stack.axis = .horizontal
+            stack.distribution = .fillEqually
+            stack.spacing = 8
+            stack.translatesAutoresizingMaskIntoConstraints = false
+            return stack
+        }()
+
         collectionView.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(collectionView)
         view.addSubview(title)
+        view.addSubview(hStack)
+
+        hStack.addArrangedSubview(cancelButton)
+        hStack.addArrangedSubview(readyButton!)
 
         let vInset: CGFloat = 38
+        let hInset: CGFloat = 20
 
         NSLayoutConstraint.activate([
 
@@ -74,13 +106,18 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
             collectionView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: vInset),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: hStack.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+
+            hStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            hStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hInset),
+            hStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hInset)
         ])
 
         collectionView.delegate = self
         collectionView.dataSource = self
+
     }
 
     func generateLayout() -> UICollectionViewLayout {
@@ -88,24 +125,27 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         return UICollectionViewCompositionalLayout { (sectionNumber, env) ->
             NSCollectionLayoutSection? in
 
+            let height: CGFloat = 75
+            let hInset: CGFloat = 16
+
             switch sectionNumber {
 
             case 0: // Input
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(75))
+                    heightDimension: .absolute(height))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(75))
+                    heightDimension: .absolute(height))
 
                 let group = NSCollectionLayoutGroup.vertical(
                     layoutSize: groupSize,
                     subitems: [item])
 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
 
                 return section
 
@@ -113,19 +153,19 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
             case 1: // ListCell
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(75))
+                    heightDimension: .absolute(height))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(75+75))
+                    heightDimension: .absolute(height+height))
 
                 let group = NSCollectionLayoutGroup.vertical(
                     layoutSize: groupSize,
                     subitems: [item])
 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 16, bottom: 32, trailing: 16)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: hInset, bottom: 32, trailing: hInset)
 
                 return section
 
@@ -199,7 +239,6 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 }
 
 
-
 // MARK: - EXTENTIONS
 
 extension CreateTrackerVC: UICollectionViewDataSource {
@@ -227,7 +266,15 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             let inputCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: InputCell.identifier,
                 for: indexPath) as! InputCell
+
             inputCell.userInputField.placeholder = "Введите название трекера"
+
+            inputCell.textFieldValueChanged = { inputText in
+                self.selectedTitle = inputText
+                print("selectedTitle === \(self.selectedTitle)")
+
+            }
+
             cell = inputCell
 
         case 1:
@@ -237,19 +284,19 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
             if indexPath.item == 0 {
                 listCell.buttonPosition = .first
+                listCell.subtitleLabel.text = selectedCategory.title
 
             } else if indexPath.item == 1 {
                 listCell.buttonPosition = .last
+                if !selectedSchedule.isEmpty {
+                    let days = selectedSchedule.map { $0.shortLabel }
+                    print("DAYS \(days)")
+                    let daysString = days.joined(separator: ", ")
+                    listCell.subtitleLabel.text = daysString
+                }
             }
 
             listCell.titleLabel.text = listCellItemName[indexPath.item]
-
-            if !schedule.isEmpty {
-                let days = schedule.map { $0.shortLabel }
-                print("DAYS \(days)")
-                let daysString = days.joined(separator: ", ")
-                listCell.subtitleLabel.text = daysString
-            }
 
             cell = listCell
 
@@ -259,17 +306,20 @@ extension CreateTrackerVC: UICollectionViewDataSource {
                 for: indexPath) as! EmojiCell
             emojiCell.emojiLabel.text = emojis[indexPath.row]
             emojiCell.backgroundShape.layer.cornerRadius = 16
+
             cell = emojiCell
 
         case 3:
             let colorCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ColorCell.identifier,
                 for: indexPath) as! ColorCell
+
             cell = colorCell
 
         default:
             fatalError("Unsupported section in cellForItemAt")
         }
+
         return cell
     }
 
@@ -322,37 +372,47 @@ extension CreateTrackerVC: UICollectionViewDelegate {
         switch indexPath.section {
 
         case 0:
-            print("Ready")
+            if indexPath.row == 0 {
+                print("Ready")
+            }
 
         case 1:
             if indexPath.row == 0 {
                 let vc = CategoryVC()
                 present(vc, animated: true, completion: nil)
             } else if indexPath.row == 1 {
-                let vc = SchedulerVC(selectedDays: schedule)
+                let vc = SchedulerVC(selectedDays: selectedSchedule)
                 vc.delegate = self
                 present(vc, animated: true, completion: nil)
             }
             collectionView.deselectItem(at: indexPath, animated: false)
 
         case 2:
+
             if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
-                if let selectedCell = collectionView.cellForItem(at: selectedEmoji ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
+                if let selectedCell = collectionView.cellForItem(at: selectedEmojiIndexPath ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
                     selectedCell.backgroundShape.backgroundColor = UIColor.clear
                 }
                 cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
-                selectedEmoji = indexPath
+                selectedEmojiIndexPath = indexPath
+                selectedEmoji = emojis[indexPath.row]
+                print("selectedEmoji === \(selectedEmoji)")
+
             }
 
         case 3:
             if let cell = collectionView.cellForItem(at: indexPath) as? ColorCell {
                 let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
                 let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-                if let selectedColor = collectionView.cellForItem(at: selectedColor ?? IndexPath(item: -1, section: 0)) as? ColorCell {
-                    selectedColor.backgroundShape.layer.borderColor = UIColor.clear.cgColor
+                if let selectedColorIndexPath = collectionView.cellForItem(at: selectedColorIndexPath ?? IndexPath(item: -1, section: 0)) as? ColorCell {
+                    selectedColorIndexPath.backgroundShape.layer.borderColor = UIColor.clear.cgColor
                 }
                 cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
-                selectedColor = indexPath
+                selectedColorIndexPath = indexPath
+
+                selectedColor = SelectionColorStyle.allCases[indexPath.row]
+                print("selectedColor === \(selectedColor)")
+
             }
 
         default:
@@ -361,14 +421,32 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     }
 }
 
+// MARK: - AddSchedulerDelegate
+
 extension CreateTrackerVC: AddSchedulerDelegate {
+
     func didUpdateSelectedDays(selectedDays: [WeekDay]) {
-        self.schedule = selectedDays
-        print("CreateTrackerVC: Look, mate, what i've got:\n \(schedule.map { "\($0)" + "\n" }.joined())")
-        
+        self.selectedSchedule = selectedDays
+        print("CreateTrackerVC: Look, mom, what I've got:\n\(selectedSchedule.map { "- \($0)" + "\n" }.joined())")
+        collectionView.reloadData()
     }
 }
 
+
+extension CreateTrackerVC {
+
+    func isTrackerReadyToBeCreated() {
+        guard
+            let _ = selectedTitle,
+            let _ = selectedEmoji,
+            let _ = selectedColor,
+            !selectedSchedule.isEmpty
+        else {
+            return
+        }
+    }
+
+}
 
 // MARK: - SHOW PREVIEW
 
