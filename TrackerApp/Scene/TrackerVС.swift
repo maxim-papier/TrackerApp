@@ -5,9 +5,8 @@ final class TrackerVC: UIViewController {
     private var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
     private var filteredCategories: [TrackerCategory] = []
     private var selectedDate = Date()
-    private var completedTrackers: [TrackerRecord]?
+    private var completedTrackers: [TrackerRecord] = []
 
-    
     private let searchController = UISearchController(searchResultsController: nil)
     private var isSearchBarEmpty: Bool { return searchController.searchBar.text?.isEmpty ?? true } //
     // private var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty } //
@@ -16,7 +15,6 @@ final class TrackerVC: UIViewController {
     private var placeholder = PlaceholderType.noSearchResults.placeholder
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -146,6 +144,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         show = filteredCategories[indexPath.section].trackers[indexPath.item]
 
+        cell.delegate = self
         cell.backgroundShape.backgroundColor = show.color
         cell.doneButton.backgroundColor = show.color
         cell.titleLabel.text = show.title
@@ -310,11 +309,19 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
 extension TrackerVC: TrackerCellDelegate {
 
-    func didCompleteTracker(_ isDone: Bool) {
+    func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
 
-    
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let trackerID = filteredCategories[indexPath.section].trackers[indexPath.item].id
+
+        if let index = completedTrackers.firstIndex(where: { $0.trackerId == trackerID }) {
+            completedTrackers.remove(at: index)
+        } else {
+            let record = TrackerRecord(trackerId: trackerID, date: selectedDate)
+            completedTrackers.append(record)
+        }
+        print("COMPLETE TRACKERS === \(completedTrackers)")
     }
-
 }
 
 

@@ -75,7 +75,7 @@ final class TrackerCell: UICollectionViewCell {
     @objc func doneButtonPressed() {
         let isDone = !doneButtonStateChange
         doneButtonStateChange = isDone
-        delegate?.didCompleteTracker(isDone)
+        delegate?.didCompleteTracker(isDone, in: self)
     }
 
 
@@ -123,6 +123,6 @@ final class TrackerCell: UICollectionViewCell {
     }
 }
 
-protocol TrackerCellDelegate {
-    func didCompleteTracker(_ isDone: Bool)
+protocol TrackerCellDelegate: AnyObject {
+    func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell)
 }
