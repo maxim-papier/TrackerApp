@@ -2,6 +2,8 @@ import UIKit
 
 final class TrackerOrEventVC: UIViewController {
 
+    var trackerVC: TrackerVC?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -20,6 +22,7 @@ final class TrackerOrEventVC: UIViewController {
 
         let habitButton = Button(type: .primary(isActive: true), title: "Привычка") { [weak self] in
             let vc = CreateTrackerVC()
+            vc.delegate = self?.trackerVC
             self?.present(vc, animated: true)
         }
 

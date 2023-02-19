@@ -1,8 +1,9 @@
 import UIKit
 
 final class TrackerVC: UIViewController {
-    
-    private let categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
+
+    var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
+
     private var filteredCategories: [TrackerCategory] = []
     
     private let searchController = UISearchController(searchResultsController: nil)
@@ -88,6 +89,7 @@ final class TrackerVC: UIViewController {
     @objc
     private func addNewTracker() {
         let vc = TrackerOrEventVC()
+        vc.trackerVC = self
         present(vc, animated: true)
     }
     
@@ -161,7 +163,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath
         ) as? TrackerHeader else { return .init() }
         
-        header.categoryLabel.text = filteredCategories[indexPath.section].title
+        header.categoryLabel.text = filteredCategories[indexPath.section].name
         return header
     }
 }
@@ -224,7 +226,7 @@ extension TrackerVC: UISearchResultsUpdating {
             // If there are any "filteredTrackers" in this "category",
             // we add this "category" to the "filteredCategories" array
             if filteredTrackers.count > 0 {
-                filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+                filteredCategories.append(TrackerCategory(name: category.name, trackers: filteredTrackers))
             }
         }
         reloadCollection()
@@ -245,7 +247,7 @@ extension TrackerVC: UISearchResultsUpdating {
                 }
             }
             if filteredTrackers.count > 0 {
-                filteredCategories.append(TrackerCategory(title: category.title, trackers: filteredTrackers))
+                filteredCategories.append(TrackerCategory(name: category.name, trackers: filteredTrackers))
             }
         }
         reloadCollection()
@@ -260,6 +262,49 @@ extension TrackerVC: UISearchResultsUpdating {
         collectionView.reloadData()
     }
 }
+
+// MARK: - CreateTrackerVC delegate
+
+extension TrackerVC: CreateTrackerVCDelegate {
+
+    func didCreateNewTracker(newCategory: TrackerCategory) {
+
+        guard let tracker = newCategory.trackers.first else { fatalError("TrackerVC says: 'There is no tracker in the new category'") }
+
+        addTrackerToCategory(tracker: tracker, categoryName: newCategory.name)
+        reloadCollection()
+    }
+
+    func addTrackerToCategory(tracker: Tracker, categoryName: String) {
+
+        var trackersForAddedCategory = [Tracker]()
+        var existingCategories = categories
+
+        // 0. нашёл такую же категорию
+        let existingCategory = categories.first { $0.name == categoryName }
+
+        // 1. достал трекеры из старой категории
+        if let existingCategory {
+            for tracker in existingCategory {
+                trackersForAddedCategory.append(tracker)
+            }
+
+            // 2. добавил туда свой трекер,
+            trackersForAddedCategory.append(tracker)
+        }
+
+        // 4. создал новую категорию с именем и обновленным списком категорий
+        let categoryWithNewTracker: TrackerCategory = .init(name: categoryName, trackers: trackersForAddedCategory)
+
+        // 5. Заменил старую категорию на новую
+        if let index = existingCategories.firstIndex(where: { $0.name == categoryName }) {
+            existingCategories[index] = categoryWithNewTracker
+        }
+
+        categories = existingCategories
+    }
+}
+
 
 
 // MARK: - SHOW PREVIEW

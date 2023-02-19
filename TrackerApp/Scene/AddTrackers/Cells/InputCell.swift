@@ -42,6 +42,7 @@ extension InputCell {
     private func setupView() {
 
         userInputField.addTarget(self, action: #selector(textFieldValueDidChange(_:)), for: .allEditingEvents)
+        userInputField.delegate = self
 
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(userInputField)
@@ -61,3 +62,21 @@ extension InputCell {
     }
 }
 
+extension InputCell: UITextFieldDelegate {
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+
+        // Allow the new text if it's less than or equal to 38 characters
+
+        guard let text = textField.text else {
+            return true
+        }
+        let newLength = text.count + string.count - range.length
+
+        return newLength <= 38
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.resignFirstResponder()
+    }
+}

@@ -1,11 +1,11 @@
 import UIKit
 
-class Button: UIButton {
+final class Button: UIButton {
 
-    var tapHandler: (() -> Void)
+    private var tapHandler: (() -> Void)
 
     var isActive: Bool = true {
-        didSet { didSetButtonActivityAndStyle(isActive: isActive) }
+        didSet { didSetButtonActivityAndStyle(isActive) }
     }
 
     init(type: TypeOfButton, title: String, tapHandler: @escaping (() -> Void) = { } ) {
@@ -48,7 +48,7 @@ class Button: UIButton {
 
 extension Button {
 
-    private func didSetButtonActivityAndStyle(isActive: Bool) {
+    private func didSetButtonActivityAndStyle(_ isActive: Bool) {
         let backgroundColor = isActive ? UIColor.mainColorYP(.blackYP) : UIColor.mainColorYP(.grayYP)
         self.backgroundColor = backgroundColor
         layer.borderColor = backgroundColor!.cgColor
@@ -60,3 +60,5 @@ enum TypeOfButton {
     case primary(isActive: Bool)
     case cancel
 }
+
+

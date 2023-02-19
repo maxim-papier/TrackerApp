@@ -21,10 +21,13 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     var selectedColorIndexPath: IndexPath?
 
     var readyButton: Button?
+
+    weak var delegate: CreateTrackerVCDelegate?
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         view.backgroundColor = .mainColorYP(.whiteYP)
         configureCollectionView()
     }
@@ -74,6 +77,10 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
             print("readyButton is ready")
+            self.delegate?.didCreateNewTracker(newCategory: self.createNewTracker())
+            if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                rootVC.dismiss(animated: true, completion: nil)
+            }
         })
 
         let hStack: UIStackView = {
@@ -120,121 +127,146 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
     }
 
+
     func generateLayout() -> UICollectionViewLayout {
+
+        let inputLayout = createInputLayout()
+        let listLayout = createListLayout()
+        let emojiLayout = createEmojiLayout()
+        let colorLayout = createColorLayout()
 
         return UICollectionViewCompositionalLayout { (sectionNumber, env) ->
             NSCollectionLayoutSection? in
 
-            let height: CGFloat = 75
-            let hInset: CGFloat = 16
-
             switch sectionNumber {
-
-            case 0: // Input
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(height))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(height))
-
-                let group = NSCollectionLayoutGroup.vertical(
-                    layoutSize: groupSize,
-                    subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
-
-                return section
-
-
-            case 1: // ListCell
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(height))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(height+height))
-
-                let group = NSCollectionLayoutGroup.vertical(
-                    layoutSize: groupSize,
-                    subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: hInset, bottom: 32, trailing: hInset)
-
-                return section
-
-            case 2: // Emojis
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1/6),
-                    heightDimension: .fractionalWidth(1/6))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .fractionalWidth(1/6))
-
-                let group = NSCollectionLayoutGroup.horizontal(
-                    layoutSize: groupSize,
-                    subitems: [item])
-
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
-
-                let headerSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(18))
-
-                let header = NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: headerSize,
-                    elementKind: UICollectionView.elementKindSectionHeader,
-                    alignment: .top)
-
-                section.boundarySupplementaryItems = [header]
-                return section
-
-            case 3: // Colors
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1/6),
-                    heightDimension: .fractionalWidth(1/6))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                item.contentInsets = NSDirectionalEdgeInsets(
-                    top: 0, leading: 0, bottom: 5, trailing: 5)
-
-                let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .estimated(46))
-
-                let group = NSCollectionLayoutGroup.horizontal(
-                    layoutSize: groupSize,
-                    subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
-
-                let headerSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(18))
-
-                let header = NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: headerSize,
-                    elementKind: UICollectionView.elementKindSectionHeader,
-                    alignment: .top)
-
-                section.boundarySupplementaryItems = [header]
-                return section
-
+            case 0: return inputLayout
+            case 1: return listLayout
+            case 2: return emojiLayout
+            case 3: return colorLayout
             default:
                 fatalError("Unsupported section in generateLayout")
             }
         }
+    }
+}
+
+extension CreateTrackerVC {
+
+    func createInputLayout() -> NSCollectionLayoutSection {
+
+        let height: CGFloat = 75
+        let hInset: CGFloat = 16
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .absolute(height))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .absolute(height))
+
+        let group = NSCollectionLayoutGroup.vertical(
+            layoutSize: groupSize,
+            subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
+
+        return section
+    }
+
+    func createListLayout() -> NSCollectionLayoutSection {
+
+        let height: CGFloat = 75
+        let hInset: CGFloat = 16
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .absolute(height))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .absolute(height+height))
+
+        let group = NSCollectionLayoutGroup.vertical(
+            layoutSize: groupSize,
+            subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: hInset, bottom: 32, trailing: hInset)
+
+        return section
+
+    }
+
+    func createEmojiLayout() -> NSCollectionLayoutSection {
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1/6),
+            heightDimension: .fractionalWidth(1/6))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .fractionalWidth(1/6))
+
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(18))
+
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top)
+
+        section.boundarySupplementaryItems = [header]
+        return section
+
+    }
+
+    func createColorLayout() -> NSCollectionLayoutSection {
+
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1/6),
+            heightDimension: .fractionalWidth(1/6))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        item.contentInsets = NSDirectionalEdgeInsets(
+            top: 0, leading: 0, bottom: 5, trailing: 5)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(46))
+
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(18))
+
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top)
+
+        section.boundarySupplementaryItems = [header]
+        return section
+
     }
 }
 
@@ -245,7 +277,11 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int { 4 }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
+
         switch section {
         case 0: return 1
         case 1: return 2
@@ -257,98 +293,95 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        let cell: UICollectionViewCell
-
         switch indexPath.section {
-
         case 0:
-            let inputCell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: InputCell.identifier,
-                for: indexPath) as! InputCell
-
-            inputCell.userInputField.placeholder = "Введите название трекера"
-
-            inputCell.textFieldValueChanged = { inputText in
-                self.selectedTitle = inputText
-                print("selectedTitle === \(self.selectedTitle)")
-
-            }
-
-            cell = inputCell
-
+            return inputCell(for: indexPath, collectionView: collectionView)
         case 1:
-            let listCell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: ListCell.identifier,
-                for: indexPath) as! ListCell
-
-            if indexPath.item == 0 {
-                listCell.buttonPosition = .first
-                listCell.subtitleLabel.text = selectedCategory.title
-
-            } else if indexPath.item == 1 {
-                listCell.buttonPosition = .last
-                if !selectedSchedule.isEmpty {
-                    let days = selectedSchedule.map { $0.shortLabel }
-                    print("DAYS \(days)")
-                    let daysString = days.joined(separator: ", ")
-                    listCell.subtitleLabel.text = daysString
-                }
-            }
-
-            listCell.titleLabel.text = listCellItemName[indexPath.item]
-
-            cell = listCell
-
+            return listCell(for: indexPath, collectionView: collectionView)
         case 2:
-            let emojiCell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: EmojiCell.identifier,
-                for: indexPath) as! EmojiCell
-            emojiCell.emojiLabel.text = emojis[indexPath.row]
-            emojiCell.backgroundShape.layer.cornerRadius = 16
-
-            cell = emojiCell
-
+            return emojiCell(for: indexPath, collectionView: collectionView)
         case 3:
-            let colorCell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: ColorCell.identifier,
-                for: indexPath) as! ColorCell
-
-            cell = colorCell
-
+            return colorCell(for: indexPath, collectionView: collectionView)
         default:
             fatalError("Unsupported section in cellForItemAt")
         }
+    }
 
-        return cell
+    func inputCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let inputCell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: InputCell.identifier,
+            for: indexPath) as! InputCell
+
+        inputCell.userInputField.placeholder = "Введите название трекера"
+
+        inputCell.textFieldValueChanged = { inputText in
+            self.selectedTitle = inputText
+
+            self.isTrackerReadyToBeCreated()
+        }
+
+        return inputCell
+    }
+
+    func listCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let listCell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: ListCell.identifier,
+            for: indexPath) as! ListCell
+
+        if indexPath.item == 0 {
+            listCell.buttonPosition = .first
+            listCell.subtitleLabel.text = selectedCategory.name
+        } else if indexPath.item == 1 {
+            listCell.buttonPosition = .last
+            if !selectedSchedule.isEmpty {
+                let days = selectedSchedule.map { $0.shortLabel }
+                print("DAYS \(days)")
+                let daysString = days.joined(separator: ", ")
+                listCell.subtitleLabel.text = daysString
+            }
+        }
+
+        listCell.titleLabel.text = listCellItemName[indexPath.item]
+
+        return listCell
+    }
+
+    func emojiCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let emojiCell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: EmojiCell.identifier,
+            for: indexPath) as! EmojiCell
+
+        emojiCell.emojiLabel.text = emojis[indexPath.row]
+        emojiCell.backgroundShape.layer.cornerRadius = 16
+
+        return emojiCell
+    }
+
+    func colorCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let colorCell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: ColorCell.identifier,
+            for: indexPath) as! ColorCell
+
+        return colorCell
     }
 
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        guard let header = collectionView.dequeueReusableSupplementaryView(
+        let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: Header.identifier,
-            for: indexPath
-        ) as? Header else { return .init() }
+            for: indexPath) as! Header
 
         switch indexPath.section {
 
-        case 0:
-            header.isHidden = true
-            return header
-        case 1:
-            header.isHidden = true
-            return header
-        case 2:
-            header.sectionLabel.text = "Emoji"
-            return header
-        case 3:
-            header.sectionLabel.text = "Цвет"
-            return header
+        case 0, 1: header.isHidden = true
+        case 2: header.sectionLabel.text = "Emoji"
+        case 3: header.sectionLabel.text = "Цвет"
         default:
             fatalError("Unsupported section in viewForSupplementaryElementOfKind")
         }
+        return header
     }
 }
 
@@ -371,54 +404,68 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
         switch indexPath.section {
 
-        case 0:
-            if indexPath.row == 0 {
-                print("Ready")
-            }
+        case 0: handleInputSelection()
+        case 1: handleListSelection(at: indexPath)
+        case 2: handleEmojiSelection(at: indexPath)
+        case 3: handleColorSelection(at: indexPath)
+        default: break
+        }
 
-        case 1:
-            if indexPath.row == 0 {
-                let vc = CategoryVC()
-                present(vc, animated: true, completion: nil)
-            } else if indexPath.row == 1 {
-                let vc = SchedulerVC(selectedDays: selectedSchedule)
-                vc.delegate = self
-                present(vc, animated: true, completion: nil)
-            }
-            collectionView.deselectItem(at: indexPath, animated: false)
+        collectionView.deselectItem(at: indexPath, animated: false)
 
-        case 2:
+    }
 
-            if let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell {
-                if let selectedCell = collectionView.cellForItem(at: selectedEmojiIndexPath ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
-                    selectedCell.backgroundShape.backgroundColor = UIColor.clear
-                }
-                cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
-                selectedEmojiIndexPath = indexPath
-                selectedEmoji = emojis[indexPath.row]
-                print("selectedEmoji === \(selectedEmoji)")
+    private func handleInputSelection() {
+        print("Ready to input")
+    }
 
-            }
+    private func handleListSelection(at indexPath: IndexPath) {
 
-        case 3:
-            if let cell = collectionView.cellForItem(at: indexPath) as? ColorCell {
-                let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
-                let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-                if let selectedColorIndexPath = collectionView.cellForItem(at: selectedColorIndexPath ?? IndexPath(item: -1, section: 0)) as? ColorCell {
-                    selectedColorIndexPath.backgroundShape.layer.borderColor = UIColor.clear.cgColor
-                }
-                cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
-                selectedColorIndexPath = indexPath
-
-                selectedColor = SelectionColorStyle.allCases[indexPath.row]
-                print("selectedColor === \(selectedColor)")
-
-            }
-
-        default:
-            break
+        if indexPath.row == 0 {
+            let vc = CategoryVC()
+            present(vc, animated: true, completion: nil)
+        } else if indexPath.row == 1 {
+            let vc = SchedulerVC(selectedDays: selectedSchedule)
+            vc.delegate = self
+            present(vc, animated: true, completion: nil)
         }
     }
+
+    private func handleEmojiSelection(at indexPath: IndexPath) {
+
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell else { return }
+
+        if let selectedCell = collectionView.cellForItem(at: selectedEmojiIndexPath ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
+            selectedCell.backgroundShape.backgroundColor = UIColor.clear
+        }
+
+        cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
+
+        selectedEmojiIndexPath = indexPath
+        selectedEmoji = emojis[indexPath.row]
+
+        isTrackerReadyToBeCreated()
+    }
+
+    private func handleColorSelection(at indexPath: IndexPath) {
+
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCell else { return }
+
+        let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
+        let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
+
+        if let selectedColorIndexPath = collectionView.cellForItem(at: selectedColorIndexPath ?? IndexPath(item: -1, section: 0)) as? ColorCell {
+            selectedColorIndexPath.backgroundShape.layer.borderColor = UIColor.clear.cgColor
+        }
+
+        cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
+
+        selectedColorIndexPath = indexPath
+        selectedColor = SelectionColorStyle.allCases[indexPath.row]
+
+        isTrackerReadyToBeCreated()
+    }
+
 }
 
 // MARK: - AddSchedulerDelegate
@@ -427,8 +474,13 @@ extension CreateTrackerVC: AddSchedulerDelegate {
 
     func didUpdateSelectedDays(selectedDays: [WeekDay]) {
         self.selectedSchedule = selectedDays
+
+        isTrackerReadyToBeCreated()
+
         print("CreateTrackerVC: Look, mom, what I've got:\n\(selectedSchedule.map { "- \($0)" + "\n" }.joined())")
-        collectionView.reloadData()
+
+        let sectionToReload = 1
+        collectionView.reloadSections(IndexSet(integer: sectionToReload))
     }
 }
 
@@ -436,17 +488,50 @@ extension CreateTrackerVC: AddSchedulerDelegate {
 extension CreateTrackerVC {
 
     func isTrackerReadyToBeCreated() {
-        guard
-            let _ = selectedTitle,
-            let _ = selectedEmoji,
-            let _ = selectedColor,
-            !selectedSchedule.isEmpty
-        else {
+        guard let title = selectedTitle, !title.isEmpty,
+              let emoji = selectedEmoji,
+              let color = selectedColor,
+              !selectedSchedule.isEmpty else {
+            print("DATA IS NOT READY")
+            readyButton?.isActive = false
             return
         }
+        print("DATA IS READY TO SAVE:")
+        print("selectedTitle === \(title)")
+        print("selectedEmoji === \(emoji)")
+        print("selectedColor === \(color)")
+        print("selectedSchedule === \(selectedSchedule)")
+        readyButton?.isActive = true
     }
 
+    func createNewTracker() -> TrackerCategory {
+
+        // Использую force unwrap, так как уже проверил,
+        // что значения существуют в методе isTrackerReadyToBeCreated()
+        let title: String = selectedTitle!
+        let emoji: String = selectedEmoji!
+        let color: UIColor = UIColor.selectionColorYP(selectedColor!)!
+        let day: Set<WeekDay>? = Set(selectedSchedule)
+
+
+        // Создаем новый трекер
+        let newTracker = Tracker(title: title, emoji: emoji, color: color, day: day)
+
+        // Создаем новую категорию для нового трекера
+        let newCategory = TrackerCategory(name: selectedCategory.name, trackers: [newTracker])
+
+        print("NEWCATEGORY === \(newCategory)")
+
+        return newCategory
+    }
 }
+
+// MARK: - PROTOCOL
+
+protocol CreateTrackerVCDelegate: AnyObject {
+    func didCreateNewTracker(newCategory: TrackerCategory)
+}
+
 
 // MARK: - SHOW PREVIEW
 
