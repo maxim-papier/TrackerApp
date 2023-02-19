@@ -96,28 +96,6 @@
 			path = ObjectsUI;
 			sourceTree = "<group>";
 		};
-		8DA0CB5A299B377F004BFE73 /* Default */ = {
-			isa = PBXGroup;
-			children = (
-				8DBA052F2993873E00E3604E /* TrackerVС.swift */,
-				8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */,
-				8DF313A62997283500B7D148 /* TrackerHeader.swift */,
-			);
-			path = Default;
-			sourceTree = "<group>";
-		};
-		8DA0CB5F299B9C28004BFE73 /* AddTrackers */ = {
-			isa = PBXGroup;
-			children = (
-				8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */,
-				8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */,
-				8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */,
-				8D2A1C11299D0CB500213C8D /* CategoryVC.swift */,
-				8DC07966299F639F00AC6C10 /* Cells */,
-			);
-			path = AddTrackers;
-			sourceTree = "<group>";
-		};
 		8DB392A829941B680031D2E1 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,10 +109,10 @@
 		8DB392B5299536B40031D2E1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				8DB392B129952B340031D2E1 /* DayOfTheWeek.swift */,
 				8DB392B329952DA90031D2E1 /* Tracker.swift */,
 				8DF313A92997507900B7D148 /* TrackerCategory.swift */,
 				8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */,
+				8DB392B129952B340031D2E1 /* DayOfTheWeek.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -158,16 +136,16 @@
 		8DBA052A2993873E00E3604E /* TrackerApp */ = {
 			isa = PBXGroup;
 			children = (
+				8DB392B5299536B40031D2E1 /* Models */,
 				8DDE29C32993E1B500D4A4DD /* Scene */,
-				8DBA05342993873E00E3604E /* Assets.xcassets */,
+				8DA0CB59299A6377004BFE73 /* ObjectsUI */,
 				8DDE29BA2993B8EA00D4A4DD /* Extensions */,
+				8DBA05342993873E00E3604E /* Assets.xcassets */,
+				8DB392A829941B680031D2E1 /* Fonts */,
 				8DBA05362993873E00E3604E /* LaunchScreen.storyboard */,
 				8DBA05392993873E00E3604E /* Info.plist */,
 				8DBA052B2993873E00E3604E /* AppDelegate.swift */,
 				8DBA052D2993873E00E3604E /* SceneDelegate.swift */,
-				8DB392A829941B680031D2E1 /* Fonts */,
-				8DB392B5299536B40031D2E1 /* Models */,
-				8DA0CB59299A6377004BFE73 /* ObjectsUI */,
 			);
 			path = TrackerApp;
 			sourceTree = "<group>";
@@ -175,6 +153,8 @@
 		8DC07966299F639F00AC6C10 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */,
+				8DF313A62997283500B7D148 /* TrackerHeader.swift */,
 				8DADE0B0299D3184005942E2 /* InputCell.swift */,
 				8D2A1C0B299CB29A00213C8D /* ListCell.swift */,
 				8D2A1C07299BC6C000213C8D /* EmojiCell.swift */,
@@ -198,10 +178,14 @@
 		8DDE29C32993E1B500D4A4DD /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				8DA0CB5A299B377F004BFE73 /* Default */,
+				8DC07966299F639F00AC6C10 /* Cells */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
+				8DBA052F2993873E00E3604E /* TrackerVС.swift */,
 				8DF313AF299774C600B7D148 /* StatisticVC.swift */,
-				8DA0CB5F299B9C28004BFE73 /* AddTrackers */,
+				8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */,
+				8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */,
+				8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */,
+				8D2A1C11299D0CB500213C8D /* CategoryVC.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";

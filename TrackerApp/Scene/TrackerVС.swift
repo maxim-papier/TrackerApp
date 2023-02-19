@@ -2,18 +2,19 @@ import UIKit
 
 final class TrackerVC: UIViewController {
 
-    var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
-
+    private var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
     private var filteredCategories: [TrackerCategory] = []
+    private var selectedDate = Date()
+    private var completedTrackers: [TrackerRecord]?
+
     
     private let searchController = UISearchController(searchResultsController: nil)
     private var isSearchBarEmpty: Bool { return searchController.searchBar.text?.isEmpty ?? true } //
-    var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty } //
-
+    // private var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty } //
     private var searchText = ""
-    private var selectedDate = Date()
 
     private var placeholder = PlaceholderType.noSearchResults.placeholder
+
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
 
@@ -305,6 +306,16 @@ extension TrackerVC: CreateTrackerVCDelegate {
     }
 }
 
+// MARK: - TrackerCellDelegate
+
+extension TrackerVC: TrackerCellDelegate {
+
+    func didCompleteTracker(_ isDone: Bool) {
+
+    
+    }
+
+}
 
 
 // MARK: - SHOW PREVIEW

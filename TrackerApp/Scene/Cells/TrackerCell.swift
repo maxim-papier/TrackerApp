@@ -4,6 +4,12 @@ final class TrackerCell: UICollectionViewCell {
 
     static let identifier = "TrackerCell"
 
+    var delegate: TrackerCellDelegate?
+
+    var doneButtonStateChange: Bool = false {
+        didSet { updateDoneButton() }
+    }
+
     let backgroundShape: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
@@ -47,19 +53,39 @@ final class TrackerCell: UICollectionViewCell {
 
     let doneButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "plus"), for: .normal)
         button.tintColor = .mainColorYP(.whiteYP)
         button.layer.cornerRadius = 17
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
         button.layer.masksToBounds = true
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
 
+    private func updateDoneButton() {
+        if doneButtonStateChange {
+            doneButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+            doneButton.alpha = 0.5
+
+        } else {
+            doneButton.setImage(UIImage(systemName: "plus"), for: .normal)
+            doneButton.alpha = 1
+        }
+    }
+
+    @objc func doneButtonPressed() {
+        let isDone = !doneButtonStateChange
+        doneButtonStateChange = isDone
+        delegate?.didCompleteTracker(isDone)
+    }
+
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        super.layoutSubviews()
 
+
+        doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
+
+        super.layoutSubviews()
         contentView.addSubview(backgroundShape)
         contentView.addSubview(doneButton)
         contentView.addSubview(daysLabel)
@@ -95,4 +121,8 @@ final class TrackerCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init has not been implemented")
     }
+}
+
+protocol TrackerCellDelegate {
+    func didCompleteTracker(_ isDone: Bool)
 }
