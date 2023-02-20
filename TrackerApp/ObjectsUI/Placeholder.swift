@@ -2,6 +2,13 @@ import UIKit
 
 final class Placeholder: UIView {
 
+    var placeholderType: PlaceholderType = .noTrackers {
+        didSet {
+            self.imageView.image = placeholderType.placeholder.imageView.image
+            self.textLabel.text = placeholderType.placeholder.textLabel.text
+        }
+    }
+
     let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
