@@ -277,7 +277,6 @@ extension TrackerVC: CreateTrackerVCDelegate {
         guard let tracker = newCategory.trackers.first else { fatalError("TrackerVC says: 'There is no tracker in the new category'") }
 
         addTrackerToCategory(tracker: tracker, categoryName: newCategory.name)
-        collectionView.reloadData()
     }
 
     func addTrackerToCategory(tracker: Tracker, categoryName: String) {
@@ -307,6 +306,7 @@ extension TrackerVC: CreateTrackerVCDelegate {
         }
 
         categories = existingCategories
+        filterResults(with: selectedDate)
     }
 }
 
