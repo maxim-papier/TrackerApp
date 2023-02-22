@@ -85,7 +85,6 @@ final class TrackerCell: UICollectionViewCell {
 
         doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
 
-        super.layoutSubviews()
         contentView.addSubview(backgroundShape)
         contentView.addSubview(doneButton)
         contentView.addSubview(daysLabel)

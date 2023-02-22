@@ -23,7 +23,6 @@ class EmojiCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        super.layoutSubviews()
 
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(emojiLabel)

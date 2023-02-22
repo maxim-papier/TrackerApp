@@ -17,13 +17,13 @@ final class Button: UIButton {
 
         case .primary(let isActive):
             self.isActive = isActive
-            setTitleColor(.white, for: .normal)
+            setTitleColor(.mainColorYP(.whiteYP), for: .normal)
             backgroundColor = isActive ? UIColor.mainColorYP(.blackYP) : UIColor.mainColorYP(.grayYP)
             layer.borderColor = backgroundColor!.cgColor
 
         case .cancel:
             setTitleColor(UIColor.mainColorYP(.redYP), for: .normal)
-            backgroundColor = .white
+            backgroundColor = .mainColorYP(.whiteYP)
             isEnabled = true
             layer.borderColor = UIColor.mainColorYP(.redYP)!.cgColor
         }

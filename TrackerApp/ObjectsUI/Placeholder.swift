@@ -4,8 +4,8 @@ final class Placeholder: UIView {
 
     var placeholderType: PlaceholderType = .noTrackers {
         didSet {
-            self.imageView.image = placeholderType.placeholder.imageView.image
-            self.textLabel.text = placeholderType.placeholder.textLabel.text
+            self.imageView.image = placeholderType.reasonImage
+            self.textLabel.text = placeholderType.reasonTitle
         }
     }
 
@@ -58,7 +58,6 @@ final class Placeholder: UIView {
     }
 }
 
-
 enum PlaceholderType {
 
     case noSearchResults
@@ -66,33 +65,28 @@ enum PlaceholderType {
     case noCategories
     case noStats
 
-    var placeholder: Placeholder {
-
+    var reasonImage: UIImage {
         guard let defaultPlaceholder = UIImage(systemName: "aqi.medium") else { fatalError("SFSymbols image error") }
 
-        let noSearchResultImage = getImage("placeholderNoSearchResults")
-        let noTrackersImage = getImage("placeholderNoTrackers")
-        let noCategoriesImage = getImage("placeholderNoTrackers")
-        let noStatsImage = getImage("placeholderNoStats")
-
-        func getImage(_ imageName: String) -> UIImage {
-            return .init(named: imageName) ?? defaultPlaceholder
-        }
-
         switch self {
-        case .noSearchResults:
-            return .init(image: noSearchResultImage, text: "Ничего не найдено")
-        case .noTrackers:
-            return .init(image: noTrackersImage, text: "Что будем отслеживать?")
-        case .noCategories:
-            return .init(image: noCategoriesImage, text: "Привычки и события\n можно объединить по смыслу")
-        case .noStats:
-            return .init(image: noStatsImage, text: "Анализировать пока нечего")
+        case .noSearchResults: return .init(named: "placeholderNoSearchResults") ?? defaultPlaceholder
+        case .noTrackers: return .init(named: "placeholderNoTrackers") ?? defaultPlaceholder
+        case .noCategories: return .init(named: "placeholderNoTrackers") ?? defaultPlaceholder
+        case .noStats: return .init(named: "placeholderNoStats") ?? defaultPlaceholder
         }
     }
-}
 
-enum PlaceholderState {
-    case show
-    case hide
+    var reasonTitle: String {
+
+        switch self {
+        case .noSearchResults: return "Ничего не найдено"
+        case .noTrackers: return "Что будем отслеживать?"
+        case .noCategories: return "Привычки и события\n можно объединить по смыслу"
+        case .noStats: return "Анализировать пока нечего"
+        }
+    }
+
+    var placeholder: Placeholder {
+        return .init(image: reasonImage, text: reasonTitle)
+    }
 }

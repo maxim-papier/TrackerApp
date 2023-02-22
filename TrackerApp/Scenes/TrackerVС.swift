@@ -139,7 +139,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
         cell.doneButton.backgroundColor = show.color
         cell.titleLabel.text = show.title
         cell.emojiLabel.text = show.emoji
-        cell.daysLabel.text = "XX дней"
+        cell.daysLabel.text = "0 дней"
         cell.delegate = self
         
         return cell
@@ -194,9 +194,8 @@ extension TrackerVC: UISearchResultsUpdating {
         guard let textInput = searchController.searchBar.text else { return }
         searchText = textInput
 
-        switch searchText.isEmpty {
-        case true: break
-        case false: filterResults(with: searchText)
+        if !searchText.isEmpty {
+            filterResults(with: searchText)
         }
     }
     
