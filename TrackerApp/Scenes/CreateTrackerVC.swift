@@ -198,7 +198,6 @@ extension CreateTrackerVC {
         section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: hInset, bottom: 32, trailing: hInset)
 
         return section
-
     }
 
     func createEmojiLayout() -> NSCollectionLayoutSection {
@@ -216,7 +215,6 @@ extension CreateTrackerVC {
             layoutSize: groupSize,
             subitems: [item])
 
-
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(top: 24, leading: 18, bottom: 24, trailing: 18)
 
@@ -231,7 +229,6 @@ extension CreateTrackerVC {
 
         section.boundarySupplementaryItems = [header]
         return section
-
     }
 
     func createColorLayout() -> NSCollectionLayoutSection {
@@ -266,7 +263,6 @@ extension CreateTrackerVC {
 
         section.boundarySupplementaryItems = [header]
         return section
-
     }
 }
 
