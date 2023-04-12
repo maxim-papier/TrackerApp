@@ -273,7 +273,9 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
     func didCreateNewTracker(newCategory: TrackerCategory) {
 
-        guard let tracker = newCategory.trackers.first else { fatalError("TrackerVC says: 'There is no tracker in the new category'") }
+        guard let tracker = newCategory.trackers.first else {
+            fatalError("TrackerVC says: 'There is no tracker in the new category'")
+        }
 
         addTrackerToCategory(tracker: tracker, categoryName: newCategory.name)
     }
@@ -318,10 +320,10 @@ extension TrackerVC: TrackerCellDelegate {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let trackerID = filteredCategories[indexPath.section].trackers[indexPath.item].id
 
-        if let index = completedTrackers.firstIndex(where: { $0.trackerId == trackerID }) {
+        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
             completedTrackers.remove(at: index)
         } else {
-            let record = TrackerRecord(trackerId: trackerID, date: selectedDate)
+            let record = TrackerRecord(id: trackerID, date: selectedDate)
             completedTrackers.append(record)
         }
         print("COMPLETE TRACKERS === \(completedTrackers)")

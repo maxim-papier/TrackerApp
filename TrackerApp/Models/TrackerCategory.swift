@@ -4,6 +4,8 @@ struct TrackerCategory {
 
     let name: String
     let trackers: [Tracker]
+    let createdAt = Date()
+    let id = UUID()
 
     init(name: String, trackers: [Tracker]) {
         self.name = name
@@ -11,6 +13,22 @@ struct TrackerCategory {
     }
 }
 
+
+//extension TrackerCategory {
+//    static func from(entity: CategoryData) -> TrackerCategory {
+//        let trackerEntities = entity.trackers[] as? [TrackerData] ?? []
+//        let trackers = trackerEntities.map { Tracker.from(entity: $0) }
+//
+//        return TrackerCategory(
+//            name: entity.name ?? "",
+//            trackers: trackers
+//        )
+//    }
+//}
+
+
+
+// MARK: - MOCKS
 
 extension TrackerCategory {
     static var mockCategory1: Self {
@@ -27,17 +45,16 @@ extension TrackerCategory: Sequence {
     }
 }
 
-extension TrackerCategory {
-    var startIndex: Int {
-        return trackers.startIndex
-    }
-
-    var endIndex: Int {
-        return trackers.endIndex
-    }
-
-    subscript(index: Int) -> Tracker {
-        return trackers[index]
-    }
-}
-
+//extension TrackerCategory {
+//    var startIndex: Int {
+//        return trackers.startIndex
+//    }
+//
+//    var endIndex: Int {
+//        return trackers.endIndex
+//    }
+//
+//    subscript(index: Int) -> Tracker {
+//        return trackers[index]
+//    }
+//}
