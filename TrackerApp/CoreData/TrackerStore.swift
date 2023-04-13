@@ -72,7 +72,7 @@ final class TrackerStore {
 
     // MARK: - Conversion methods
 
-    func coreDataTracker(from tracker: Tracker) -> TrackerData {
+    private func coreDataTracker(from tracker: Tracker) -> TrackerData {
 
         let coreDataTracker = TrackerData(context: context)
         coreDataTracker.id = tracker.id
@@ -90,7 +90,7 @@ final class TrackerStore {
         return coreDataTracker
     }
 
-    func tracker(from coreDataTracker: TrackerData) -> Tracker? {
+    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
         guard let id = coreDataTracker.id,
               let title = coreDataTracker.title,
               let emoji = coreDataTracker.emoji,

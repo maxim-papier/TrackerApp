@@ -51,7 +51,7 @@ final class TrackerRecordStore {
 
     // MARK: - Conversion methods
 
-    func coreDataTrackerRecord(from record: TrackerRecord) -> TrackerRecordData {
+    private func coreDataTrackerRecord(from record: TrackerRecord) -> TrackerRecordData {
 
         let coreDataRecord = TrackerRecordData(context: context)
         coreDataRecord.id = record.id
@@ -60,7 +60,7 @@ final class TrackerRecordStore {
         return coreDataRecord
     }
 
-    func trackerRecords(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
+    private func trackerRecords(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
 
         guard
             let id = coreDataRecord.id,

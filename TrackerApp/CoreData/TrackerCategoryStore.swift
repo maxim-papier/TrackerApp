@@ -13,7 +13,7 @@ final class TrackerCategoryStore {
 
     func createTrackerCategory(category: TrackerCategory) {
 
-        let coreDataCategory = coreDataTrackerCategory(from: category)
+        _ = coreDataTrackerCategory(from: category)
 
         do {
             try context.save()
@@ -76,7 +76,7 @@ final class TrackerCategoryStore {
 
     // MARK: - Conversion methods
 
-    func coreDataTrackerCategory(from category: TrackerCategory) -> CategoryData {
+    private func coreDataTrackerCategory(from category: TrackerCategory) -> CategoryData {
 
         let coreDataCategory = CategoryData(context: context)
         coreDataCategory.id = category.id
@@ -89,7 +89,7 @@ final class TrackerCategoryStore {
         return coreDataCategory
     }
 
-    func coreDataTracker(from tracker: Tracker) -> TrackerData {
+    private func coreDataTracker(from tracker: Tracker) -> TrackerData {
 
         let coreDataTracker = TrackerData(context: context)
         coreDataTracker.id = tracker.id
@@ -107,7 +107,7 @@ final class TrackerCategoryStore {
         return coreDataTracker
     }
 
-    func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
+    private func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
 
         guard
             let id = coreDataCategory.id,
@@ -124,7 +124,7 @@ final class TrackerCategoryStore {
 
     }
 
-    func tracker(from coreDataTracker: TrackerData) -> Tracker? {
+    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
 
         guard let id = coreDataTracker.id,
               let title = coreDataTracker.title,
