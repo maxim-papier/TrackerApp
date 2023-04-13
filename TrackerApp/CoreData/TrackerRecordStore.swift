@@ -13,7 +13,7 @@ final class TrackerRecordStore {
 
     func createTrackerRecord(record: TrackerRecord) {
 
-        let coreDataRecord = coreDataTrackerRecord(from: record)
+        _ = coreDataTrackerRecord(from: record)
         do {
             try context.save()
         } catch {
@@ -32,6 +32,23 @@ final class TrackerRecordStore {
             return []
         }
     }
+
+    func updateTrackerRecord(record: TrackerRecord) {
+        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", record.id as CVarArg)
+
+        do {
+            let coreDataRecords = try context.fetch(request)
+            guard let coreDataRecord = coreDataRecords.first else { return }
+
+            coreDataRecord.date = record.date
+
+            try context.save()
+        } catch {
+            print("Error updating tracker record: \(error)")
+        }
+    }
+
 
     func deleteTrackerRecord(by id: UUID) {
 

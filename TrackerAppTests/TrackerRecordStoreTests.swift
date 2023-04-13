@@ -55,19 +55,19 @@ final class TrackerRecordStoreTests: XCTestCase {
         XCTAssertEqual(readRecords.first?.date, record.date)
     }
 
-//    func testUpdateRecord() {
-//        let record = TrackerRecord(id: UUID(), date: Date())
-//        recordStore.createTrackerRecord(record: record)
-//
-//        let updatedDate = Date().addingTimeInterval(60 * 60 * 24)
-//        let updatedRecord = TrackerRecord(id: record.id, date: updatedDate)
-//        recordStore.updateTrackerRecord(record: updatedRecord)
-//
-//        let readRecords = recordStore.readTrackerRecords()
-//        XCTAssertEqual(readRecords.count, 1)
-//        XCTAssertEqual(readRecords.first?.id, record.id)
-//        XCTAssertEqual(readRecords.first?.date, updatedDate)
-//    }
+    func testUpdateRecord() {
+        let record = TrackerRecord(id: UUID(), date: Date())
+        recordStore.createTrackerRecord(record: record)
+
+        let updatedDate = Date().addingTimeInterval(60 * 60 * 24)
+        let updatedRecord = TrackerRecord(id: record.id, date: updatedDate)
+        recordStore.updateTrackerRecord(record: updatedRecord)
+
+        let readRecords = recordStore.readTrackerRecord()
+        XCTAssertEqual(readRecords.count, 1)
+        XCTAssertEqual(readRecords.first?.id, record.id)
+        XCTAssertEqual(readRecords.first?.date, updatedDate)
+    }
 
     func testDeleteRecord() {
 
