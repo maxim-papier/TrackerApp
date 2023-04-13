@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import CoreData
 
 final class TrackerCategoryStore {
@@ -9,63 +9,145 @@ final class TrackerCategoryStore {
         self.context = context
     }
 
-    // Add CRUD here
+    // MARK: - CRUD methods
 
-    func createCategory(name: String) {
+    func createTrackerCategory(category: TrackerCategory) {
 
-        if categoryExist(withName: name) {
-            print("Category with name \(name) already exist")
-        }
-
-        let categoryData = CategoryData(context: context)
-        categoryData.name = name
-        categoryData.id = UUID()
-        categoryData.createdAt = Date()
+        let coreDataCategory = coreDataTrackerCategory(from: category)
 
         do {
             try context.save()
         } catch {
-            context.rollback()
-            print("Failed to save new category: \(error.localizedDescription)")
+            print("Error saving category: \(error)")
         }
-
     }
 
-//    func getCategory(by id: UUID) -> TrackerCategory? {
-//
-//        let fetchRequest: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-//        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-//        fetchRequest.fetchLimit = 1
-//
-//        do {
-//            let fetchedCategories = try context.fetch(fetchRequest)
-//            return fetchedCategories.first.map(TrackerCategory.from(entity))
-//        } catch {
-//            <#statements#>
-//        }
-//
-//
-//    }
+    func readTrackerCategories() -> [TrackerCategory] {
 
-
-    //func getAllCategories() -> [TrackerCategory]
-
-
-
-
-    private func categoryExist(withName name: String) -> Bool {
-
-        let fetchRequest: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
 
         do {
-            let fetchedCategories = try context.fetch(fetchRequest)
-            return !fetchedCategories.isEmpty
+            let coreDataCategories = try context.fetch(request)
+            return coreDataCategories.compactMap { trackerCategory(form: $0) }
         } catch {
-            print("Failed to check if category exists: \(error.localizedDescription)")
-            return false
+            print("Error fetching categories: \(error)")
+            return []
         }
+    }
+
+    func updateTrackerCategory(category: TrackerCategory) -> [TrackerCategory] {
+
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == $0", category.id as CVarArg)
+
+        do {
+            let coreDataCategories = try context.fetch(request)
+            guard let coreDataCategory = coreDataCategories.first else { return [] }
+
+            coreDataCategory.name = category.name
+
+            // Update trackers relationship
+            let newTrackers = category.trackers.map { coreDataTracker(from: $0) }
+            coreDataCategory.trackers = NSSet(array: newTrackers)
+
+            try context.save()
+        } catch {
+            print("Error updating category: \(error)")
+        }
+
+        return readTrackerCategories()
+    }
+
+    func deleteTrackerCategory(by id: UUID) {
+
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == $0", id as CVarArg)
+
+        do {
+            let coreDataCategories = try context.fetch(request)
+            guard let coreDataCategory = coreDataCategories.first else { return }
+            context.delete(coreDataCategory)
+            try context.save()
+        } catch {
+            print("Error deleting category: \(error)")
+        }
+    }
+
+
+    // MARK: - Conversion methods
+
+    func coreDataTrackerCategory(from category: TrackerCategory) -> CategoryData {
+
+        let coreDataCategory = CategoryData(context: context)
+        coreDataCategory.id = category.id
+        coreDataCategory.name = category.name
+        coreDataCategory.createdAt = category.createdAt
+
+        let coreDataTrackers = category.trackers.map { coreDataTracker(from: $0) }
+        coreDataCategory.trackers = NSSet(array: coreDataTrackers)
+
+        return coreDataCategory
+    }
+
+    func coreDataTracker(from tracker: Tracker) -> TrackerData {
+
+        let coreDataTracker = TrackerData(context: context)
+        coreDataTracker.id = tracker.id
+        coreDataTracker.title = tracker.title
+        coreDataTracker.emoji = tracker.emoji
+
+        let trackerColorHex = tracker.color.toHexString()
+        coreDataTracker.colorHEX = trackerColorHex
+        coreDataTracker.createdAt = tracker.createdAt
+
+        let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
+        let scheduleData = try? NSKeyedArchiver.archivedData(withRootObject: weekDaySet, requiringSecureCoding: false)
+        coreDataTracker.schedule = scheduleData
+
+        return coreDataTracker
+    }
+
+    func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
+
+        guard
+            let id = coreDataCategory.id,
+            let name = coreDataCategory.name,
+            let trackersData = coreDataCategory.trackers as? Set<TrackerData>,
+            let createdAt = coreDataCategory.createdAt
+        else {
+            return nil
+        }
+
+        let trackers = trackersData.compactMap { tracker(from: $0) }
+
+        return TrackerCategory(id: id, name: name, trackers: trackers, createdAt: createdAt)
 
     }
 
+    func tracker(from coreDataTracker: TrackerData) -> Tracker? {
+
+        guard let id = coreDataTracker.id,
+              let title = coreDataTracker.title,
+              let emoji = coreDataTracker.emoji,
+              let colorHex = coreDataTracker.colorHEX,
+              let createdAt = coreDataTracker.createdAt
+        else {
+            return nil
+        }
+
+        let color = UIColor(hexString: colorHex)
+
+        var schedule = Set<WeekDay>()
+        if let scheduleData = coreDataTracker.schedule {
+            do {
+                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClass: WeekDaySet.self, from: scheduleData) {
+                    schedule = weekDaySet.weekDays
+                }
+            } catch {
+                print("Error unarchiving schedule: \(error)")
+            }
+        }
+
+        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
+    }
 }

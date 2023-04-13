@@ -4,28 +4,16 @@ struct TrackerCategory {
 
     let name: String
     let trackers: [Tracker]
-    let createdAt = Date()
-    let id = UUID()
+    let createdAt: Date
+    let id: UUID
 
-    init(name: String, trackers: [Tracker]) {
+    init(id: UUID = UUID(), name: String, trackers: [Tracker], createdAt: Date = Date()) {
+        self.id = id
         self.name = name
         self.trackers = trackers
+        self.createdAt = createdAt
     }
 }
-
-
-//extension TrackerCategory {
-//    static func from(entity: CategoryData) -> TrackerCategory {
-//        let trackerEntities = entity.trackers[] as? [TrackerData] ?? []
-//        let trackers = trackerEntities.map { Tracker.from(entity: $0) }
-//
-//        return TrackerCategory(
-//            name: entity.name ?? "",
-//            trackers: trackers
-//        )
-//    }
-//}
-
 
 
 // MARK: - MOCKS
@@ -44,17 +32,3 @@ extension TrackerCategory: Sequence {
         return trackers.makeIterator()
     }
 }
-
-//extension TrackerCategory {
-//    var startIndex: Int {
-//        return trackers.startIndex
-//    }
-//
-//    var endIndex: Int {
-//        return trackers.endIndex
-//    }
-//
-//    subscript(index: Int) -> Tracker {
-//        return trackers[index]
-//    }
-//}

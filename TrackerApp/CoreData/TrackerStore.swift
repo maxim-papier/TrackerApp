@@ -13,7 +13,7 @@ final class TrackerStore {
     // MARK: - CRUD methods
 
     func createTracker(tracker: Tracker) {
-        let coreDataTracker = coreDataTracker(from: tracker)
+        _ = coreDataTracker(from: tracker)
         do {
             try context.save()
         } catch {
