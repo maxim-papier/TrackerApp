@@ -35,14 +35,14 @@ final class TrackerCategoryStore {
         }
     }
 
-    func updateTrackerCategory(category: TrackerCategory) -> [TrackerCategory] {
+    func updateTrackerCategory(category: TrackerCategory) {
 
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == $0", category.id as CVarArg)
+        request.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
 
         do {
             let coreDataCategories = try context.fetch(request)
-            guard let coreDataCategory = coreDataCategories.first else { return [] }
+            guard let coreDataCategory = coreDataCategories.first else { return }
 
             coreDataCategory.name = category.name
 
@@ -54,14 +54,12 @@ final class TrackerCategoryStore {
         } catch {
             print("Error updating category: \(error)")
         }
-
-        return readTrackerCategories()
     }
 
     func deleteTrackerCategory(by id: UUID) {
 
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == $0", id as CVarArg)
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
 
         do {
             let coreDataCategories = try context.fetch(request)

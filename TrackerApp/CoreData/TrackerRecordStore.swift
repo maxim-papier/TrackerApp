@@ -36,7 +36,7 @@ final class TrackerRecordStore {
     func deleteTrackerRecord(by id: UUID) {
 
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == $0", id as CVarArg)
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
 
         do {
             let coreDataRecords = try context.fetch(request)
