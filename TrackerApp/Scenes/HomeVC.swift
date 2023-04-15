@@ -1,6 +1,20 @@
 import UIKit
 
 final class HomeVC: UITabBarController {
+
+
+    private let dependencies: DependencyContainer
+
+    init(dependencies: DependencyContainer) {
+        self.dependencies = dependencies
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
@@ -10,7 +24,7 @@ final class HomeVC: UITabBarController {
         tabBar.backgroundColor = UIColor.mainColorYP(.whiteYP)
 
         // Setup Tabs
-        let firstVC = UINavigationController(rootViewController: TrackerVC())
+        let firstVC = UINavigationController(rootViewController: TrackerVC(dependencies: dependencies))
         let secondVC = UINavigationController(rootViewController: StatisticVC())
         let controllers = [firstVC, secondVC]
         viewControllers = controllers
@@ -43,14 +57,5 @@ extension HomeVC {
         let textAttributes = [NSAttributedString.Key.font: font]
 
         navigationController.navigationBar.standardAppearance.largeTitleTextAttributes = textAttributes
-    }
-}
-
-// MARK: - SHOW PREVIEW
-
-import SwiftUI
-struct HomeVCProvider: PreviewProvider {
-    static var previews: some View {
-        HomeVC().showPreview()
     }
 }

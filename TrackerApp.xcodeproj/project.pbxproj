@@ -42,6 +42,7 @@
 		8DDE29BE2993BB7200D4A4DD /* ColorsYP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */; };
 		8DDE29C02993C1AC00D4A4DD /* FontsYP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */; };
 		8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */; };
+		8DE6446929EAA61000D1A7B6 /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE6446829EAA61000D1A7B6 /* DependencyContainer.swift */; };
 		8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A62997283500B7D148 /* TrackerHeader.swift */; };
 		8DF313AA2997507900B7D148 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A92997507900B7D148 /* TrackerCategory.swift */; };
 		8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */; };
@@ -99,6 +100,7 @@
 		8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorsYP.swift; sourceTree = "<group>"; };
 		8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontsYP.swift; sourceTree = "<group>"; };
 		8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCell.swift; sourceTree = "<group>"; };
+		8DE6446829EAA61000D1A7B6 /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
 		8DF313A62997283500B7D148 /* TrackerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerHeader.swift; sourceTree = "<group>"; };
 		8DF313A92997507900B7D148 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				8D11528629C1B5BC00687C5C /* TrackerStore.swift */,
 				8D11528829C1B5CC00687C5C /* TrackerCategoryStore.swift */,
 				8D11528A29C1B5DE00687C5C /* TrackerRecordStore.swift */,
+				8DE6446829EAA61000D1A7B6 /* DependencyContainer.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -393,6 +396,7 @@
 				8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */,
 				8DD760DC29E430AE00C07D2A /* Constants.swift in Sources */,
 				8D9FF56A299E490A009E91A8 /* SchedulerCell.swift in Sources */,
+				8DE6446929EAA61000D1A7B6 /* DependencyContainer.swift in Sources */,
 				8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */,
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,

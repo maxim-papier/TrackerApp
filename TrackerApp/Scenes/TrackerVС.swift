@@ -4,6 +4,8 @@ final class TrackerVC: UIViewController {
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
+    
+
     private var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
     private var filteredCategories: [TrackerCategory] = []
     private var selectedDate = Date()
@@ -16,9 +18,17 @@ final class TrackerVC: UIViewController {
 
     var placeholder = PlaceholderType.noSearchResults.placeholder
 
-    init() { super.init(nibName: nil, bundle: nil) }
-    required init?(coder: NSCoder) { fatalError("There is no storyboard") }
-    
+    var dependencies: DependencyContainer
+
+    init(dependencies: DependencyContainer) {
+        self.dependencies = dependencies
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         filterResults(with: selectedDate)
@@ -327,15 +337,5 @@ extension TrackerVC: TrackerCellDelegate {
             completedTrackers.append(record)
         }
         print("COMPLETE TRACKERS === \(completedTrackers)")
-    }
-}
-
-
-// MARK: - SHOW PREVIEW
-
-import SwiftUI
-struct TrackerVCProvider: PreviewProvider {
-    static var previews: some View {
-        TrackerVC().showPreview()
     }
 }

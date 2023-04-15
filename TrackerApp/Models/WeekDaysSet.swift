@@ -18,3 +18,4 @@ final class WeekDaySet: NSObject, NSCoding {
         coder.encode(weekDays, forKey: key)
     }
 }
+
