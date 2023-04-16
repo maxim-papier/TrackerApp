@@ -1,13 +1,76 @@
 import UIKit
 import CoreData
 
-final class TrackerStore {
+protocol TrackerStoreDelegate: AnyObject {
+    func trackerStoreWillUpdate()
+    func trackerStoreDidInsert(at indexPath: IndexPath)
+    func trackerStoreDidDelete(at indexPath: IndexPath)
+    func trackerStoreDidUpdate(at indexPath: IndexPath)
+    func trackerStoreDidMove(from oldIndexPath: IndexPath, to newIndexPath: IndexPath)
+    func trackerStoreDidUpdate()
+}
+
+
+final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
 
     private let context: NSManagedObjectContext
+    private var fetchedResultsController: NSFetchedResultsController<TrackerData>?
+    weak var delegate: TrackerStoreDelegate?
 
     init(context: NSManagedObjectContext) {
         self.context = context
     }
+
+
+
+    // MARK: - Fetch Controller
+
+    func setupFetchedResultsController() {
+
+        let sortDescriptor = "title"
+
+        let fetchRequest: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: true)]
+
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController?.delegate = self
+
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch {
+            print("Unable to perform fetch request: \(error)")
+        }
+
+    }
+
+
+    // MARK: - NSFetchedResultsControllerDelegate
+
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        delegate?.trackerStoreWillUpdate()
+    }
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+
+        #warning("make it safe")
+        switch type {
+        case .insert:
+            delegate?.trackerStoreDidInsert(at: newIndexPath!)
+        case .delete:
+            delegate?.trackerStoreDidDelete(at: indexPath!)
+        case .update:
+            delegate?.trackerStoreDidUpdate(at: indexPath!)
+        case .move:
+            delegate?.trackerStoreDidMove(from: indexPath!, to: newIndexPath!)
+        @unknown default:
+            fatalError("Unknown change type")
+        }
+    }
+
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        delegate?.trackerStoreDidUpdate()
+    }
+
 
 
     // MARK: - CRUD methods
@@ -116,3 +179,4 @@ final class TrackerStore {
         return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
     }
 }
+

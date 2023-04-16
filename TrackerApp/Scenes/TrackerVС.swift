@@ -4,8 +4,7 @@ final class TrackerVC: UIViewController {
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
-    
-
+    // Rudiments
     private var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
     private var filteredCategories: [TrackerCategory] = []
     private var selectedDate = Date()
@@ -13,12 +12,10 @@ final class TrackerVC: UIViewController {
 
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchText = ""
-    // private var isSearchBarEmpty: Bool { return searchController.searchBar.text?.isEmpty ?? true }
-    // private var isFiltering: Bool { return searchController.isActive && !isSearchBarEmpty } //
 
     var placeholder = PlaceholderType.noSearchResults.placeholder
 
-    var dependencies: DependencyContainer
+    private var dependencies: DependencyContainer
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
@@ -31,6 +28,7 @@ final class TrackerVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        dependencies.trackerStore.delegate = self
         filterResults(with: selectedDate)
         setup()
     }
@@ -338,4 +336,38 @@ extension TrackerVC: TrackerCellDelegate {
         }
         print("COMPLETE TRACKERS === \(completedTrackers)")
     }
+}
+
+
+// MARK: - TrackerStoreDelegate
+
+extension TrackerVC: TrackerStoreDelegate {
+
+    func trackerStoreWillUpdate() {
+        collectionView.performBatchUpdates(nil, completion: nil)
+    }
+
+    func trackerStoreDidInsert(at indexPath: IndexPath) {
+        collectionView.insertItems(at: [indexPath])
+    }
+
+    func trackerStoreDidDelete(at indexPath: IndexPath) {
+        collectionView.deleteItems(at: [indexPath])
+    }
+
+    func trackerStoreDidUpdate(at indexPath: IndexPath) {
+        collectionView.reloadItems(at: [indexPath])
+    }
+
+    func trackerStoreDidMove(from oldIndexPath: IndexPath, to newIndexPath: IndexPath) {
+        collectionView.moveItem(at: oldIndexPath, to: newIndexPath)
+    }
+
+    func trackerStoreDidUpdate() {
+        collectionView.performBatchUpdates(nil, completion: nil)
+    }
+
+
+
+
 }

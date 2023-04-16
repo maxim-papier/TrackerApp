@@ -3,6 +3,7 @@ import Foundation
 struct TrackerRecord {
     let id: UUID
     let date: Date
+
 //    let createdAt: Date
 
 //    init(id: UUID, date: Date, createdAt: Date = Date()) {
@@ -10,4 +11,5 @@ struct TrackerRecord {
 //        self.date = date
 //        self.createdAt = createdAt
 //    }
+
 }
