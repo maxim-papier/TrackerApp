@@ -25,6 +25,7 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
 
     // MARK: - Fetch Controller
 
+
     func setupFetchedResultsController() {
 
         let sortDescriptor = "title"

@@ -12,4 +12,9 @@ final class DependencyContainer {
         trackerCategoryStore = TrackerCategoryStore(context: context)
         trackerRecordSore = TrackerRecordStore(context: context)
     }
+
+    var fetchedResultsControllerForCategory: NSFetchedResultsController<CategoryData> {
+        return trackerCategoryStore.fetchedResultsControllerForCategory()
+    }
+
 }

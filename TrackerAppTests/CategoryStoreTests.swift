@@ -6,6 +6,7 @@ final class CategoryStoreTests: XCTestCase {
 
     var context: NSManagedObjectContext!
     var categoryStore: TrackerCategoryStore!
+    var trackerStore: TrackerStore!
 
     override func setUp() {
         super.setUp()
@@ -69,6 +70,8 @@ final class CategoryStoreTests: XCTestCase {
         let readCategories = categoryStore.readTrackerCategories()
         XCTAssertEqual(readCategories.count, 0)
     }
+
+
 
 
 }

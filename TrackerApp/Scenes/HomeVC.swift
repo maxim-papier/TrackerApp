@@ -18,6 +18,10 @@ final class HomeVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
+        let categoriesInBase = dependencies.trackerCategoryStore.readTrackerCategories()
+        print(categoriesInBase.count)
+        print(categoriesInBase)
+
     }
 
     private func setupTabs() {

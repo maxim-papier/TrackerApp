@@ -1,13 +1,63 @@
 import UIKit
 import CoreData
 
+protocol TrackerCategoryStoreDelegate: AnyObject {
+    func trackerCategoryStoreDidChangeContent()
+}
+
 final class TrackerCategoryStore: NSObject {
 
+    weak var delegate: TrackerCategoryStoreDelegate?
+
     private let context: NSManagedObjectContext
+    private var fetchedResultsController: NSFetchedResultsController<CategoryData>?
 
     init(context: NSManagedObjectContext) {
         self.context = context
+        super.init()
     }
+
+
+    // MARK: - FetchedResultsController
+
+    func fetchedResultsControllerForCategory() -> NSFetchedResultsController<CategoryData> {
+
+        if let fetchedResultsController = fetchedResultsController {
+            return fetchedResultsController
+        } else {
+            setupFetchedResultsController()
+            guard let fetchedResultsController = fetchedResultsController else {
+                fatalError("Failed to initialize fetchedResultsController")
+            }
+            return fetchedResultsController
+        }
+    }
+
+    func createFetchedResultsController() -> NSFetchedResultsController<CategoryData> {
+
+        let sortDescriptor = "createdAt"
+
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: true)]
+
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+
+        return fetchedResultsController
+    }
+
+    func setupFetchedResultsController() {
+
+        fetchedResultsController = createFetchedResultsController()
+        fetchedResultsController?.delegate = self
+
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch {
+            print("Error setting up fetched results controller: \(error)")
+        }
+    }
+
+
 
     // MARK: - CRUD methods
 
@@ -70,6 +120,26 @@ final class TrackerCategoryStore: NSObject {
             print("Error deleting category: \(error)")
         }
     }
+
+    func addTrackerToCategory(tracker: Tracker, categoryId: UUID? = nil) {
+        // Если categoryId не предоставлен, создаем новую категорию
+        if let categoryId = categoryId {
+            if let category = readTrackerCategories().first(where: { $0.id == categoryId }) {
+                // Категория найдена, добавляем трекер в существующую категорию
+                var updatedTrackers = category.trackers
+                updatedTrackers.append(tracker)
+                let updatedCategory = TrackerCategory(id: category.id, name: category.name, trackers: updatedTrackers, createdAt: category.createdAt)
+                updateTrackerCategory(category: updatedCategory)
+            } else {
+                print("Category with id \(categoryId) not found")
+            }
+        } else {
+            // Создаем новую категорию с трекером
+            let newCategory = TrackerCategory(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
+            createTrackerCategory(category: newCategory)
+        }
+    }
+
 
 
     // MARK: - Conversion methods
@@ -148,4 +218,12 @@ final class TrackerCategoryStore: NSObject {
 
         return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
     }
+}
+
+extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
+
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        delegate?.trackerCategoryStoreDidChangeContent()
+    }
+
 }

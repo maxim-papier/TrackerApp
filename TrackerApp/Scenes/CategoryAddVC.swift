@@ -1,6 +1,6 @@
 import UIKit
 
-final class CategoryVC: UIViewController {
+final class CategoryAddVC: UIViewController {
 
 
     private var dependencies: DependencyContainer
@@ -22,7 +22,7 @@ final class CategoryVC: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,7 @@ final class CategoryVC: UIViewController {
         dependencies.trackerCategoryStore.delegate = self
         dependencies.trackerCategoryStore.setupFetchedResultsController()
         configure()
-        
+
     }
 
     private func configure() {
@@ -63,12 +63,6 @@ final class CategoryVC: UIViewController {
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
-            tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: vInset),
-            tableView.bottomAnchor.constraint(equalTo: addCategoryButton.topAnchor, constant: -24),
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-
-
             addCategoryButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             addCategoryButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             addCategoryButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -76,36 +70,3 @@ final class CategoryVC: UIViewController {
     }
 }
 
-
-extension CategoryVC: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-}
-
-extension CategoryVC: UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let category = fetchedResultsController.object(at: indexPath)
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! CategoryCell
-        cell.labelMenu.text = category.name
-
-        return cell
-    }
-
-}
-
-// MARK: - Category Tracker Store Delegate
-
-extension CategoryVC: TrackerCategoryStoreDelegate {
-    func trackerCategoryStoreDidChangeContent() {
-        self.tableView.reloadData()
-    }
-}

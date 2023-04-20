@@ -92,7 +92,7 @@ final class TrackerVC: UIViewController {
     }
     
     @objc private func addNewTracker() {
-        let vc = TrackerOrEventVC()
+        let vc = TrackerOrEventVC(dependencies: dependencies)
         vc.trackerVC = self
         present(vc, animated: true)
     }
@@ -281,43 +281,22 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
     func didCreateNewTracker(newCategory: TrackerCategory) {
 
+        let trackerCategoryStore = dependencies.trackerCategoryStore
+
         guard let tracker = newCategory.trackers.first else {
             fatalError("TrackerVC says: 'There is no tracker in the new category'")
         }
 
-        addTrackerToCategory(tracker: tracker, categoryName: newCategory.name)
-    }
+        let categoryId = trackerCategoryStore.readTrackerCategories().first(where: { $0.name == newCategory.name })?.id
+        trackerCategoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
 
-    func addTrackerToCategory(tracker: Tracker, categoryName: String) {
-
-        var trackersForAddedCategory = [Tracker]()
-        var existingCategories = categories
-
-        // 0. нашёл такую же категорию
-        let existingCategory = categories.first { $0.name == categoryName }
-
-        // 1. достал трекеры из старой категории
-        if let existingCategory {
-            for tracker in existingCategory {
-                trackersForAddedCategory.append(tracker)
-            }
-
-            // 2. добавил туда свой трекер,
-            trackersForAddedCategory.append(tracker)
-        }
-
-        // 4. создал новую категорию с именем и обновленным списком категорий
-        let categoryWithNewTracker: TrackerCategory = .init(name: categoryName, trackers: trackersForAddedCategory)
-
-        // 5. Заменил старую категорию на новую
-        if let index = existingCategories.firstIndex(where: { $0.name == categoryName }) {
-            existingCategories[index] = categoryWithNewTracker
-        }
-
-        categories = existingCategories
+        // Обновление  данных и интерфейса
+        categories = trackerCategoryStore.readTrackerCategories()
         filterResults(with: selectedDate)
     }
+
 }
+
 
 // MARK: - TrackerCellDelegate
 

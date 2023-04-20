@@ -23,7 +23,17 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     var readyButton: Button?
 
     weak var delegate: CreateTrackerVCDelegate?
-    
+
+    private var dependencies: DependencyContainer
+
+    init(dependencies: DependencyContainer) {
+        self.dependencies = dependencies
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -418,7 +428,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     private func handleListSelection(at indexPath: IndexPath) {
 
         if indexPath.row == 0 {
-            let vc = CategoryVC()
+            let vc = CategoryVC(dependencies: dependencies)
             present(vc, animated: true, completion: nil)
         } else if indexPath.row == 1 {
             let vc = SchedulerVC(selectedDays: selectedSchedule)
@@ -526,14 +536,4 @@ extension CreateTrackerVC {
 
 protocol CreateTrackerVCDelegate: AnyObject {
     func didCreateNewTracker(newCategory: TrackerCategory)
-}
-
-
-// MARK: - SHOW PREVIEW
-
-import SwiftUI
-struct CreateTrackerVCProvider: PreviewProvider {
-    static var previews: some View {
-        CreateTrackerVC().showPreview()
-    }
 }
