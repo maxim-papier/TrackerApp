@@ -38,7 +38,7 @@ final class TrackerCategoryStore: NSObject {
         let sortDescriptor = "createdAt"
 
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: false)]
 
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
 
@@ -148,6 +148,21 @@ final class TrackerCategoryStore: NSObject {
             createTrackerCategory(category: newCategory)
         }
     }
+
+    func getTrackerCategory(by id: UUID) -> TrackerCategory? {
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+
+        do {
+            let coreDataCategories = try context.fetch(request)
+            guard let coreDataCategory = coreDataCategories.first else { return nil }
+            return trackerCategory(form: coreDataCategory)
+        } catch {
+            print("Error fetching category by id: \(error)")
+            return nil
+        }
+    }
+
     
 
     // MARK: - Clean all categories data

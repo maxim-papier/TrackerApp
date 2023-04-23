@@ -59,6 +59,16 @@ final class CategoryVC: UIViewController {
         configure()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let selectedCategoryId = selectedCategoryId,
+           let selectedCategoryIndex = fetchedResultsController.fetchedObjects?.firstIndex(where: { $0.id == selectedCategoryId }) {
+            let indexPath = IndexPath(row: selectedCategoryIndex, section: 0)
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+        }
+    }
+
 
     private func configure() {
 
@@ -78,8 +88,10 @@ final class CategoryVC: UIViewController {
             guard let self else { return }
 
             let vc = NewCategoryVC(dependencies: self.dependencies)
-
+            vc.delegate = self
             self.present(vc, animated: true)
+
+            //self.navigationController?.pushViewController(vc, animated: true)
         }
 
         readyButton = Button(type: .primary(isActive: true), title: "Готово") { [weak self] in
@@ -120,8 +132,6 @@ final class CategoryVC: UIViewController {
 }
 
 
-extension CategoryVC: UITableViewDelegate {}
-
 extension CategoryVC: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -132,7 +142,7 @@ extension CategoryVC: UITableViewDataSource {
 
         let category = fetchedResultsController.object(at: indexPath)
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! CategoryCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as! CategoryCell
         cell.labelMenu.text = category.name
         cell.checkmarkImageView.isHidden = indexPath != selectedIndexPath
 
@@ -147,21 +157,26 @@ extension CategoryVC: UITableViewDataSource {
         default: cell.buttonPosition = .middle
         }
 
-        /*
-         switch (indexPath.row, weekdays.count) {
-         case (firstIndex, 1): cell.buttonPosition = .single
-         case (firstIndex, _): cell.buttonPosition = .first
-         case (lastIndex, _): cell.buttonPosition = .last
-         default: cell.buttonPosition = .middle
-         }
-
-         */
-
-
         return cell
     }
-
 }
+
+extension CategoryVC: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? CategoryCell else { return }
+        let numberOfCategories = fetchedResultsController.sections?[indexPath.section].numberOfObjects ?? 0
+        let firstIndex = 0
+        let lastIndex = numberOfCategories - 1
+
+        switch (indexPath.row, numberOfCategories) {
+        case (firstIndex, 1): cell.buttonPosition = .single
+        case (firstIndex, _): cell.buttonPosition = .first
+        case (lastIndex, _): cell.buttonPosition = .last
+        default: cell.buttonPosition = .middle
+        }
+    }
+}
+
 
 
 // MARK: - Select Cells
@@ -201,5 +216,28 @@ extension CategoryVC {
 extension CategoryVC: TrackerCategoryStoreDelegate {
     func trackerCategoryStoreDidChangeContent() {
         self.tableView.reloadData()
+    }
+}
+
+
+// MARK: - New Category Delegate
+
+extension CategoryVC: NewCategoryVCDelegate {
+    private func presentNewCategoryVC() {
+        let newCategoryVC = NewCategoryVC(dependencies: dependencies)
+        newCategoryVC.delegate = self
+        newCategoryVC.onCategoryCreated = { [weak self] categoryId in
+            self?.selectedCategoryId = categoryId
+        }
+        let navigationController = UINavigationController(rootViewController: newCategoryVC)
+        present(navigationController, animated: true, completion: nil)
+    }
+
+    func newCategoryVC(_ controller: NewCategoryVC, didCreateNewCategoryWithId id: UUID) {
+        if let category = fetchedResultsController.fetchedObjects?.first(where: { $0.id == id }),
+           let indexPath = fetchedResultsController.indexPath(forObject: category) {
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+            tableView.delegate?.tableView?(tableView, didSelectRowAt: indexPath)
+        }
     }
 }

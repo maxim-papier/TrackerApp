@@ -2,6 +2,8 @@ import UIKit
 
 final class NewCategoryVC: UIViewController {
 
+    weak var delegate: NewCategoryVCDelegate?
+
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
 
@@ -18,20 +20,38 @@ final class NewCategoryVC: UIViewController {
 
     private var inputCell = InputCell()
 
+    var onCategoryCreated: ((UUID) -> Void)?
+    private var categoryName = ""
+
 
     // MARK: - Setup button
 
-    private var readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
-        print("readyButton is ready")
-    })
+    private lazy var readyButton: Button = {
+        let button = Button(type: .primary(isActive: false), title: "Готово")
+        button.addTarget(self, action: #selector(readyButtonTapped), for: .touchUpInside)
+        return button
+    }()
+
+    @objc private func readyButtonTapped() {
+        let newCategory = TrackerCategory(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
+        let success = dependencies.trackerCategoryStore.createTrackerCategory(category: newCategory)
+        if success {
+            delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)
+            onCategoryCreated?(newCategory.id)
+            dismiss(animated: true)
+        } else {
+            showErrorMessage("Такая категория уже есть")
+        }
+    }
+
+    @objc private func inputFieldDidChange(_ textField: UITextField) {
+        categoryName = textField.text ?? ""
+        updateReadyButtonState()
+    }
 
     private func updateReadyButtonState() {
         let isInputNotEmpty = inputCell.userInputField.text?.isEmpty == false
         readyButton.isActive = isInputNotEmpty
-    }
-
-    @objc private func inputFieldDidChange() {
-        updateReadyButtonState()
     }
 
 
@@ -48,10 +68,13 @@ final class NewCategoryVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
         dependencies.trackerCategoryStore.setupFetchedResultsController()
+        inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
+
         configure()
         updateReadyButtonState()
     }
 
+    
     private func configure() {
 
         collectionView.delegate = self
@@ -84,11 +107,8 @@ final class NewCategoryVC: UIViewController {
             readyButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             readyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             readyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-
         ])
     }
-
-
 }
 
 extension NewCategoryVC: UICollectionViewDataSource {
@@ -98,12 +118,9 @@ extension NewCategoryVC: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         inputCell = collectionView.dequeueReusableCell(withReuseIdentifier: InputCell.identifier, for: indexPath) as! InputCell
         inputCell.userInputField.placeholder = "Введите название категории"
-
-        inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange), for: .editingChanged)
-
+        inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
         return inputCell
     }
 }
@@ -119,9 +136,15 @@ extension NewCategoryVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
-
 }
 
 extension NewCategoryVC: UICollectionViewDelegate {
 
+}
+
+
+// MARK: - NewCategory Delegate
+
+protocol NewCategoryVCDelegate: AnyObject {
+    func newCategoryVC(_ newCategoryVC: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
 }
