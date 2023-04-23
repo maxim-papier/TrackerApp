@@ -38,6 +38,7 @@
 		8DBA05302993873E00E3604E /* TrackerVС.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBA052F2993873E00E3604E /* TrackerVС.swift */; };
 		8DBA05352993873E00E3604E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DBA05342993873E00E3604E /* Assets.xcassets */; };
 		8DBA05382993873E00E3604E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8DBA05362993873E00E3604E /* LaunchScreen.storyboard */; };
+		8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD4C84229F3BD9000DD67F3 /* ErrorPresenter.swift */; };
 		8DD760DC29E430AE00C07D2A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD760DB29E430AE00C07D2A /* Constants.swift */; };
 		8DDE29BE2993BB7200D4A4DD /* ColorsYP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */; };
 		8DDE29C02993C1AC00D4A4DD /* FontsYP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */; };
@@ -97,6 +98,7 @@
 		8DBA05342993873E00E3604E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8DBA05372993873E00E3604E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8DBA05392993873E00E3604E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DD4C84229F3BD9000DD67F3 /* ErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorPresenter.swift; sourceTree = "<group>"; };
 		8DD760DB29E430AE00C07D2A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = SOURCE_ROOT; };
 		8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorsYP.swift; sourceTree = "<group>"; };
 		8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontsYP.swift; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 				8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */,
 				8DDE29BD2993BB7200D4A4DD /* ColorsYP.swift */,
 				8DDE29BF2993C1AC00D4A4DD /* FontsYP.swift */,
+				8DD4C84229F3BD9000DD67F3 /* ErrorPresenter.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -404,6 +407,7 @@
 				8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */,
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
+				8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
 				8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */,
 				8DAE17BB29E63BAD00DFBC9A /* WeekDaysSet.swift in Sources */,

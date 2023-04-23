@@ -21,8 +21,25 @@ final class HomeVC: UITabBarController {
         let categoriesInBase = dependencies.trackerCategoryStore.readTrackerCategories()
         print(categoriesInBase.count)
         print(categoriesInBase)
-
+//        cleanCoreData {
+//            print("All data has been cleared")
+//        }
     }
+
+
+    // MARK: - Clear Core Data
+
+//    private func cleanCoreData(completion: @escaping() -> Void) {
+//        DispatchQueue.main.async {
+//            self.dependencies.trackerCategoryStore.clearCategoryData()
+//            self.dependencies.trackerStore.clearTrackerData()
+//            self.dependencies.trackerRecordSore.clearRecordData()
+//            completion()
+//        }
+//    }
+
+
+    // MARK: - Setup
 
     private func setupTabs() {
         tabBar.backgroundColor = UIColor.mainColorYP(.whiteYP)

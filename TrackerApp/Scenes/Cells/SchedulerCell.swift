@@ -81,8 +81,6 @@ final class SchedulerCell: UITableViewCell {
     @objc func toggleValueChanged(_ sender: UISwitch) {
         toggleValueChanged?(sender.isOn)
     }
-
-
 }
 
 extension SchedulerCell {

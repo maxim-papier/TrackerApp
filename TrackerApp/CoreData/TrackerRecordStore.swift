@@ -65,6 +65,22 @@ final class TrackerRecordStore: NSObject {
         }
     }
 
+    // MARK: - Clean all records data
+
+    func clearRecordData() {
+
+        print("Clearing records data...")
+
+        let request: NSFetchRequest<NSFetchRequestResult> = TrackerRecordData.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        do {
+            try context.execute(deleteRequest)
+        } catch let error as NSError {
+            print("Error deleting category data: \(error.localizedDescription)")
+        }
+    }
+
 
     // MARK: - Conversion methods
 

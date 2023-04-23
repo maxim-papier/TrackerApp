@@ -8,10 +8,7 @@ final class CategoryCell: UITableViewCell {
 
     static let identifier = "CategoryCell"
     var toggleValueChanged: ((Bool) -> Void)?
-
-
     var buttonPosition: SchedulerButtonPosition = .middle { didSet { updateAppearance() } }
-
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -34,11 +31,13 @@ final class CategoryCell: UITableViewCell {
         return label
     }()
 
-    let toggleControl: UISwitch = {
-        let control = UISwitch()
-        control.onTintColor = UIColor.mainColorYP(.blueYP)
-        control.translatesAutoresizingMaskIntoConstraints = false
-        return control
+    let checkmarkImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "checkmark")
+        imageView.tintColor = UIColor.mainColorYP(.blueYP)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isHidden = true
+        return imageView
     }()
 
 
@@ -77,21 +76,17 @@ final class CategoryCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Old people love new Clint Eastwood movies")
     }
-
-    @objc func toggleValueChanged(_ sender: UISwitch) {
-        toggleValueChanged?(sender.isOn)
-    }
 }
 
+
+// MARK: - Configuration
 
 extension CategoryCell {
     func configure() {
 
-        toggleControl.addTarget(self, action: #selector(toggleValueChanged(_:)), for: .valueChanged)
-
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(labelMenu)
-        backgroundShape.addSubview(toggleControl)
+        backgroundShape.addSubview(checkmarkImageView)
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
@@ -103,10 +98,10 @@ extension CategoryCell {
             labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
             labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),
             labelMenu.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
-            labelMenu.trailingAnchor.constraint(equalTo: toggleControl.leadingAnchor, constant: -hInset),
+            labelMenu.trailingAnchor.constraint(equalTo: checkmarkImageView.leadingAnchor, constant: -hInset),
 
-            toggleControl.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
-            toggleControl.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
+            checkmarkImageView.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
+            checkmarkImageView.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
 
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
             backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),

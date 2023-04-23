@@ -61,16 +61,25 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - CRUD methods
 
-    func createTrackerCategory(category: TrackerCategory) {
-
-        _ = coreDataTrackerCategory(from: category)
+    func createTrackerCategory(category: TrackerCategory) -> Bool {
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.predicate = NSPredicate(format: "name == %@", category.name)
 
         do {
-            try context.save()
+            let results = try context.fetch(request)
+            if let _ = results.first {
+                return false
+            } else {
+                _ = coreDataTrackerCategory(from: category)
+                try context.save()
+                return true
+            }
         } catch {
-            print("Error saving category: \(error)")
+            print("Error checking or creating category: \(error)")
+            return false
         }
     }
+
 
     func readTrackerCategories() -> [TrackerCategory] {
 
@@ -139,7 +148,23 @@ final class TrackerCategoryStore: NSObject {
             createTrackerCategory(category: newCategory)
         }
     }
+    
 
+    // MARK: - Clean all categories data
+
+    func clearCategoryData() {
+
+        print("Clearing category data...")
+        
+        let request: NSFetchRequest<NSFetchRequestResult> = CategoryData.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        do {
+            try context.execute(deleteRequest)
+        } catch {
+            print("Error deleting category data: \(error)")
+        }
+    }
 
 
     // MARK: - Conversion methods

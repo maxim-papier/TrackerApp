@@ -134,7 +134,6 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         collectionView.delegate = self
         collectionView.dataSource = self
-
     }
 
 
@@ -380,7 +379,6 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             for: indexPath) as! Header
 
         switch indexPath.section {
-
         case 0, 1: header.isHidden = true
         case 2: header.sectionLabel.text = "Emoji"
         case 3: header.sectionLabel.text = "Цвет"
@@ -409,7 +407,6 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         switch indexPath.section {
-
         case 0: handleInputSelection()
         case 1: handleListSelection(at: indexPath)
         case 2: handleEmojiSelection(at: indexPath)
@@ -490,6 +487,8 @@ extension CreateTrackerVC: AddSchedulerDelegate {
     }
 }
 
+
+// MARK: - Create Tracker
 
 extension CreateTrackerVC {
 
