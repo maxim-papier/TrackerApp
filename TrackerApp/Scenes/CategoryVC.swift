@@ -24,7 +24,6 @@ final class CategoryVC: UIViewController {
     private var buttonToShow: ButtonToShow = .add {
         didSet {
             updateButton()
-            print("SELECTA - \(selectedCategoryId)")
         }
     }
 
@@ -42,7 +41,6 @@ final class CategoryVC: UIViewController {
         }
     }
 
-    // ----
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
@@ -76,13 +74,16 @@ final class CategoryVC: UIViewController {
             return label
         }()
 
-        addCategoryButton = Button(type: .primary(isActive: true), title: "Добавить категорию") {
-            [self] in
-            dismiss(animated: true)
+        addCategoryButton = Button(type: .primary(isActive: true), title: "Добавить категорию") { [weak self] in
+            guard let self else { return }
+
+            let vc = NewCategoryVC(dependencies: self.dependencies)
+
+            self.present(vc, animated: true)
         }
 
-        readyButton = Button(type: .primary(isActive: true), title: "Готово") {
-            [self] in
+        readyButton = Button(type: .primary(isActive: true), title: "Готово") { [weak self] in
+            guard let self else { return }
             dismiss(animated: true)
         }
 
