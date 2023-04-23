@@ -2,11 +2,14 @@ import UIKit
 
 final class CategoryVC: UIViewController {
 
+    weak var delegate: CategorySelectionDelegate?
+
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
 
     private var selectedIndexPath: IndexPath?
     private var selectedCategoryId: UUID?
+    private var selectedCategory: TrackerCategory?
 
     private let tableView: UITableView = {
         let table = UITableView()
@@ -39,6 +42,13 @@ final class CategoryVC: UIViewController {
             addCategoryButton.isHidden = true
             readyButton.isHidden = false
         }
+    }
+
+    @objc func doneButtonTapped() {
+        if let selectedCategory = selectedCategory {
+            delegate?.categorySelected(category: selectedCategory)
+        }
+        dismiss(animated: true, completion: nil)
     }
 
 
@@ -99,6 +109,8 @@ final class CategoryVC: UIViewController {
             dismiss(animated: true)
         }
 
+        readyButton.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
+
         view.addSubview(title)
         view.addSubview(tableView)
         view.addSubview(addCategoryButton)
@@ -129,6 +141,8 @@ final class CategoryVC: UIViewController {
             readyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
+
+
 }
 
 
@@ -186,27 +200,29 @@ extension CategoryVC {
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool { return true }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let categoryStore = dependencies.trackerCategoryStore
+        let categoryData = fetchedResultsController.object(at: indexPath)
 
-        if let previousSelectedIndexPath = selectedIndexPath {
-            let previousSelectedCell = tableView.cellForRow(at: previousSelectedIndexPath) as? CategoryCell
-            previousSelectedCell?.checkmarkImageView.isHidden = true
-        }
-
-        if selectedIndexPath == indexPath {
+        if indexPath == selectedIndexPath {
+            tableView.deselectRow(at: indexPath, animated: true)
             selectedIndexPath = nil
-            selectedCategoryId = nil
+            selectedCategory = nil
             buttonToShow = .add
         } else {
-            let category = fetchedResultsController.object(at: indexPath)
-            selectedCategoryId = category.id
-
-            let selectedCell = tableView.cellForRow(at: indexPath) as? CategoryCell
-            selectedCell?.checkmarkImageView.isHidden = false
+            if let previousIndexPath = selectedIndexPath {
+                tableView.deselectRow(at: previousIndexPath, animated: true)
+                if let previousCell = tableView.cellForRow(at: previousIndexPath) as? CategoryCell {
+                    previousCell.checkmarkImageView.isHidden = true
+                }
+            }
             selectedIndexPath = indexPath
+            selectedCategory = categoryStore.trackerCategory(form: categoryData)
             buttonToShow = .ready
-        }
 
-        tableView.deselectRow(at: indexPath, animated: true)
+            if let cell = tableView.cellForRow(at: indexPath) as? CategoryCell {
+                cell.checkmarkImageView.isHidden = false
+            }
+        }
     }
 }
 

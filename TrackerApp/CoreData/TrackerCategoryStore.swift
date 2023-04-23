@@ -215,7 +215,7 @@ final class TrackerCategoryStore: NSObject {
         return coreDataTracker
     }
 
-    private func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
+    func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
 
         guard
             let id = coreDataCategory.id,

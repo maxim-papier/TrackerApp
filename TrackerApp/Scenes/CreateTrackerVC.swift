@@ -12,7 +12,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     private let listCellItemName: [String] = ["Категория", "Расписание"]
 
     var selectedTitle: String?
-    var selectedCategory = TrackerCategory.mockCategory1
+    var selectedCategory: TrackerCategory?
     var selectedSchedule = [WeekDay]()
     var selectedEmoji: String?
     var selectedColor: SelectionColorStyle?
@@ -335,7 +335,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
         if indexPath.item == 0 {
             listCell.buttonPosition = .first
-            listCell.subtitleLabel.text = selectedCategory.name
+            listCell.subtitleLabel.text = selectedCategory?.name
         } else if indexPath.item == 1 {
             listCell.buttonPosition = .last
             if !selectedSchedule.isEmpty {
@@ -426,6 +426,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
         if indexPath.row == 0 {
             let vc = CategoryVC(dependencies: dependencies)
+            vc.delegate = self
             present(vc, animated: true, completion: nil)
         } else if indexPath.row == 1 {
             let vc = SchedulerVC(selectedDays: selectedSchedule)
@@ -523,7 +524,7 @@ extension CreateTrackerVC {
         let newTracker = Tracker(title: title, emoji: emoji, color: color, day: day)
 
         // Создаем новую категорию для нового трекера
-        let newCategory = TrackerCategory(name: selectedCategory.name, trackers: [newTracker])
+        let newCategory = TrackerCategory(name: selectedCategory?.name ?? "", trackers: [newTracker])
 
         print("NEWCATEGORY === \(newCategory)")
 
@@ -531,8 +532,23 @@ extension CreateTrackerVC {
     }
 }
 
+extension CreateTrackerVC: CategorySelectionDelegate {
+    func categorySelected(category: TrackerCategory) {
+        selectedCategory = category
+        let sectionToReload = 1
+        collectionView.reloadSections(IndexSet(integer: sectionToReload))
+    }
+}
+
+
 // MARK: - PROTOCOL
 
 protocol CreateTrackerVCDelegate: AnyObject {
     func didCreateNewTracker(newCategory: TrackerCategory)
 }
+
+protocol CategorySelectionDelegate: AnyObject {
+    func categorySelected(category: TrackerCategory)
+}
+
+
