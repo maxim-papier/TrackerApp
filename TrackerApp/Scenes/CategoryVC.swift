@@ -52,6 +52,8 @@ final class CategoryVC: UIViewController {
     }
 
 
+    // MARK: - Initilizers
+
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
         super.init(nibName: nil, bundle: nil)
@@ -60,6 +62,9 @@ final class CategoryVC: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,6 +84,8 @@ final class CategoryVC: UIViewController {
         }
     }
 
+
+    // MARK: - Configuration
 
     private func configure() {
 
@@ -121,7 +128,6 @@ final class CategoryVC: UIViewController {
         let vInset: CGFloat = 38
 
         NSLayoutConstraint.activate([
-
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
@@ -130,7 +136,6 @@ final class CategoryVC: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: readyButton.topAnchor, constant: -24),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-
 
             addCategoryButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             addCategoryButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -141,7 +146,6 @@ final class CategoryVC: UIViewController {
             readyButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-
 
 }
 
@@ -177,8 +181,11 @@ extension CategoryVC: UITableViewDataSource {
 
 extension CategoryVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
         guard let cell = cell as? CategoryCell else { return }
+
         let numberOfCategories = fetchedResultsController.sections?[indexPath.section].numberOfObjects ?? 0
+
         let firstIndex = 0
         let lastIndex = numberOfCategories - 1
 
@@ -200,8 +207,14 @@ extension CategoryVC {
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool { return true }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
         let categoryStore = dependencies.trackerCategoryStore
         let categoryData = fetchedResultsController.object(at: indexPath)
+
+        if let previousIndexPath = selectedIndexPath,
+           let previousCell = tableView.cellForRow(at: previousIndexPath) as? CategoryCell {
+            previousCell.checkmarkImageView.isHidden = true
+        }
 
         if indexPath == selectedIndexPath {
             tableView.deselectRow(at: indexPath, animated: true)
@@ -209,14 +222,8 @@ extension CategoryVC {
             selectedCategory = nil
             buttonToShow = .add
         } else {
-            if let previousIndexPath = selectedIndexPath {
-                tableView.deselectRow(at: previousIndexPath, animated: true)
-                if let previousCell = tableView.cellForRow(at: previousIndexPath) as? CategoryCell {
-                    previousCell.checkmarkImageView.isHidden = true
-                }
-            }
             selectedIndexPath = indexPath
-            selectedCategory = categoryStore.trackerCategory(form: categoryData)
+            selectedCategory = categoryStore.trackerCategory(from: categoryData)
             buttonToShow = .ready
 
             if let cell = tableView.cellForRow(at: indexPath) as? CategoryCell {
@@ -239,17 +246,21 @@ extension CategoryVC: TrackerCategoryStoreDelegate {
 // MARK: - New Category Delegate
 
 extension CategoryVC: NewCategoryVCDelegate {
+
     private func presentNewCategoryVC() {
+
         let newCategoryVC = NewCategoryVC(dependencies: dependencies)
         newCategoryVC.delegate = self
         newCategoryVC.onCategoryCreated = { [weak self] categoryId in
             self?.selectedCategoryId = categoryId
         }
+
         let navigationController = UINavigationController(rootViewController: newCategoryVC)
         present(navigationController, animated: true, completion: nil)
     }
 
     func newCategoryVC(_ controller: NewCategoryVC, didCreateNewCategoryWithId id: UUID) {
+
         if let category = fetchedResultsController.fetchedObjects?.first(where: { $0.id == id }),
            let indexPath = fetchedResultsController.indexPath(forObject: category) {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)

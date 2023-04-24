@@ -29,14 +29,14 @@ final class HomeVC: UITabBarController {
 
     // MARK: - Clear Core Data
 
-//    private func cleanCoreData(completion: @escaping() -> Void) {
-//        DispatchQueue.main.async {
-//            self.dependencies.trackerCategoryStore.clearCategoryData()
-//            self.dependencies.trackerStore.clearTrackerData()
-//            self.dependencies.trackerRecordSore.clearRecordData()
-//            completion()
-//        }
-//    }
+    private func cleanCoreData(completion: @escaping() -> Void) {
+        DispatchQueue.main.async {
+            self.dependencies.trackerCategoryStore.clearCategoryData()
+            self.dependencies.trackerStore.clearTrackerData()
+            self.dependencies.trackerRecordSore.clearRecordData()
+            completion()
+        }
+    }
 
 
     // MARK: - Setup

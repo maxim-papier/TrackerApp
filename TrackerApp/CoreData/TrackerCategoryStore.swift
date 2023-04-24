@@ -87,7 +87,7 @@ final class TrackerCategoryStore: NSObject {
 
         do {
             let coreDataCategories = try context.fetch(request)
-            return coreDataCategories.compactMap { trackerCategory(form: $0) }
+            return coreDataCategories.compactMap { trackerCategory(from: $0) }
         } catch {
             print("Error fetching categories: \(error)")
             return []
@@ -130,24 +130,37 @@ final class TrackerCategoryStore: NSObject {
         }
     }
 
+    // MARK: - Adding new tracker into category
+
     func addTrackerToCategory(tracker: Tracker, categoryId: UUID? = nil) {
-        // Если categoryId не предоставлен, создаем новую категорию
-        if let categoryId = categoryId {
-            if let category = readTrackerCategories().first(where: { $0.id == categoryId }) {
-                // Категория найдена, добавляем трекер в существующую категорию
-                var updatedTrackers = category.trackers
-                updatedTrackers.append(tracker)
-                let updatedCategory = TrackerCategory(id: category.id, name: category.name, trackers: updatedTrackers, createdAt: category.createdAt)
-                updateTrackerCategory(category: updatedCategory)
-            } else {
-                print("Category with id \(categoryId) not found")
-            }
-        } else {
-            // Создаем новую категорию с трекером
-            let newCategory = TrackerCategory(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
-            createTrackerCategory(category: newCategory)
+        guard let categoryId = categoryId else {
+            createNewCategory(with: tracker)
+            return
         }
+
+        addToExistingCategory(tracker: tracker, categoryId: categoryId)
     }
+
+    private func createNewCategory(with tracker: Tracker) {
+        let newCategory = TrackerCategory(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
+        _ = createTrackerCategory(category: newCategory)
+    }
+
+    private func addToExistingCategory(tracker: Tracker, categoryId: UUID) {
+        guard let category = readTrackerCategories().first(where: { $0.id == categoryId }) else {
+            print("Category with id \(categoryId) not found")
+            return
+        }
+
+        var updatedTrackers = category.trackers
+        updatedTrackers.append(tracker)
+
+        let updatedCategory = TrackerCategory(id: category.id, name: category.name, trackers: updatedTrackers, createdAt: category.createdAt)
+        updateTrackerCategory(category: updatedCategory)
+    }
+
+
+    // 
 
     func getTrackerCategory(by id: UUID) -> TrackerCategory? {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
@@ -156,13 +169,12 @@ final class TrackerCategoryStore: NSObject {
         do {
             let coreDataCategories = try context.fetch(request)
             guard let coreDataCategory = coreDataCategories.first else { return nil }
-            return trackerCategory(form: coreDataCategory)
+            return trackerCategory(from: coreDataCategory)
         } catch {
             print("Error fetching category by id: \(error)")
             return nil
         }
     }
-
     
 
     // MARK: - Clean all categories data
@@ -215,7 +227,7 @@ final class TrackerCategoryStore: NSObject {
         return coreDataTracker
     }
 
-    func trackerCategory(form coreDataCategory: CategoryData) -> TrackerCategory? {
+    func trackerCategory(from coreDataCategory: CategoryData) -> TrackerCategory? {
 
         guard
             let id = coreDataCategory.id,
@@ -229,7 +241,6 @@ final class TrackerCategoryStore: NSObject {
         let trackers = trackersData.compactMap { tracker(from: $0) }
 
         return TrackerCategory(id: id, name: name, trackers: trackers, createdAt: createdAt)
-
     }
 
     private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
@@ -265,5 +276,4 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         delegate?.trackerCategoryStoreDidChangeContent()
     }
-
 }

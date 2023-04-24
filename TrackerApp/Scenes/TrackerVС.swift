@@ -281,20 +281,19 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
     func didCreateNewTracker(newCategory: TrackerCategory) {
 
-        let trackerCategoryStore = dependencies.trackerCategoryStore
+        let categoryStore = dependencies.trackerCategoryStore
 
         guard let tracker = newCategory.trackers.first else {
             fatalError("TrackerVC says: 'There is no tracker in the new category'")
         }
 
-        let categoryId = trackerCategoryStore.readTrackerCategories().first(where: { $0.name == newCategory.name })?.id
-        trackerCategoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
+        let categoryId = categoryStore.readTrackerCategories().first(where: { $0.name == newCategory.name })?.id
+        categoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
 
         // Обновление  данных и интерфейса
-        categories = trackerCategoryStore.readTrackerCategories()
+        categories = categoryStore.readTrackerCategories()
         filterResults(with: selectedDate)
     }
-
 }
 
 
@@ -345,8 +344,4 @@ extension TrackerVC: TrackerStoreDelegate {
     func trackerStoreDidUpdate() {
         collectionView.performBatchUpdates(nil, completion: nil)
     }
-
-
-
-
 }

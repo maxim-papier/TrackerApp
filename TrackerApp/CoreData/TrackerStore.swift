@@ -53,7 +53,6 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
 
-        #warning("make it safe")
         switch type {
         case .insert:
             delegate?.trackerStoreDidInsert(at: newIndexPath!)
