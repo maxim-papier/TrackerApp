@@ -62,6 +62,7 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - CRUD methods
 
     func createTrackerCategory(category: TrackerCategory) -> Bool {
+
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", category.name)
 
@@ -160,7 +161,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
 
-    // 
+    //
 
     func getTrackerCategory(by id: UUID) -> TrackerCategory? {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
@@ -221,8 +222,21 @@ final class TrackerCategoryStore: NSObject {
         coreDataTracker.createdAt = tracker.createdAt
 
         let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = try? NSKeyedArchiver.archivedData(withRootObject: weekDaySet, requiringSecureCoding: false)
-        coreDataTracker.schedule = scheduleData
+        print("-------")
+        print("coreDataTracker said:")
+        print("got this to archive \(weekDaySet.weekDays)")
+        print("-------")
+
+        do {
+            let scheduleData = try NSKeyedArchiver.archivedData(withRootObject: weekDaySet, requiringSecureCoding: false)
+            coreDataTracker.schedule = scheduleData
+            print("-------")
+            print("coreDataTracker Archiver said:")
+            print("archived: \(scheduleData)")
+            print("-------")
+        } catch {
+            print("Error archiving schedule: \(error)")
+        }
 
         return coreDataTracker
     }
@@ -245,11 +259,12 @@ final class TrackerCategoryStore: NSObject {
 
     private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
 
-        guard let id = coreDataTracker.id,
-              let title = coreDataTracker.title,
-              let emoji = coreDataTracker.emoji,
-              let colorHex = coreDataTracker.colorHEX,
-              let createdAt = coreDataTracker.createdAt
+        guard
+            let id = coreDataTracker.id,
+            let title = coreDataTracker.title,
+            let emoji = coreDataTracker.emoji,
+            let colorHex = coreDataTracker.colorHEX,
+            let createdAt = coreDataTracker.createdAt
         else {
             return nil
         }
@@ -259,7 +274,9 @@ final class TrackerCategoryStore: NSObject {
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
             do {
-                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClass: WeekDaySet.self, from: scheduleData) {
+                let allowedClasses: NSSet = [NSSet.self, NSNumber.self, WeekDaySet.self]
+
+                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClasses: allowedClasses as! Set<AnyHashable>, from: scheduleData) as? WeekDaySet {
                     schedule = weekDaySet.weekDays
                 }
             } catch {

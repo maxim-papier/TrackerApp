@@ -19,8 +19,17 @@ final class HomeVC: UITabBarController {
         super.viewDidLoad()
         setupTabs()
         let categoriesInBase = dependencies.trackerCategoryStore.readTrackerCategories()
-        print(categoriesInBase.count)
-        print(categoriesInBase)
+        print("CORE DATA CURRENTLY CONTAINS:")
+        print("---------")
+        print("Categories: \(categoriesInBase.count) ")
+        print("---------")
+        print("Categories Names: \(categoriesInBase.map({ $0.name }))")
+        print("---------")
+        print("Trackers:")
+        categoriesInBase.forEach {
+            print($0.trackers.map { "Name — \($0.title) Schedule — \($0.day)" }.joined(separator: "\n"))
+        }
+        print("---------")
 //        cleanCoreData {
 //            print("All data has been cleared")
 //        }
@@ -30,12 +39,10 @@ final class HomeVC: UITabBarController {
     // MARK: - Clear Core Data
 
     private func cleanCoreData(completion: @escaping() -> Void) {
-        DispatchQueue.main.async {
-            self.dependencies.trackerCategoryStore.clearCategoryData()
-            self.dependencies.trackerStore.clearTrackerData()
-            self.dependencies.trackerRecordSore.clearRecordData()
-            completion()
-        }
+        self.dependencies.trackerCategoryStore.clearCategoryData()
+        self.dependencies.trackerStore.clearTrackerData()
+        self.dependencies.trackerRecordSore.clearRecordData()
+        completion()
     }
 
 

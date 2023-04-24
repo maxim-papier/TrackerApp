@@ -326,7 +326,6 @@
 				TargetAttributes = {
 					8DADA65C29E823C100D19456 = {
 						CreatedOnToolsVersion = 14.3;
-						TestTargetID = 8DBA05272993873E00E3604E;
 					};
 					8DBA05272993873E00E3604E = {
 						CreatedOnToolsVersion = 14.2;
@@ -453,7 +452,6 @@
 		8DADA66429E823C100D19456 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4LW96FX5L3;
@@ -468,14 +466,12 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackerApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackerApp";
 			};
 			name = Debug;
 		};
 		8DADA66529E823C100D19456 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4LW96FX5L3;
@@ -490,7 +486,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackerApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackerApp";
 			};
 			name = Release;
 		};

@@ -43,10 +43,6 @@ final class TrackerStoreTests: XCTestCase {
         print("TEST TRACKER DATA === \(readTrackers)")
         XCTAssertEqual(readTrackers.count, 1)
         XCTAssertEqual(readTrackers.first?.id, tracker.id)
-
-
-        //    static var mock01: Set<WeekDay> = [.monday, .friday, .sunday]
-
     }
 
     func testUpdateTracker() {
