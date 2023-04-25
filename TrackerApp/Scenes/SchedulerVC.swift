@@ -3,12 +3,13 @@ import UIKit
 final class SchedulerVC: UIViewController {
 
     let weekdays = WeekDay.allCases
-    var selectedDays = [WeekDay]()
+    var selectedDays = WeekDaySet(weekDays: [])
 
     weak var delegate: AddSchedulerDelegate?
 
     init(selectedDays: [WeekDay]) {
-        self.selectedDays = selectedDays
+        let weekDaySet = WeekDaySet(weekDays: Set(selectedDays))
+        self.selectedDays = weekDaySet
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -93,7 +94,7 @@ extension SchedulerVC: UITableViewDataSource {
 
         let weekday = weekdays[indexPath.row]
 
-        let isWeekdaySelected = selectedDays.contains(weekday)
+        let isWeekdaySelected = selectedDays.weekDays.contains(weekday)
         cell.toggleControl.isOn = isWeekdaySelected
 
         cell.labelMenu.text = weekday.label
@@ -108,15 +109,14 @@ extension SchedulerVC: UITableViewDataSource {
         cell.toggleValueChanged = { isOn in
             let weekDay = self.weekdays[indexPath.row]
             if isOn {
-                self.selectedDays.append(weekDay)
-                print("AFTER (+) — \(self.selectedDays)")
+                self.selectedDays.weekDays.insert(weekDay)
+                print("AFTER (+) — \(self.selectedDays.weekDays)")
             } else {
-                if let index = self.selectedDays.firstIndex(of: weekDay) {
-                    self.selectedDays.remove(at: index)
-                    print("AFTER (-) — \(self.selectedDays)")
-                }
+                self.selectedDays.weekDays.remove(weekDay)
+                print("AFTER (-) — \(self.selectedDays.weekDays)")
             }
         }
+
         print("SELECTED - \(selectedDays)")
         return cell
     }
@@ -126,6 +126,6 @@ extension SchedulerVC: UITableViewDataSource {
 // MARK: - Protocol
 
 protocol AddSchedulerDelegate: AnyObject {
-    func didUpdateSelectedDays(selectedDays: [WeekDay])
+    func didUpdateSelectedDays(selectedDays: WeekDaySet)
 }
 

@@ -2,27 +2,33 @@ import UIKit
 
 final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout {
 
+
+    // MARK: Tracker creation properties
+
+    var selectedTitle: String?
+    var selectedCategory: TrackerCategory?
+    var selectedSchedule = WeekDaySet(weekDays: [])
+    var selectedEmoji: String?
+    var selectedColor: SelectionColorStyle?
+    var selectedEmojiIndexPath: IndexPath?
+    var selectedColorIndexPath: IndexPath?
+
+    weak var delegate: CreateTrackerVCDelegate?
+
+
+    // MARK: Actual VC properties
+
     var collectionView: UICollectionView! = nil
+    private let listCellItemName: [String] = ["Категория", "Расписание"]
+    var readyButton: Button?
 
     private let emojis = [
         "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶",
         "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
 
-    private let listCellItemName: [String] = ["Категория", "Расписание"]
 
-    var selectedTitle: String?
-    var selectedCategory: TrackerCategory?
-    var selectedSchedule = [WeekDay]()
-    var selectedEmoji: String?
-    var selectedColor: SelectionColorStyle?
-
-    var selectedEmojiIndexPath: IndexPath?
-    var selectedColorIndexPath: IndexPath?
-
-    var readyButton: Button?
-
-    weak var delegate: CreateTrackerVCDelegate?
+    // MARK: Core Data
 
     private var dependencies: DependencyContainer
 
@@ -37,11 +43,12 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .mainColorYP(.whiteYP)
         configureCollectionView()
     }
 
+
+    // MARK: - Setup UI and Collection
 
     func configureCollectionView() {
 
@@ -338,8 +345,8 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             listCell.subtitleLabel.text = selectedCategory?.name
         } else if indexPath.item == 1 {
             listCell.buttonPosition = .last
-            if !selectedSchedule.isEmpty {
-                let days = selectedSchedule.map { $0.shortLabel }
+            if !selectedSchedule.weekDays.isEmpty {
+                let days = selectedSchedule.weekDays.map { $0.shortLabel }
                 print("DAYS \(days)")
                 let daysString = days.joined(separator: ", ")
                 listCell.subtitleLabel.text = daysString
@@ -429,7 +436,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
             vc.delegate = self
             present(vc, animated: true, completion: nil)
         } else if indexPath.row == 1 {
-            let vc = SchedulerVC(selectedDays: selectedSchedule)
+            let vc = SchedulerVC(selectedDays: Array(selectedSchedule.weekDays))
             vc.delegate = self
             present(vc, animated: true, completion: nil)
         }
@@ -472,16 +479,14 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
 }
 
-// MARK: - AddSchedulerDelegate
+// MARK: - Add Scheduler Delegate
 
 extension CreateTrackerVC: AddSchedulerDelegate {
 
-    func didUpdateSelectedDays(selectedDays: [WeekDay]) {
+    func didUpdateSelectedDays(selectedDays: WeekDaySet) {
         self.selectedSchedule = selectedDays
 
         isTrackerReadyToBeCreated()
-
-        print("CreateTrackerVC: Look, mom, what I've got:\n\(selectedSchedule.map { "- \($0)" + "\n" }.joined())")
 
         let sectionToReload = 1
         collectionView.reloadSections(IndexSet(integer: sectionToReload))
@@ -497,8 +502,7 @@ extension CreateTrackerVC {
         guard let title = selectedTitle, !title.isEmpty,
               let emoji = selectedEmoji,
               let color = selectedColor,
-              !selectedSchedule.isEmpty else {
-            print("DATA IS NOT READY")
+              !selectedSchedule.weekDays.isEmpty else {
             readyButton?.isActive = false
             return
         }
@@ -517,7 +521,7 @@ extension CreateTrackerVC {
         let title: String = selectedTitle!
         let emoji: String = selectedEmoji!
         let color: UIColor = UIColor.selectionColorYP(selectedColor!)!
-        let day: Set<WeekDay>? = Set(selectedSchedule)
+        let day: Set<WeekDay>? = Set(selectedSchedule.weekDays)
 
 
         // Создаем новый трекер

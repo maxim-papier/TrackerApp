@@ -52,7 +52,7 @@ final class CategoryVC: UIViewController {
     }
 
 
-    // MARK: - Initilizers
+    // MARK: - Initializers
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies

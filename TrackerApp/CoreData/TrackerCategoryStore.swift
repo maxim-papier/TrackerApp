@@ -62,6 +62,7 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - CRUD methods
 
     func createTrackerCategory(category: TrackerCategory) -> Bool {
+
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", category.name)
 
@@ -160,7 +161,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
 
-    // 
+    //
 
     func getTrackerCategory(by id: UUID) -> TrackerCategory? {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
@@ -221,8 +222,13 @@ final class TrackerCategoryStore: NSObject {
         coreDataTracker.createdAt = tracker.createdAt
 
         let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = try? NSKeyedArchiver.archivedData(withRootObject: weekDaySet, requiringSecureCoding: false)
-        coreDataTracker.schedule = scheduleData
+
+        do {
+            let scheduleData = try JSONEncoder().encode(weekDaySet)
+            coreDataTracker.schedule = scheduleData
+        } catch {
+            print("Error encoding schedule: \(error)")
+        }
 
         return coreDataTracker
     }
@@ -245,11 +251,12 @@ final class TrackerCategoryStore: NSObject {
 
     private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
 
-        guard let id = coreDataTracker.id,
-              let title = coreDataTracker.title,
-              let emoji = coreDataTracker.emoji,
-              let colorHex = coreDataTracker.colorHEX,
-              let createdAt = coreDataTracker.createdAt
+        guard
+            let id = coreDataTracker.id,
+            let title = coreDataTracker.title,
+            let emoji = coreDataTracker.emoji,
+            let colorHex = coreDataTracker.colorHEX,
+            let createdAt = coreDataTracker.createdAt
         else {
             return nil
         }
@@ -259,11 +266,10 @@ final class TrackerCategoryStore: NSObject {
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
             do {
-                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClass: WeekDaySet.self, from: scheduleData) {
-                    schedule = weekDaySet.weekDays
-                }
+                let weekDaySet = try JSONDecoder().decode(WeekDaySet.self, from: scheduleData)
+                schedule = weekDaySet.weekDays
             } catch {
-                print("Error unarchiving schedule: \(error)")
+                print("Error decoding schedule: \(error)")
             }
         }
 
