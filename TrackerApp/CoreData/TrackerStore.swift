@@ -185,11 +185,10 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
             do {
-                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClass: WeekDaySet.self, from: scheduleData) {
-                    schedule = weekDaySet.weekDays
-                }
+                let weekDaySet = try JSONDecoder().decode(WeekDaySet.self, from: scheduleData)
+                schedule = weekDaySet.weekDays
             } catch {
-                print("Error unarchiving schedule: \(error)")
+                print("Error decoding schedule: \(error)")
             }
         }
 

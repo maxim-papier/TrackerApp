@@ -222,20 +222,12 @@ final class TrackerCategoryStore: NSObject {
         coreDataTracker.createdAt = tracker.createdAt
 
         let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        print("-------")
-        print("coreDataTracker said:")
-        print("got this to archive \(weekDaySet.weekDays)")
-        print("-------")
 
         do {
-            let scheduleData = try NSKeyedArchiver.archivedData(withRootObject: weekDaySet, requiringSecureCoding: false)
+            let scheduleData = try JSONEncoder().encode(weekDaySet)
             coreDataTracker.schedule = scheduleData
-            print("-------")
-            print("coreDataTracker Archiver said:")
-            print("archived: \(scheduleData)")
-            print("-------")
         } catch {
-            print("Error archiving schedule: \(error)")
+            print("Error encoding schedule: \(error)")
         }
 
         return coreDataTracker
@@ -274,13 +266,10 @@ final class TrackerCategoryStore: NSObject {
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
             do {
-                let allowedClasses: NSSet = [NSSet.self, NSNumber.self, WeekDaySet.self]
-
-                if let weekDaySet = try NSKeyedUnarchiver.unarchivedObject(ofClasses: allowedClasses as! Set<AnyHashable>, from: scheduleData) as? WeekDaySet {
-                    schedule = weekDaySet.weekDays
-                }
+                let weekDaySet = try JSONDecoder().decode(WeekDaySet.self, from: scheduleData)
+                schedule = weekDaySet.weekDays
             } catch {
-                print("Error unarchiving schedule: \(error)")
+                print("Error decoding schedule: \(error)")
             }
         }
 

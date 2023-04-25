@@ -503,7 +503,6 @@ extension CreateTrackerVC {
               let emoji = selectedEmoji,
               let color = selectedColor,
               !selectedSchedule.weekDays.isEmpty else {
-            print("DATA IS NOT READY")
             readyButton?.isActive = false
             return
         }

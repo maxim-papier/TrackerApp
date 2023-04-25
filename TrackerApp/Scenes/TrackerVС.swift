@@ -15,12 +15,12 @@ final class TrackerVC: UIViewController {
 
     var placeholder = PlaceholderType.noSearchResults.placeholder
 
-    private var dependencies: DependencyContainer
+        private var dependencies: DependencyContainer
 
-    init(dependencies: DependencyContainer) {
-        self.dependencies = dependencies
-        super.init(nibName: nil, bundle: nil)
-    }
+        init(dependencies: DependencyContainer) {
+            self.dependencies = dependencies
+            super.init(nibName: nil, bundle: nil)
+        }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
