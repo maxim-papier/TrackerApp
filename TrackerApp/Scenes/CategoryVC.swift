@@ -69,8 +69,8 @@ final class CategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.trackerCategoryStore.delegate = self
         dependencies.trackerCategoryStore.setupFetchedResultsController()
+        dependencies.trackerCategoryStore.delegate = self
         configure()
     }
 
@@ -237,9 +237,15 @@ extension CategoryVC {
 // MARK: - Category Tracker Store Delegate
 
 extension CategoryVC: TrackerCategoryStoreDelegate {
-    func trackerCategoryStoreDidChangeContent() {
-        self.tableView.reloadData()
+
+    func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath) {
+        tableView.reloadData()
     }
+
+    func trackerCategoryStoreDidDeleteCategory(at indexPath: IndexPath) {
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+
 }
 
 

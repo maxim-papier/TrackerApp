@@ -554,5 +554,3 @@ protocol CreateTrackerVCDelegate: AnyObject {
 protocol CategorySelectionDelegate: AnyObject {
     func categorySelected(category: TrackerCategory)
 }
-
-

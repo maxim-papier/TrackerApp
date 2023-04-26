@@ -17,10 +17,7 @@ final class DependencyContainer {
         return trackerCategoryStore.fetchedResultsControllerForCategory()
     }
 
-//    func fetchFilteredTrackerCategoriesByDate(selectedDate: Date) -> [TrackerCategory] {
-//
-//        let allCategories = fe
-//
-//    }
-
+    var fetchedResultsControllerForTrackers: NSFetchedResultsController<TrackerData> {
+        return trackerStore.fetchedResultsControllerForTracker()
+    }
 }

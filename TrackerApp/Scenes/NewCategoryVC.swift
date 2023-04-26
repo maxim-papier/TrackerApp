@@ -36,6 +36,13 @@ final class NewCategoryVC: UIViewController {
         let newCategory = TrackerCategory(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
         let success = dependencies.trackerCategoryStore.createTrackerCategory(category: newCategory)
         if success {
+            // Обновление fetchedResultsController после создания новой категории
+            do {
+                try fetchedResultsController.performFetch()
+            } catch {
+                print("An error occurred while fetching the updated data: \(error)")
+            }
+
             delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)
             onCategoryCreated?(newCategory.id)
             dismiss(animated: true)
