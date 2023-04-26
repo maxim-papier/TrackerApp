@@ -3,9 +3,10 @@ import UIKit
 final class CategoryVC: UIViewController {
 
     weak var delegate: CategorySelectionDelegate?
-
     private var dependencies: DependencyContainer
-    private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
+    private lazy var fetchedResultsController = {
+        dependencies.fetchedResultsControllerForCategory
+    }()
 
     private var selectedIndexPath: IndexPath?
     private var selectedCategoryId: UUID?

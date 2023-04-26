@@ -2,11 +2,15 @@ import UIKit
 
 final class TrackerVC: UIViewController {
 
+    weak var delegate: TrackerStoreDelegate?
+    private var dependencies: DependencyContainer
+    private lazy var fetchedResultsController = {
+        dependencies.fetchedResultsControllerForTrackers
+    }()
+
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     // Rudiments
-    private var categories: [TrackerCategory] = [.mockCategory1, .mockCategory2]
-    private var filteredCategories: [TrackerCategory] = []
     private var selectedDate = Date()
     private var completedTrackers: [TrackerRecord] = []
 
@@ -15,12 +19,11 @@ final class TrackerVC: UIViewController {
 
     var placeholder = PlaceholderType.noSearchResults.placeholder
 
-        private var dependencies: DependencyContainer
 
-        init(dependencies: DependencyContainer) {
-            self.dependencies = dependencies
-            super.init(nibName: nil, bundle: nil)
-        }
+    init(dependencies: DependencyContainer) {
+        self.dependencies = dependencies
+        super.init(nibName: nil, bundle: nil)
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -28,7 +31,8 @@ final class TrackerVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // dependencies.trackerStore.delegate = self
+        dependencies.trackerStore.setupFetchedResultsController()
+        dependencies.trackerStore.delegate = self
         filterResults(with: selectedDate)
         setup()
     }
@@ -126,32 +130,37 @@ final class TrackerVC: UIViewController {
 extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return filteredCategories.count
+        return fetchedResultsController.sections?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfSections = filteredCategories.indices.contains(section) ? filteredCategories[section].trackers.count : 0
-        return numberOfSections
+
+        guard let sections = fetchedResultsController.sections else { return 0 }
+
+        return sections[section].numberOfObjects
     }
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
 
-        let show: Tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
+        guard let tracker = dependencies.trackerStore.tracker(from: trackerData),
+              let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TrackerCell.identifier,
+                for: indexPath) as? TrackerCell else { return .init() }
 
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TrackerCell.identifier,
-            for: indexPath) as? TrackerCell else { return .init() }
+        cell.backgroundShape.backgroundColor = tracker.color
+        cell.doneButton.backgroundColor = tracker.color
+        cell.titleLabel.text = tracker.title
+        cell.emojiLabel.text = tracker.emoji
 
-        cell.backgroundShape.backgroundColor = show.color
-        cell.doneButton.backgroundColor = show.color
-        cell.titleLabel.text = show.title
-        cell.emojiLabel.text = show.emoji
         cell.daysLabel.text = "0 дней"
+
         cell.delegate = self
-        
+
         return cell
     }
+
     
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -161,7 +170,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             withReuseIdentifier: TrackerHeader.identifier,
             for: indexPath) as? TrackerHeader else { return .init() }
 
-        header.categoryLabel.text = filteredCategories[indexPath.section].name
+        header.categoryLabel.text = fetchedResultsController.sections?[indexPath.section].name
         return header
     }
 }
@@ -207,70 +216,38 @@ extension TrackerVC: UISearchResultsUpdating {
         }
     }
     
-    private func filterResults(with searchText: String) {
-        
-        // Reset array to be empty
-        filteredCategories = []
-        
-        for category in categories {
-            // Store the relevant trackers
-            var filteredTrackers: [Tracker] = []
-            
-            for tracker in category.trackers {
-                if tracker.title.lowercased().contains(searchText.lowercased()) {
-                    filteredTrackers.append(tracker)
-                }
-            }
-            // If there are any "filteredTrackers" in this "category",
-            // we add this "category" to the "filteredCategories" array
-            if filteredTrackers.count > 0 {
-                filteredCategories.append(TrackerCategory(name: category.name, trackers: filteredTrackers))
-            }
-        }
-        reloadCollectionAfterSearch()
-    }
-
     private func filterResults(with date: Date) {
-
-        filteredCategories = []
-
-        let selectedWeekDay = Calendar.current.component(.weekday, from: date)
-        guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else { return }
-
-        for category in categories {
-            var filteredTrackers: [Tracker] = []
-            for tracker in category.trackers {
-                if let day = tracker.day, day.contains(selectedWeekDayEnum) {
-                    filteredTrackers.append(tracker)
-                }
-            }
-            if filteredTrackers.count > 0 {
-                filteredCategories.append(TrackerCategory(name: category.name, trackers: filteredTrackers))
-            }
-        }
-        reloadCollectionAfterPickingDate()
+        dependencies.trackerStore.updatePredicateForDateFilter(date: date)
+        collectionView.reloadData()
     }
 
+    private func filterResults(with searchText: String) {
+        dependencies.trackerStore.updatePredicateForTextFilter(searchText: searchText)
+        collectionView.reloadData()
+    }
+
+
+    #warning("Надо доработать методы для вывода плейсхоледоров")
     private func reloadCollectionAfterSearch() {
 
-        placeholder.placeholderType = .noSearchResults
-
-        switch filteredCategories.isEmpty {
-        case true: placeholder.isHidden = false
-        case false: placeholder.isHidden = true
-        }
-        collectionView.reloadData()
+//        placeholder.placeholderType = .noSearchResults
+//
+//        switch filteredCategories.isEmpty {
+//        case true: placeholder.isHidden = false
+//        case false: placeholder.isHidden = true
+//        }
+//        collectionView.reloadData()
     }
 
     private func reloadCollectionAfterPickingDate() {
 
-        placeholder.placeholderType = .noTrackers
-
-        switch filteredCategories.isEmpty {
-        case true: placeholder.isHidden = false
-        case false: placeholder.isHidden = true
-        }
-        collectionView.reloadData()
+//        placeholder.placeholderType = .noTrackers
+//
+//        switch filteredCategories.isEmpty {
+//        case true: placeholder.isHidden = false
+//        case false: placeholder.isHidden = true
+//        }
+//        collectionView.reloadData()
     }
 
 }
@@ -291,7 +268,6 @@ extension TrackerVC: CreateTrackerVCDelegate {
         categoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
 
         // Обновление  данных и интерфейса
-        categories = categoryStore.readTrackerCategories()
         filterResults(with: selectedDate)
     }
 }
@@ -303,15 +279,44 @@ extension TrackerVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
 
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        let trackerID = filteredCategories[indexPath.section].trackers[indexPath.item].id
-
-        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
-            completedTrackers.remove(at: index)
-        } else {
-            let record = TrackerRecord(id: trackerID, date: selectedDate)
-            completedTrackers.append(record)
-        }
-        print("COMPLETE TRACKERS === \(completedTrackers)")
+//        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+//        let trackerID = filteredCategories[indexPath.section].trackers[indexPath.item].id
+//
+//        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
+//            completedTrackers.remove(at: index)
+//        } else {
+//            let record = TrackerRecord(id: trackerID, date: selectedDate)
+//            completedTrackers.append(record)
+//        }
+//        print("COMPLETE TRACKERS === \(completedTrackers)")
     }
+}
+
+
+// MARK: - Tracker Store Delegate
+
+extension TrackerVC: TrackerStoreDelegate {
+
+    func trackerStoreDidChange(changeType: TrackerStoreChangeType, object: Any, at indexPath: IndexPath?, newIndexPath: IndexPath?) {
+
+        switch changeType {
+
+        case .insert:
+            guard let newIndexPath = newIndexPath else { return }
+            collectionView.insertItems(at: [newIndexPath])
+
+        case .delete:
+            guard let indexPath = indexPath else { return }
+            collectionView.deleteItems(at: [indexPath])
+
+        case .update:
+            guard let indexPath = indexPath else { return }
+            collectionView.reloadItems(at: [indexPath])
+
+        case .move:
+            guard let indexPath = indexPath, let newIndexPath = newIndexPath else { return }
+            collectionView.moveItem(at: indexPath, to: newIndexPath)
+        }
+    }
+
 }

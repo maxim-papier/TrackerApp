@@ -1,10 +1,20 @@
 import UIKit
 import CoreData
 
+enum TrackerStoreChangeType {
+    case insert
+    case delete
+    case update
+    case move
+}
+
 // MARK: - TrackerStoreDelegate
 
 protocol TrackerStoreDelegate: AnyObject {
-    func trackerStoreDidChangeContent()
+    func trackerStoreDidChange(changeType: TrackerStoreChangeType,
+                               object: Any,
+                               at indexPath: IndexPath?,
+                               newIndexPath: IndexPath?)
 }
 
 // MARK: - TrackerStore
@@ -56,9 +66,6 @@ final class TrackerStore: NSObject {
     }
 
     // MARK: - CRUD methods for Tracker
-
-
-    // MARK: - CRUD methods
 
     func createTracker(tracker: Tracker) {
         _ = coreDataTracker(from: tracker)
@@ -133,7 +140,7 @@ final class TrackerStore: NSObject {
         return coreDataTracker
     }
 
-    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
+    func tracker(from coreDataTracker: TrackerData) -> Tracker? {
         guard
             let id = coreDataTracker.id,
             let title = coreDataTracker.title,
@@ -199,7 +206,27 @@ final class TrackerStore: NSObject {
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {
 
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        delegate?.trackerStoreDidChangeContent()
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any,
+                    at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType,
+                    newIndexPath: IndexPath?) {
+
+        var changeType: TrackerStoreChangeType
+
+        switch type {
+        case .insert:
+            changeType = .insert
+        case .delete:
+            changeType = .delete
+        case .update:
+            changeType = .update
+        case .move:
+            changeType = .move
+        @unknown default:
+            fatalError("Unhandled case in NSFetchedResultsControllerDelegate")
+        }
+
+        delegate?.trackerStoreDidChange(changeType: changeType, object: anObject, at: indexPath, newIndexPath: newIndexPath)
     }
 }
