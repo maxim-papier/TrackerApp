@@ -1,5 +1,10 @@
 import UIKit
 
+enum FilterType {
+    case search
+    case date
+}
+
 final class TrackerVC: UIViewController {
 
     weak var delegate: TrackerStoreDelegate?
@@ -217,39 +222,30 @@ extension TrackerVC: UISearchResultsUpdating {
     }
     
     private func filterResults(with date: Date) {
-        dependencies.trackerStore.updatePredicateForDateFilter(date: date)
-        collectionView.reloadData()
+        dependencies.trackerStore.updatePredicateForWeekDayFilter(date: date)
+        reloadCollectionAfterFiltering(filterType: .date)
     }
 
     private func filterResults(with searchText: String) {
         dependencies.trackerStore.updatePredicateForTextFilter(searchText: searchText)
+        reloadCollectionAfterFiltering(filterType: .search)
+    }
+
+
+    private func reloadCollectionAfterFiltering(filterType: FilterType) {
+        updatePlaceholder(for: filterType)
         collectionView.reloadData()
     }
 
+    private func updatePlaceholder(for filterType: FilterType) {
+        switch filterType {
+        case .search: placeholder.placeholderType = .noSearchResults
+        case .date: placeholder.placeholderType = .noTrackers
+        }
 
-    #warning("Надо доработать методы для вывода плейсхоледоров")
-    private func reloadCollectionAfterSearch() {
-
-//        placeholder.placeholderType = .noSearchResults
-//
-//        switch filteredCategories.isEmpty {
-//        case true: placeholder.isHidden = false
-//        case false: placeholder.isHidden = true
-//        }
-//        collectionView.reloadData()
+        let isEmpty = fetchedResultsController.sections?.reduce(0, { $0 + $1.numberOfObjects }) == 0
+        placeholder.isHidden = !isEmpty
     }
-
-    private func reloadCollectionAfterPickingDate() {
-
-//        placeholder.placeholderType = .noTrackers
-//
-//        switch filteredCategories.isEmpty {
-//        case true: placeholder.isHidden = false
-//        case false: placeholder.isHidden = true
-//        }
-//        collectionView.reloadData()
-    }
-
 }
 
 // MARK: - CreateTrackerVC delegate
@@ -268,7 +264,7 @@ extension TrackerVC: CreateTrackerVCDelegate {
         categoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
 
         // Обновление  данных и интерфейса
-        filterResults(with: selectedDate)
+        //filterResults(with: selectedDate)
     }
 }
 
@@ -279,16 +275,21 @@ extension TrackerVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
 
-//        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-//        let trackerID = filteredCategories[indexPath.section].trackers[indexPath.item].id
-//
-//        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
-//            completedTrackers.remove(at: index)
-//        } else {
-//            let record = TrackerRecord(id: trackerID, date: selectedDate)
-//            completedTrackers.append(record)
-//        }
-//        print("COMPLETE TRACKERS === \(completedTrackers)")
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
+
+        guard let trackerID = trackerData.id else {
+            print("Error: Tracker ID is nil")
+            return
+        }
+
+        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
+            completedTrackers.remove(at: index)
+        } else {
+            let record = TrackerRecord(id: trackerID, date: selectedDate)
+            completedTrackers.append(record)
+        }
+        print("COMPLETE TRACKERS === \(completedTrackers)")
     }
 }
 

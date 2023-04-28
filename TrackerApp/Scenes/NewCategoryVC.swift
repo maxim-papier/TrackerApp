@@ -145,9 +145,7 @@ extension NewCategoryVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension NewCategoryVC: UICollectionViewDelegate {
-
-}
+extension NewCategoryVC: UICollectionViewDelegate {}
 
 
 // MARK: - NewCategory Delegate

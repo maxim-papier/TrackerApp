@@ -500,6 +500,7 @@ extension CreateTrackerVC {
 
     func isTrackerReadyToBeCreated() {
         guard let title = selectedTitle, !title.isEmpty,
+              let category = selectedCategory,
               let emoji = selectedEmoji,
               let color = selectedColor,
               !selectedSchedule.weekDays.isEmpty else {
@@ -508,6 +509,7 @@ extension CreateTrackerVC {
         }
         print("DATA IS READY TO SAVE:")
         print("selectedTitle === \(title)")
+        print("selectedCategory === \(category)")
         print("selectedEmoji === \(emoji)")
         print("selectedColor === \(color)")
         print("selectedSchedule === \(selectedSchedule)")

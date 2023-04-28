@@ -65,6 +65,7 @@ final class TrackerStore: NSObject {
         }
     }
 
+
     // MARK: - CRUD methods for Tracker
 
     func createTracker(tracker: Tracker) {
@@ -182,22 +183,48 @@ final class TrackerStore: NSObject {
 
     // MARK: - Filtering methods
 
-    func updatePredicateForDateFilter(date: Date) {
-        let datePredicate = createDatePredicate(for: date)
-        fetchedResultsController!.fetchRequest.predicate = datePredicate
-    }
+    // Filter by text
 
     func updatePredicateForTextFilter(searchText: String) {
         let textPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
         fetchedResultsController!.fetchRequest.predicate = textPredicate
+        performFetch()
     }
 
-    private func createDatePredicate(for date: Date) -> NSPredicate {
-        let calendar = Calendar.current
-        let startDate = calendar.startOfDay(for: date)
-        let endDate = calendar.date(byAdding: .day, value: 1, to: startDate)!
-        return NSPredicate(format: "(date >= %@) AND (date < %@)", startDate as NSDate, endDate as NSDate)
+    // Filter by day of the week
+
+    func updatePredicateForWeekDayFilter(date: Date) {
+        let weekDayPredicate = createWeekDayPredicate(for: date)
+        fetchedResultsController!.fetchRequest.predicate = weekDayPredicate
+        performFetch()
     }
+
+    private func createWeekDayPredicate(for date: Date) -> NSPredicate {
+
+        let selectedWeekDay = Calendar.current.component(.weekday, from: date)
+        guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else {
+            return NSPredicate(value: false)
+        }
+
+        let selectedWeekDayValue = selectedWeekDayEnum.rawValue
+
+        let lhs = NSExpression(forKeyPath: "schedule")
+        let rhs = NSExpression(forConstantValue: selectedWeekDayValue)
+        let containsSelectedWeekDay = NSComparisonPredicate(leftExpression: lhs, rightExpression: rhs, modifier: .direct, type: .contains, options: [])
+
+        return containsSelectedWeekDay
+    }
+
+    // Fetch
+
+    private func performFetch() {
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch {
+            print("Error performing fetch after updating predicate: \(error)")
+        }
+    }
+
 
 
 }
