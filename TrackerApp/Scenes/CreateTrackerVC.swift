@@ -5,6 +5,8 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
     // MARK: Tracker creation properties
 
+    var isCreatingEvent: Bool = false
+
     var selectedTitle: String?
     var selectedCategory: TrackerCategory?
     var selectedSchedule = WeekDaySet(weekDays: [])
@@ -80,7 +82,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         let title: UILabel = {
             let label = UILabel()
-            label.text = "Новая привычка"
+            label.text = isCreatingEvent ? "Новое событие" : "Новая привычка"
             label.textColor = UIColor.mainColorYP(.blackYP)
             label.font = FontYP.medium16
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -221,6 +223,7 @@ extension CreateTrackerVC {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1/6),
             heightDimension: .fractionalWidth(1/6))
+
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let groupSize = NSCollectionLayoutSize(
@@ -296,7 +299,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
         switch section {
         case 0: return 1
-        case 1: return 2
+        case 1: return isCreatingEvent ? 1 : 2
         case 2: return emojis.count
         case 3: return SelectionColorStyle.allCases.count
         default: fatalError("Unsupported section in numberOfItemsInSection")
@@ -336,14 +339,15 @@ extension CreateTrackerVC: UICollectionViewDataSource {
     }
 
     func listCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+
         let listCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ListCell.identifier,
             for: indexPath) as! ListCell
 
         if indexPath.item == 0 {
-            listCell.buttonPosition = .first
+            listCell.buttonPosition = isCreatingEvent ? .single : .first
             listCell.subtitleLabel.text = selectedCategory?.name
-        } else if indexPath.item == 1 {
+        } else if indexPath.item == 1 && !isCreatingEvent {
             listCell.buttonPosition = .last
             if !selectedSchedule.weekDays.isEmpty {
                 let days = selectedSchedule.weekDays.map { $0.shortLabel }
@@ -502,17 +506,28 @@ extension CreateTrackerVC {
         guard let title = selectedTitle, !title.isEmpty,
               let category = selectedCategory,
               let emoji = selectedEmoji,
-              let color = selectedColor,
-              !selectedSchedule.weekDays.isEmpty else {
+              let color = selectedColor else {
             readyButton?.isActive = false
             return
         }
+
+        switch isCreatingEvent {
+        case false:
+            guard !selectedSchedule.weekDays.isEmpty else {
+                readyButton?.isActive = false
+                return
+            }
+        case true:
+            break
+        }
+
         print("DATA IS READY TO SAVE:")
         print("selectedTitle === \(title)")
         print("selectedCategory === \(category)")
         print("selectedEmoji === \(emoji)")
         print("selectedColor === \(color)")
         print("selectedSchedule === \(selectedSchedule)")
+
         readyButton?.isActive = true
     }
 
