@@ -7,15 +7,8 @@ enum FilterType {
 
 final class TrackerVC: UIViewController {
 
-    weak var delegate: TrackerStoreDelegate?
-    private var dependencies: DependencyContainer
-    private lazy var fetchedResultsController = {
-        dependencies.fetchedResultsControllerForTrackers
-    }()
-
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
-    // Rudiments
     private var selectedDate = Date()
     private var completedTrackers: [TrackerRecord] = []
 
@@ -24,6 +17,14 @@ final class TrackerVC: UIViewController {
 
     var placeholder = PlaceholderType.noSearchResults.placeholder
 
+
+    // CoreData properties
+
+    weak var delegate: TrackerStoreDelegate?
+    private var dependencies: DependencyContainer
+    private lazy var fetchedResultsController = {
+        dependencies.fetchedResultsControllerForTrackers
+    }()
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
@@ -288,6 +289,7 @@ extension TrackerVC: TrackerCellDelegate {
         } else {
             let record = TrackerRecord(id: trackerID, date: selectedDate)
             completedTrackers.append(record)
+            dependencies.trackerRecordStore.addRecord(forTrackerWithID: trackerID)
         }
         print("COMPLETE TRACKERS === \(completedTrackers)")
     }

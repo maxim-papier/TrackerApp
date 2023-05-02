@@ -11,16 +11,19 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - CRUD methods
 
-    func addRecord(for tracker: Tracker) {
-
-        let coreDataTracker = coreDataTracker(from: tracker)
-
-        let record = TrackerRecordData(context: context)
-        record.id = UUID()
-        record.date = Date()
-        record.tracker = coreDataTracker
+    func addRecord(forTrackerWithID trackerID: UUID) {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
 
         do {
+            let fetchedTrackers = try context.fetch(request)
+            guard let coreDataTracker = fetchedTrackers.first else { return }
+
+            let record = TrackerRecordData(context: context)
+            record.id = UUID()
+            record.date = Date()
+            record.tracker = coreDataTracker
+
             try context.save()
         } catch {
             print("Error adding tracker record: \(error)")
@@ -41,6 +44,21 @@ final class TrackerRecordStore: NSObject {
             print("Error deleting tracker record: \(error)")
         }
     }
+
+    func fetchAllRecords() -> [TrackerRecord] {
+        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+
+        do {
+            let coreDataRecords = try context.fetch(request)
+            return coreDataRecords.compactMap { self.trackerRecord(from: $0) }
+        } catch {
+            print("Error fetching all tracker records: \(error)")
+            return []
+        }
+    }
+
+
+    //MARK: - Clear all records
 
     func clearRecordData() {
 
@@ -97,4 +115,16 @@ final class TrackerRecordStore: NSObject {
 
         return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
     }
+
+    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
+
+            guard
+                let id = coreDataRecord.id,
+                let date = coreDataRecord.date
+            else {
+                return nil
+            }
+
+            return TrackerRecord(id: id, date: date)
+        }
 }
