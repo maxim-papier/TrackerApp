@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import CoreData
 
 final class TrackerRecordStore: NSObject {
@@ -11,46 +11,23 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - CRUD methods
 
-    func createTrackerRecord(record: TrackerRecord) {
+    func addRecord(for tracker: Tracker) {
 
-        _ = coreDataTrackerRecord(from: record)
+        let coreDataTracker = coreDataTracker(from: tracker)
+
+        let record = TrackerRecordData(context: context)
+        record.id = UUID()
+        record.date = Date()
+        record.tracker = coreDataTracker
+
         do {
             try context.save()
         } catch {
-            print("Error saving tracker record: \(error)")
+            print("Error adding tracker record: \(error)")
         }
     }
 
-    func readTrackerRecord() -> [TrackerRecord] {
-
-        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
-        do {
-            let coreDataRecords = try context.fetch(request)
-            return coreDataRecords.compactMap( { trackerRecords(from: $0)  } )
-        } catch {
-            print("Error fetching tracker records: \(error)")
-            return []
-        }
-    }
-
-    func updateTrackerRecord(record: TrackerRecord) {
-        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", record.id as CVarArg)
-
-        do {
-            let coreDataRecords = try context.fetch(request)
-            guard let coreDataRecord = coreDataRecords.first else { return }
-
-            coreDataRecord.date = record.date
-
-            try context.save()
-        } catch {
-            print("Error updating tracker record: \(error)")
-        }
-    }
-
-
-    func deleteTrackerRecord(by id: UUID) {
+    func deleteRecord(by id: UUID) {
 
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -65,8 +42,6 @@ final class TrackerRecordStore: NSObject {
         }
     }
 
-    // MARK: - Clean all records data
-
     func clearRecordData() {
 
         print("Clearing records data...")
@@ -77,32 +52,49 @@ final class TrackerRecordStore: NSObject {
         do {
             try context.execute(deleteRequest)
         } catch let error as NSError {
-            print("Error deleting category data: \(error.localizedDescription)")
+            print("Error deleting record data: \(error.localizedDescription)")
         }
     }
 
-
     // MARK: - Conversion methods
 
-    private func coreDataTrackerRecord(from record: TrackerRecord) -> TrackerRecordData {
+    private func coreDataTracker(from tracker: Tracker) -> TrackerData {
 
-        let coreDataRecord = TrackerRecordData(context: context)
-        coreDataRecord.id = record.id
-        coreDataRecord.date = record.date
+        let coreDataTracker = TrackerData(context: context)
+        coreDataTracker.id = tracker.id
+        coreDataTracker.title = tracker.title
+        coreDataTracker.emoji = tracker.emoji
+        coreDataTracker.colorHEX = tracker.color.toHexString()
+        coreDataTracker.createdAt = tracker.createdAt
 
-        return coreDataRecord
+        let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
+        let scheduleData = weekDaySet.toData()
+        coreDataTracker.schedule = scheduleData
+
+        return coreDataTracker
     }
 
-    private func trackerRecords(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
+    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
 
         guard
-            let id = coreDataRecord.id,
-            let date = coreDataRecord.date
+            let id = coreDataTracker.id,
+            let title = coreDataTracker.title,
+            let emoji = coreDataTracker.emoji,
+            let colorHex = coreDataTracker.colorHEX,
+            let createdAt = coreDataTracker.createdAt
         else {
             return nil
         }
 
-        return TrackerRecord(id: id, date: date)
-    }
+        let color = UIColor(hexString: colorHex)
 
+        var schedule = Set<WeekDay>()
+        if let scheduleData = coreDataTracker.schedule {
+            if let weekDaySet = WeekDaySet.fromData(scheduleData) {
+                schedule = weekDaySet.weekDays
+            }
+        }
+
+        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
+    }
 }
