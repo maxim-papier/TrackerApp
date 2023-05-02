@@ -170,10 +170,10 @@ extension CategoryVC: UITableViewDataSource {
         let lastIndex = numberOfCategories - 1
 
         switch (indexPath.row, numberOfCategories) {
-        case (firstIndex, 1): cell.buttonPosition = .single
-        case (firstIndex, _): cell.buttonPosition = .first
-        case (lastIndex, _): cell.buttonPosition = .last
-        default: cell.buttonPosition = .middle
+        case (firstIndex, 1): cell.categoryButtonPosition = .single
+        case (firstIndex, _): cell.categoryButtonPosition = .first
+        case (lastIndex, _): cell.categoryButtonPosition = .last
+        default: cell.categoryButtonPosition = .middle
         }
 
         return cell
@@ -191,10 +191,10 @@ extension CategoryVC: UITableViewDelegate {
         let lastIndex = numberOfCategories - 1
 
         switch (indexPath.row, numberOfCategories) {
-        case (firstIndex, 1): cell.buttonPosition = .single
-        case (firstIndex, _): cell.buttonPosition = .first
-        case (lastIndex, _): cell.buttonPosition = .last
-        default: cell.buttonPosition = .middle
+        case (firstIndex, 1): cell.categoryButtonPosition = .single
+        case (firstIndex, _): cell.categoryButtonPosition = .first
+        case (lastIndex, _): cell.categoryButtonPosition = .last
+        default: cell.categoryButtonPosition = .middle
         }
     }
 }

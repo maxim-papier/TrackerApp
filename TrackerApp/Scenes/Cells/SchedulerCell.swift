@@ -1,24 +1,21 @@
+import UIKit
+
 enum SchedulerButtonPosition {
     case first, middle, last, single
 }
 
-
-import UIKit
-
 final class SchedulerCell: UITableViewCell {
+
+    // MARK: - Properties
 
     static let identifier = "SchedulerCell"
 
     var buttonPosition: SchedulerButtonPosition = .middle { didSet { updateAppearance() } }
     var toggleValueChanged: ((Bool) -> Void)?
 
+    // MARK: - UI Components
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
-    }
-
-    let backgroundShape: UIView = {
+    private let backgroundShape: UIView = {
         let view = UIView()
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
@@ -41,33 +38,7 @@ final class SchedulerCell: UITableViewCell {
         return control
     }()
 
-
-    private func updateAppearance() {
-
-        let radius: CGFloat = 16
-
-        switch buttonPosition {
-
-        case .first:
-            backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
-            backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
-            case .middle:
-            backgroundShape.layer.maskedCorners = []
-
-        case .last:
-            backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
-            backgroundShape.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-
-        case .single:
-            backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
-            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-        }
-    }
+    // MARK: - Initialization
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -78,14 +49,44 @@ final class SchedulerCell: UITableViewCell {
         fatalError("Old people love new Clint Eastwood movies")
     }
 
-    @objc func toggleValueChanged(_ sender: UISwitch) {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
+    }
+
+
+    // MARK: - Private Methods
+    
+    private func updateAppearance() {
+        let radius: CGFloat = 16
+
+        switch buttonPosition {
+        case .first:
+            backgroundShape.layer.cornerRadius = radius
+            backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        case .middle:
+            backgroundShape.layer.maskedCorners = []
+        case .last:
+            backgroundShape.layer.cornerRadius = radius
+            backgroundShape.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        case .single:
+            backgroundShape.layer.cornerRadius = radius
+            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        }
+        backgroundShape.layer.masksToBounds = true
+    }
+
+    @objc private func toggleValueChanged(_ sender: UISwitch) {
         toggleValueChanged?(sender.isOn)
     }
 }
 
-extension SchedulerCell {
-    func configure() {
 
+// MARK: - Cell configuration and constraints
+
+extension SchedulerCell {
+    private func configure() {
         toggleControl.addTarget(self, action: #selector(toggleValueChanged(_:)), for: .valueChanged)
 
         contentView.addSubview(backgroundShape)

@@ -1,14 +1,17 @@
+import UIKit
+
 enum CategoryButtonPosition {
     case first, middle, last, single
 }
-
-import UIKit
 
 final class CategoryCell: UITableViewCell {
 
     static let identifier = "CategoryCell"
     var toggleValueChanged: ((Bool) -> Void)?
-    var buttonPosition: SchedulerButtonPosition = .middle { didSet { updateAppearance() } }
+    var categoryButtonPosition: CategoryButtonPosition = .middle {
+        didSet { updateAppearance()
+        }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -19,6 +22,15 @@ final class CategoryCell: UITableViewCell {
         let view = UIView()
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
+        view.layer.masksToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    let selectedView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+        view.layer.masksToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -45,26 +57,33 @@ final class CategoryCell: UITableViewCell {
 
         let radius: CGFloat = 16
 
-        switch buttonPosition {
+        switch categoryButtonPosition {
 
         case .first:
             backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
             backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
-            case .middle:
+            selectedView.layer.cornerRadius = radius
+            selectedView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+        case .middle:
             backgroundShape.layer.maskedCorners = []
 
         case .last:
             backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
             backgroundShape.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+
             separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+
+            selectedView.layer.cornerRadius = radius
+            selectedView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
 
         case .single:
             backgroundShape.layer.cornerRadius = radius
-            backgroundShape.layer.masksToBounds = true
+
             separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+
+            selectedView.layer.cornerRadius = radius
         }
     }
 
@@ -78,18 +97,16 @@ final class CategoryCell: UITableViewCell {
     }
 }
 
-
 // MARK: - Configuration
 
 extension CategoryCell {
-    func configure() {
 
+    func configure() {
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(labelMenu)
         backgroundShape.addSubview(checkmarkImageView)
 
-        selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+        selectedBackgroundView = selectedView
 
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
@@ -106,8 +123,7 @@ extension CategoryCell {
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
             backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),
             backgroundShape.topAnchor.constraint(equalTo: contentView.topAnchor),
-            backgroundShape.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            backgroundShape.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
     }
 }
-
