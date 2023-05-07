@@ -96,7 +96,10 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
             print("readyButton is ready")
-            self.delegate?.didCreateNewTracker(newCategory: self.createNewTracker())
+            
+            let newTracker = self.createNewTracker()
+            guard let selectedCategoryID = self.selectedCategory?.id else { return }
+            self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
             if let rootVC = UIApplication.shared.windows.first?.rootViewController {
                 rootVC.dismiss(animated: true, completion: nil)
             }
@@ -531,25 +534,16 @@ extension CreateTrackerVC {
         readyButton?.isActive = true
     }
 
-    func createNewTracker() -> TrackerCategory {
+    func createNewTracker() -> Tracker {
 
-        // Использую force unwrap, так как уже проверил,
-        // что значения существуют в методе isTrackerReadyToBeCreated()
         let title: String = selectedTitle!
         let emoji: String = selectedEmoji!
         let color: UIColor = UIColor.selectionColorYP(selectedColor!)!
         let day: Set<WeekDay>? = Set(selectedSchedule.weekDays)
-
-
-        // Создаем новый трекер
+        
         let newTracker = Tracker(title: title, emoji: emoji, color: color, day: day)
 
-        // Создаем новую категорию для нового трекера
-        let newCategory = TrackerCategory(name: selectedCategory?.name ?? "", trackers: [newTracker])
-
-        print("NEWCATEGORY === \(newCategory)")
-
-        return newCategory
+        return newTracker
     }
 }
 
@@ -565,7 +559,7 @@ extension CreateTrackerVC: CategorySelectionDelegate {
 // MARK: - PROTOCOL
 
 protocol CreateTrackerVCDelegate: AnyObject {
-    func didCreateNewTracker(newCategory: TrackerCategory)
+    func didCreateNewTracker(newTracker: Tracker, categoryID: UUID)
 }
 
 protocol CategorySelectionDelegate: AnyObject {

@@ -101,8 +101,6 @@ final class TrackerCategoryStore: NSObject {
             guard let coreDataCategory = coreDataCategories.first else { return }
 
             coreDataCategory.name = category.name
-            let newTrackers = category.trackers.map { coreDataTracker(from: $0) }
-            coreDataCategory.trackers = NSSet(array: newTrackers)
 
             try context.save()
         } catch {
@@ -143,20 +141,31 @@ final class TrackerCategoryStore: NSObject {
     }
 
     private func addToExistingCategory(tracker: Tracker, categoryId: UUID) {
-        guard let category = readTrackerCategories().first(where: { $0.id == categoryId }) else {
-            print("Category with id \(categoryId) not found")
-            return
+        
+        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", categoryId as NSUUID)
+
+        do {
+            let coreDataCategories = try context.fetch(request)
+            guard let coreDataCategory = coreDataCategories.first else {
+                print("Category with id \(categoryId) not found")
+                return
+            }
+            
+            let newTrackerData = coreDataTracker(from: tracker)
+            coreDataCategory.addToTrackers(newTrackerData)
+            
+            try context.save()
+            
+        } catch {
+            print("Error updating category: \(error)")
         }
-
-        var updatedTrackers = category.trackers
-        updatedTrackers.append(tracker)
-
-        let updatedCategory = TrackerCategory(id: category.id, name: category.name, trackers: updatedTrackers, createdAt: category.createdAt)
-        updateTrackerCategory(category: updatedCategory)
+        
     }
 
     /// Get a TrackerCategory by id from the store
     func getTrackerCategory(by id: UUID) -> TrackerCategory? {
+        
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
 

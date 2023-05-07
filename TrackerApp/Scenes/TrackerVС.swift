@@ -140,30 +140,27 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        guard let sections = fetchedResultsController.sections else { return 0 }
-
-        return sections[section].numberOfObjects
-    }
+       
+        return dependencies.trackerStore.fetchedResultsControllerForTracker().fetchedObjects?.count ?? 0
+        }
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrackerCell", for: indexPath) as! TrackerCell
 
-        guard let tracker = dependencies.trackerStore.tracker(from: trackerData),
-              let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: TrackerCell.identifier,
-                for: indexPath) as? TrackerCell else { return .init() }
+        let trackerData = dependencies.trackerStore.fetchedResultsControllerForTracker().object(at: indexPath)
 
-        cell.backgroundShape.backgroundColor = tracker.color
-        cell.doneButton.backgroundColor = tracker.color
-        cell.titleLabel.text = tracker.title
-        cell.emojiLabel.text = tracker.emoji
+        if let tracker = dependencies.trackerStore.tracker(from: trackerData) {
+            cell.backgroundShape.backgroundColor = tracker.color
+            cell.doneButton.backgroundColor = tracker.color
+            cell.titleLabel.text = tracker.title
+            cell.emojiLabel.text = tracker.emoji
 
-        cell.daysLabel.text = "0 дней"
+            cell.daysLabel.text = "0 дней"
 
-        cell.delegate = self
-
+            cell.delegate = self
+        }
         return cell
     }
 
@@ -253,19 +250,13 @@ extension TrackerVC: UISearchResultsUpdating {
 
 extension TrackerVC: CreateTrackerVCDelegate {
 
-    func didCreateNewTracker(newCategory: TrackerCategory) {
-
+    
+    func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
+        
         let categoryStore = dependencies.trackerCategoryStore
+        
+        categoryStore.addTrackerToCategory(tracker: newTracker, categoryId: categoryID)
 
-        guard let tracker = newCategory.trackers.first else {
-            fatalError("TrackerVC says: 'There is no tracker in the new category'")
-        }
-
-        let categoryId = categoryStore.readTrackerCategories().first(where: { $0.name == newCategory.name })?.id
-        categoryStore.addTrackerToCategory(tracker: tracker, categoryId: categoryId)
-
-        // Обновление  данных и интерфейса
-        //filterResults(with: selectedDate)
     }
 }
 
