@@ -33,13 +33,22 @@ final class TrackerOrEventVC: UIViewController {
 
         let habitButton = Button(type: .primary(isActive: true), title: "Привычка") { [weak self] in
             guard let self = self else { return }
+
             let vc = CreateTrackerVC(dependencies: self.dependencies)
+            vc.isCreatingEvent = false
             vc.delegate = self.trackerVC
+
             self.present(vc, animated: true)
         }
 
         let eventButton = Button(type: .primary(isActive: true), title: "Нерегулярное событие") { [weak self] in
-            self?.dismiss(animated: true)
+            guard let self = self else { return }
+
+            let vc = CreateTrackerVC(dependencies: self.dependencies)
+            vc.isCreatingEvent = true
+            vc.delegate = self.trackerVC
+
+            present(vc, animated: true, completion: nil)
         }
 
         let vStack: UIStackView = {

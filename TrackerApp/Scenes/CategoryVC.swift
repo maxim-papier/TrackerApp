@@ -3,9 +3,10 @@ import UIKit
 final class CategoryVC: UIViewController {
 
     weak var delegate: CategorySelectionDelegate?
-
     private var dependencies: DependencyContainer
-    private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
+    private lazy var fetchedResultsController = {
+        dependencies.fetchedResultsControllerForCategory
+    }()
 
     private var selectedIndexPath: IndexPath?
     private var selectedCategoryId: UUID?
@@ -69,8 +70,8 @@ final class CategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.trackerCategoryStore.delegate = self
         dependencies.trackerCategoryStore.setupFetchedResultsController()
+        dependencies.trackerCategoryStore.delegate = self
         configure()
     }
 
@@ -169,10 +170,10 @@ extension CategoryVC: UITableViewDataSource {
         let lastIndex = numberOfCategories - 1
 
         switch (indexPath.row, numberOfCategories) {
-        case (firstIndex, 1): cell.buttonPosition = .single
-        case (firstIndex, _): cell.buttonPosition = .first
-        case (lastIndex, _): cell.buttonPosition = .last
-        default: cell.buttonPosition = .middle
+        case (firstIndex, 1): cell.categoryButtonPosition = .single
+        case (firstIndex, _): cell.categoryButtonPosition = .first
+        case (lastIndex, _): cell.categoryButtonPosition = .last
+        default: cell.categoryButtonPosition = .middle
         }
 
         return cell
@@ -190,10 +191,10 @@ extension CategoryVC: UITableViewDelegate {
         let lastIndex = numberOfCategories - 1
 
         switch (indexPath.row, numberOfCategories) {
-        case (firstIndex, 1): cell.buttonPosition = .single
-        case (firstIndex, _): cell.buttonPosition = .first
-        case (lastIndex, _): cell.buttonPosition = .last
-        default: cell.buttonPosition = .middle
+        case (firstIndex, 1): cell.categoryButtonPosition = .single
+        case (firstIndex, _): cell.categoryButtonPosition = .first
+        case (lastIndex, _): cell.categoryButtonPosition = .last
+        default: cell.categoryButtonPosition = .middle
         }
     }
 }
@@ -237,9 +238,15 @@ extension CategoryVC {
 // MARK: - Category Tracker Store Delegate
 
 extension CategoryVC: TrackerCategoryStoreDelegate {
-    func trackerCategoryStoreDidChangeContent() {
-        self.tableView.reloadData()
+
+    func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath) {
+        tableView.reloadData()
     }
+
+    func trackerCategoryStoreDidDeleteCategory(at indexPath: IndexPath) {
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+
 }
 
 

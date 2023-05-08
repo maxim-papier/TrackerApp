@@ -4,23 +4,20 @@ final class DependencyContainer {
 
     let trackerStore: TrackerStore
     let trackerCategoryStore: TrackerCategoryStore
-    let trackerRecordSore: TrackerRecordStore
+    let trackerRecordStore: TrackerRecordStore
 
     init(context: NSManagedObjectContext) {
 
         trackerStore = TrackerStore(context: context)
         trackerCategoryStore = TrackerCategoryStore(context: context)
-        trackerRecordSore = TrackerRecordStore(context: context)
+        trackerRecordStore = TrackerRecordStore(context: context)
     }
 
     var fetchedResultsControllerForCategory: NSFetchedResultsController<CategoryData> {
         return trackerCategoryStore.fetchedResultsControllerForCategory()
     }
 
-//    func fetchFilteredTrackerCategoriesByDate(selectedDate: Date) -> [TrackerCategory] {
-//
-//        let allCategories = fe
-//
-//    }
-
+    var fetchedResultsControllerForTrackers: NSFetchedResultsController<TrackerData> {
+        return trackerStore.fetchedResultsControllerForTracker()
+    }
 }

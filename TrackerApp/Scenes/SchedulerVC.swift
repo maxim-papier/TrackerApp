@@ -2,10 +2,14 @@ import UIKit
 
 final class SchedulerVC: UIViewController {
 
+    // MARK: - Properties
+
     let weekdays = WeekDay.allCases
     var selectedDays = WeekDaySet(weekDays: [])
 
     weak var delegate: AddSchedulerDelegate?
+
+    // MARK: - Initialization
 
     init(selectedDays: [WeekDay]) {
         let weekDaySet = WeekDaySet(weekDays: Set(selectedDays))
@@ -17,12 +21,15 @@ final class SchedulerVC: UIViewController {
         fatalError("It's time to retire buddy")
     }
 
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .mainColorYP(.whiteYP)
         configure()
     }
+
+    // MARK: - Private Methods
 
     private func configure() {
 
@@ -55,10 +62,10 @@ final class SchedulerVC: UIViewController {
         view.addSubview(tableView)
         view.addSubview(doneButton)
 
+        // Constraints
         let vInset: CGFloat = 38
 
         NSLayoutConstraint.activate([
-
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
 
@@ -74,29 +81,33 @@ final class SchedulerVC: UIViewController {
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension SchedulerVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool { return false }
 }
 
+// MARK: - UITableViewDataSource
 
 extension SchedulerVC: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return weekdays.count }
+        return weekdays.count
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let firstIndex = 0
         let lastIndex = weekdays.count - 1
         let cellID = SchedulerCell.identifier
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? SchedulerCell else { fatalError("Unable to dequeue \(cellID)") }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? SchedulerCell else {
+            fatalError("Unable to dequeue \(cellID)")
+        }
 
         let weekday = weekdays[indexPath.row]
 
         let isWeekdaySelected = selectedDays.weekDays.contains(weekday)
-        cell.toggleControl.isOn = isWeekdaySelected
 
+        cell.toggleControl.isOn = isWeekdaySelected
         cell.labelMenu.text = weekday.label
 
         switch (indexPath.row, weekdays.count) {
@@ -122,10 +133,8 @@ extension SchedulerVC: UITableViewDataSource {
     }
 }
 
-
-// MARK: - Protocol
+// MARK: - AddSchedulerDelegate Protocol
 
 protocol AddSchedulerDelegate: AnyObject {
     func didUpdateSelectedDays(selectedDays: WeekDaySet)
 }
-

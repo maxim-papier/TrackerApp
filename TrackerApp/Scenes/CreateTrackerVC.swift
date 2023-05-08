@@ -5,6 +5,8 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
     // MARK: Tracker creation properties
 
+    var isCreatingEvent: Bool = false
+
     var selectedTitle: String?
     var selectedCategory: TrackerCategory?
     var selectedSchedule = WeekDaySet(weekDays: [])
@@ -80,7 +82,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         let title: UILabel = {
             let label = UILabel()
-            label.text = "Новая привычка"
+            label.text = isCreatingEvent ? "Новое событие" : "Новая привычка"
             label.textColor = UIColor.mainColorYP(.blackYP)
             label.font = FontYP.medium16
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +96,10 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
 
         readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
             print("readyButton is ready")
-            self.delegate?.didCreateNewTracker(newCategory: self.createNewTracker())
+            
+            let newTracker = self.createNewTracker()
+            guard let selectedCategoryID = self.selectedCategory?.id else { return }
+            self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
             if let rootVC = UIApplication.shared.windows.first?.rootViewController {
                 rootVC.dismiss(animated: true, completion: nil)
             }
@@ -221,6 +226,7 @@ extension CreateTrackerVC {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1/6),
             heightDimension: .fractionalWidth(1/6))
+
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let groupSize = NSCollectionLayoutSize(
@@ -296,7 +302,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
         switch section {
         case 0: return 1
-        case 1: return 2
+        case 1: return isCreatingEvent ? 1 : 2
         case 2: return emojis.count
         case 3: return SelectionColorStyle.allCases.count
         default: fatalError("Unsupported section in numberOfItemsInSection")
@@ -336,14 +342,15 @@ extension CreateTrackerVC: UICollectionViewDataSource {
     }
 
     func listCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+
         let listCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ListCell.identifier,
             for: indexPath) as! ListCell
 
         if indexPath.item == 0 {
-            listCell.buttonPosition = .first
+            listCell.buttonPosition = isCreatingEvent ? .single : .first
             listCell.subtitleLabel.text = selectedCategory?.name
-        } else if indexPath.item == 1 {
+        } else if indexPath.item == 1 && !isCreatingEvent {
             listCell.buttonPosition = .last
             if !selectedSchedule.weekDays.isEmpty {
                 let days = selectedSchedule.weekDays.map { $0.shortLabel }
@@ -499,40 +506,45 @@ extension CreateTrackerVC: AddSchedulerDelegate {
 extension CreateTrackerVC {
 
     func isTrackerReadyToBeCreated() {
+        
         guard let title = selectedTitle, !title.isEmpty,
+              let category = selectedCategory,
               let emoji = selectedEmoji,
-              let color = selectedColor,
-              !selectedSchedule.weekDays.isEmpty else {
+              let color = selectedColor else {
             readyButton?.isActive = false
             return
         }
+
+        switch isCreatingEvent {
+        case false:
+            guard !selectedSchedule.weekDays.isEmpty else {
+                readyButton?.isActive = false
+                return
+            }
+        case true:
+            break
+        }
+
         print("DATA IS READY TO SAVE:")
         print("selectedTitle === \(title)")
+        print("selectedCategory === \(category)")
         print("selectedEmoji === \(emoji)")
         print("selectedColor === \(color)")
         print("selectedSchedule === \(selectedSchedule)")
+
         readyButton?.isActive = true
     }
 
-    func createNewTracker() -> TrackerCategory {
+    func createNewTracker() -> Tracker {
 
-        // Использую force unwrap, так как уже проверил,
-        // что значения существуют в методе isTrackerReadyToBeCreated()
         let title: String = selectedTitle!
         let emoji: String = selectedEmoji!
         let color: UIColor = UIColor.selectionColorYP(selectedColor!)!
         let day: Set<WeekDay>? = Set(selectedSchedule.weekDays)
-
-
-        // Создаем новый трекер
+        
         let newTracker = Tracker(title: title, emoji: emoji, color: color, day: day)
 
-        // Создаем новую категорию для нового трекера
-        let newCategory = TrackerCategory(name: selectedCategory?.name ?? "", trackers: [newTracker])
-
-        print("NEWCATEGORY === \(newCategory)")
-
-        return newCategory
+        return newTracker
     }
 }
 
@@ -548,11 +560,9 @@ extension CreateTrackerVC: CategorySelectionDelegate {
 // MARK: - PROTOCOL
 
 protocol CreateTrackerVCDelegate: AnyObject {
-    func didCreateNewTracker(newCategory: TrackerCategory)
+    func didCreateNewTracker(newTracker: Tracker, categoryID: UUID)
 }
 
 protocol CategorySelectionDelegate: AnyObject {
     func categorySelected(category: TrackerCategory)
 }
-
-
