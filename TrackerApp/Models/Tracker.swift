@@ -19,6 +19,8 @@ struct Tracker {
 }
 
 
+// MARK: - Mocks
+
 extension Tracker {
 
     static var mockCase1: Self {

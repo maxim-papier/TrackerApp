@@ -58,7 +58,7 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - CRUD methods
 
-    /// Create a new TrackerCategory in the store
+    // Create a new TrackerCategory in the store
     func createTrackerCategory(category: TrackerCategory) -> Bool {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", category.name)
@@ -78,7 +78,7 @@ final class TrackerCategoryStore: NSObject {
         }
     }
 
-    /// Read all TrackerCategories from the store
+    // Read all TrackerCategories from the store
     func readTrackerCategories() -> [TrackerCategory] {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
 
@@ -91,7 +91,7 @@ final class TrackerCategoryStore: NSObject {
         }
     }
 
-    /// Update an existing TrackerCategory in the store
+    // Update an existing TrackerCategory in the store
     func updateTrackerCategory(category: TrackerCategory) {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
@@ -108,7 +108,7 @@ final class TrackerCategoryStore: NSObject {
         }
     }
 
-    /// Delete a TrackerCategory by id from the store
+    // Delete a TrackerCategory by id from the store
     func deleteTrackerCategory(by id: UUID) {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -125,9 +125,10 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - Adding new tracker into category
 
-    /// Add a tracker to an existing category or create a new category if categoryId is not provided
-    func addTrackerToCategory(tracker: Tracker, categoryId: UUID? = nil) {
-        guard let categoryId = categoryId else {
+    // Add a tracker to an existing category or create a new category if categoryId is not provided
+    func addTrackerToCategory(tracker: Tracker, categoryID: UUID? = nil) {
+        
+        guard let categoryId = categoryID else {
             createNewCategory(with: tracker)
             return
         }
@@ -155,6 +156,8 @@ final class TrackerCategoryStore: NSObject {
             let newTrackerData = coreDataTracker(from: tracker)
             coreDataCategory.addToTrackers(newTrackerData)
             
+            print("CHECKING 📅 BEFORE SAVING TO CONTEXT:  \(newTrackerData.schedule)")
+            
             try context.save()
             
         } catch {
@@ -163,7 +166,7 @@ final class TrackerCategoryStore: NSObject {
         
     }
 
-    /// Get a TrackerCategory by id from the store
+    // Get a TrackerCategory by id from the store
     func getTrackerCategory(by id: UUID) -> TrackerCategory? {
         
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
@@ -181,7 +184,7 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - Clean all categories data
 
-    /// Clear all category data from the store
+    // Clear all category data from the store
     func clearCategoryData() {
         print("Clearing category data...")
 
@@ -234,7 +237,7 @@ final class TrackerCategoryStore: NSObject {
         coreDataTracker.createdAt = tracker.createdAt
 
         let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = weekDaySet.toData()
+        let scheduleData = weekDaySet.toString()
         coreDataTracker.schedule = scheduleData
 
         return coreDataTracker
@@ -255,7 +258,7 @@ final class TrackerCategoryStore: NSObject {
 
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
-            if let weekDaySet = WeekDaySet.fromData(scheduleData) {
+            if let weekDaySet = WeekDaySet.fromString(scheduleData) {
                 schedule = weekDaySet.weekDays
             }
         }

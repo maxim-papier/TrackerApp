@@ -10,7 +10,6 @@ final class TrackerVC: UIViewController {
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     private var selectedDate = Date()
-    private var completedTrackers: [TrackerRecord] = []
 
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchText = ""
@@ -25,6 +24,7 @@ final class TrackerVC: UIViewController {
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
     }()
+
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
@@ -248,15 +248,13 @@ extension TrackerVC: UISearchResultsUpdating {
 
 // MARK: - CreateTrackerVC delegate
 
+
 extension TrackerVC: CreateTrackerVCDelegate {
 
-    
+    // Save tracker to the category with current ID
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
-        
-        let categoryStore = dependencies.trackerCategoryStore
-        
-        categoryStore.addTrackerToCategory(tracker: newTracker, categoryId: categoryID)
-
+        dependencies.trackerCategoryStore.addTrackerToCategory(tracker: newTracker,
+                                                               categoryID: categoryID)
     }
 }
 
@@ -266,51 +264,28 @@ extension TrackerVC: CreateTrackerVCDelegate {
 extension TrackerVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
-
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
-
+        
         guard let trackerID = trackerData.id else {
             print("Error: Tracker ID is nil")
             return
         }
 
-        if let index = completedTrackers.firstIndex(where: { $0.id == trackerID }) {
-            completedTrackers.remove(at: index)
+        if dependencies.trackerRecordStore.recordExists(forTrackerWithID: trackerID) {
+            dependencies.trackerRecordStore.deleteRecord(by: trackerID)
         } else {
-            let record = TrackerRecord(id: trackerID, date: selectedDate)
-            completedTrackers.append(record)
-            dependencies.trackerRecordStore.addRecord(forTrackerWithID: trackerID)
+            dependencies.trackerRecordStore.addOrUpdateRecord(forTrackerWithID: trackerID)
         }
-        print("COMPLETE TRACKERS === \(completedTrackers)")
     }
+
 }
 
 
 // MARK: - Tracker Store Delegate
 
 extension TrackerVC: TrackerStoreDelegate {
-
-    func trackerStoreDidChange(changeType: TrackerStoreChangeType, object: Any, at indexPath: IndexPath?, newIndexPath: IndexPath?) {
-
-        switch changeType {
-
-        case .insert:
-            guard let newIndexPath = newIndexPath else { return }
-            collectionView.insertItems(at: [newIndexPath])
-
-        case .delete:
-            guard let indexPath = indexPath else { return }
-            collectionView.deleteItems(at: [indexPath])
-
-        case .update:
-            guard let indexPath = indexPath else { return }
-            collectionView.reloadItems(at: [indexPath])
-
-        case .move:
-            guard let indexPath = indexPath, let newIndexPath = newIndexPath else { return }
-            collectionView.moveItem(at: indexPath, to: newIndexPath)
-        }
+    func trackerStoreDidChangeContent() {
+        collectionView.reloadData()
     }
-
 }

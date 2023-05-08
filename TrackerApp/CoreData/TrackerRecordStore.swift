@@ -11,24 +11,50 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - CRUD methods
 
-    func addRecord(forTrackerWithID trackerID: UUID) {
-        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
+    func addOrUpdateRecord(forTrackerWithID trackerID: UUID) {
+        
+        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+        request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
+    
 
         do {
-            let fetchedTrackers = try context.fetch(request)
-            guard let coreDataTracker = fetchedTrackers.first else { return }
+            let fetchedRecords = try context.fetch(request)
 
-            let record = TrackerRecordData(context: context)
-            record.id = UUID()
-            record.date = Date()
-            record.tracker = coreDataTracker
+            if let coreDataRecord = fetchedRecords.first {
+                coreDataRecord.doneDate = Date()
+            } else {
+                let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+                request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
+
+                let fetchedTrackers = try context.fetch(request)
+                guard let coreDataTracker = fetchedTrackers.first else { return }
+
+                let record = TrackerRecordData(context: context)
+                record.doneDate = Date()
+                record.tracker = coreDataTracker
+            }
 
             try context.save()
+            
         } catch {
-            print("Error adding tracker record: \(error)")
+            print("Error adding or updating tracker record: \(error)")
         }
     }
+    
+    func recordExists(forTrackerWithID trackerID: UUID) -> Bool {
+        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+        request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
+
+        do {
+            let fetchedRecords = try context.fetch(request)
+            return !fetchedRecords.isEmpty
+        } catch {
+            print("Error checking if tracker record exists: \(error)")
+            return false
+        }
+    }
+
+
 
     func deleteRecord(by id: UUID) {
 
@@ -76,55 +102,14 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - Conversion methods
 
-    private func coreDataTracker(from tracker: Tracker) -> TrackerData {
-
-        let coreDataTracker = TrackerData(context: context)
-        coreDataTracker.id = tracker.id
-        coreDataTracker.title = tracker.title
-        coreDataTracker.emoji = tracker.emoji
-        coreDataTracker.colorHEX = tracker.color.toHexString()
-        coreDataTracker.createdAt = tracker.createdAt
-
-        let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = weekDaySet.toData()
-        coreDataTracker.schedule = scheduleData
-
-        return coreDataTracker
-    }
-
-    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
-
-        guard
-            let id = coreDataTracker.id,
-            let title = coreDataTracker.title,
-            let emoji = coreDataTracker.emoji,
-            let colorHex = coreDataTracker.colorHEX,
-            let createdAt = coreDataTracker.createdAt
-        else {
-            return nil
-        }
-
-        let color = UIColor(hexString: colorHex)
-
-        var schedule = Set<WeekDay>()
-        if let scheduleData = coreDataTracker.schedule {
-            if let weekDaySet = WeekDaySet.fromData(scheduleData) {
-                schedule = weekDaySet.weekDays
-            }
-        }
-
-        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
-    }
-
     private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
 
             guard
-                let id = coreDataRecord.id,
-                let date = coreDataRecord.date
+                let date = coreDataRecord.doneDate
             else {
                 return nil
             }
 
-            return TrackerRecord(id: id, date: date)
+            return TrackerRecord(date: date)
         }
 }

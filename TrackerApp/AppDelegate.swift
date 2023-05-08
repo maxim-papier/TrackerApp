@@ -47,12 +47,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        saveData()
-    }
-
+    func applicationWillTerminate(_ application: UIApplication) { saveData() }
+    func applicationDidEnterBackground(_ application: UIApplication) { saveData() }
+    
     func getContext() -> NSManagedObjectContext {
         return persistentContainer.viewContext
     }
 }
+
 

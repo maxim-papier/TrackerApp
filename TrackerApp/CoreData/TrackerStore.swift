@@ -11,10 +11,7 @@ enum TrackerStoreChangeType {
 // MARK: - TrackerStoreDelegate
 
 protocol TrackerStoreDelegate: AnyObject {
-    func trackerStoreDidChange(changeType: TrackerStoreChangeType,
-                               object: Any,
-                               at indexPath: IndexPath?,
-                               newIndexPath: IndexPath?)
+    func trackerStoreDidChangeContent()
 }
 
 // MARK: - TrackerStore
@@ -100,8 +97,9 @@ final class TrackerStore: NSObject {
             coreDataTracker.emoji = tracker.emoji
             coreDataTracker.title = tracker.title
 
-            let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-            let scheduleData = try JSONEncoder().encode(weekDaySet)
+            let weekDays = tracker.day ?? Set<WeekDay>()
+            let weekDaySet = WeekDaySet(weekDays: weekDays)
+            let scheduleData = weekDaySet.toString()
             coreDataTracker.schedule = scheduleData
 
             try context.save()
@@ -134,8 +132,9 @@ final class TrackerStore: NSObject {
         coreDataTracker.colorHEX = tracker.color.toHexString()
         coreDataTracker.createdAt = tracker.createdAt
 
-        let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = weekDaySet.toData()
+        let weekDays = tracker.day ?? Set<WeekDay>()
+        let weekDaySet = WeekDaySet(weekDays: weekDays)
+        let scheduleData = weekDaySet.toString()
         coreDataTracker.schedule = scheduleData
 
         return coreDataTracker
@@ -156,7 +155,7 @@ final class TrackerStore: NSObject {
 
         var schedule = Set<WeekDay>()
         if let scheduleData = coreDataTracker.schedule {
-            if let weekDaySet = WeekDaySet.fromData(scheduleData) {
+            if let weekDaySet = WeekDaySet.fromString(scheduleData) {
                 schedule = weekDaySet.weekDays
             }
         }
@@ -186,8 +185,12 @@ final class TrackerStore: NSObject {
     // Filter by text
 
     func updatePredicateForTextFilter(searchText: String) {
-        let textPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
-        fetchedResultsController!.fetchRequest.predicate = textPredicate
+        if searchText.isEmpty {
+            fetchedResultsController!.fetchRequest.predicate = nil
+        } else {
+            let textPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
+            fetchedResultsController!.fetchRequest.predicate = textPredicate
+        }
         performFetch()
     }
 
@@ -200,23 +203,19 @@ final class TrackerStore: NSObject {
     }
 
     private func createWeekDayPredicate(for date: Date) -> NSPredicate {
-
         let selectedWeekDay = Calendar.current.component(.weekday, from: date)
         guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else {
             return NSPredicate(value: false)
         }
 
         let selectedWeekDayValue = selectedWeekDayEnum.rawValue
+        let searchString = "\"weekDays\":[\(selectedWeekDayValue)]"
 
-        let lhs = NSExpression(forKeyPath: "schedule")
-        let rhs = NSExpression(forConstantValue: selectedWeekDayValue)
-        let containsSelectedWeekDay = NSComparisonPredicate(leftExpression: lhs, rightExpression: rhs, modifier: .direct, type: .contains, options: [])
-
-        return containsSelectedWeekDay
+        return NSPredicate(format: "schedule CONTAINS %@", searchString)
     }
 
     // Fetch
-
+    
     private func performFetch() {
         do {
             try fetchedResultsController?.performFetch()
@@ -224,36 +223,16 @@ final class TrackerStore: NSObject {
             print("Error performing fetch after updating predicate: \(error)")
         }
     }
-
-
-
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {  }
 
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
-                    didChange anObject: Any,
-                    at indexPath: IndexPath?,
-                    for type: NSFetchedResultsChangeType,
-                    newIndexPath: IndexPath?) {
-
-        var changeType: TrackerStoreChangeType
-
-        switch type {
-        case .insert:
-            changeType = .insert
-        case .delete:
-            changeType = .delete
-        case .update:
-            changeType = .update
-        case .move:
-            changeType = .move
-        @unknown default:
-            fatalError("Unhandled case in NSFetchedResultsControllerDelegate")
-        }
-
-        delegate?.trackerStoreDidChange(changeType: changeType, object: anObject, at: indexPath, newIndexPath: newIndexPath)
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        delegate?.trackerStoreDidChangeContent()
     }
 }
+
+

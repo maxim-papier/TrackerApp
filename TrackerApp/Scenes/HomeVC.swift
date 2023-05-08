@@ -27,7 +27,7 @@ final class HomeVC: UITabBarController {
         print("---------")
         print("Trackers:")
         categoriesInBase.forEach {
-            print($0.trackers.map { "Name — \($0.title) Schedule — \(String(describing: $0.day))" }.joined(separator: "\n"))
+            print($0.trackers.map { "Name — \($0.title) Schedule — \(String(describing: $0.day)) \($0.id)" }.joined(separator: "\n"))
         }
         let recordsInBase = dependencies.trackerRecordStore.fetchAllRecords()
         print("REC: \(String(describing: recordsInBase.first))")
