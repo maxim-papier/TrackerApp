@@ -85,29 +85,6 @@ final class TrackerStore: NSObject {
         }
     }
 
-    func updateTracker(tracker: Tracker) {
-        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
-
-        do {
-            let coreDataTrackers = try context.fetch(request)
-            guard let coreDataTracker = coreDataTrackers.first else { return }
-
-            coreDataTracker.colorHEX = tracker.color.toHexString()
-            coreDataTracker.emoji = tracker.emoji
-            coreDataTracker.title = tracker.title
-
-            let weekDays = tracker.day ?? Set<WeekDay>()
-            let weekDaySet = WeekDaySet(weekDays: weekDays)
-            let scheduleData = weekDaySet.toString()
-            coreDataTracker.schedule = scheduleData
-
-            try context.save()
-        } catch {
-            print("Error updating tracker: \(error)")
-        }
-    }
-
     func deleteTracker(by id: UUID) {
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -132,10 +109,13 @@ final class TrackerStore: NSObject {
         coreDataTracker.colorHEX = tracker.color.toHexString()
         coreDataTracker.createdAt = tracker.createdAt
 
-        let weekDays = tracker.day ?? Set<WeekDay>()
-        let weekDaySet = WeekDaySet(weekDays: weekDays)
-        let scheduleData = weekDaySet.toString()
-        coreDataTracker.schedule = scheduleData
+        if let weekDays = tracker.day, !weekDays.isEmpty {
+            let weekDaySet = WeekDaySet(weekDays: weekDays)
+            let scheduleData = weekDaySet.toString()
+            coreDataTracker.schedule = scheduleData
+        } else {
+            coreDataTracker.schedule = "no_schedule"
+        }
 
         return coreDataTracker
     }
@@ -211,7 +191,16 @@ final class TrackerStore: NSObject {
         let selectedWeekDayValue = selectedWeekDayEnum.rawValue
         let searchString = "\"weekDays\":[\(selectedWeekDayValue)]"
 
-        return NSPredicate(format: "schedule CONTAINS %@", searchString)
+        // Предикат для проверки наличия выбранного дня недели в schedule
+        let containsSelectedWeekDay = NSPredicate(format: "schedule CONTAINS %@", searchString)
+
+        // Предикат для проверки наличия маркера "no_schedule"
+        let noSchedulePredicate = NSPredicate(format: "schedule == 'no_schedule'")
+
+        // Объединение двух предикатов с использованием OR
+        let combinedPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
+
+        return combinedPredicate
     }
 
     // Fetch

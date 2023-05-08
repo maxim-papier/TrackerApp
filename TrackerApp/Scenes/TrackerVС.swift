@@ -39,7 +39,7 @@ final class TrackerVC: UIViewController {
         super.viewDidLoad()
         dependencies.trackerStore.setupFetchedResultsController()
         dependencies.trackerStore.delegate = self
-        filterResults(with: selectedDate)
+        filterResults(with: Date())
         setup()
     }
 
@@ -278,7 +278,6 @@ extension TrackerVC: TrackerCellDelegate {
             dependencies.trackerRecordStore.addOrUpdateRecord(forTrackerWithID: trackerID)
         }
     }
-
 }
 
 

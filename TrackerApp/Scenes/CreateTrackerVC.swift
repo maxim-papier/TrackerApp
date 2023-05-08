@@ -506,6 +506,7 @@ extension CreateTrackerVC: AddSchedulerDelegate {
 extension CreateTrackerVC {
 
     func isTrackerReadyToBeCreated() {
+        
         guard let title = selectedTitle, !title.isEmpty,
               let category = selectedCategory,
               let emoji = selectedEmoji,

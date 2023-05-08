@@ -236,9 +236,13 @@ final class TrackerCategoryStore: NSObject {
         coreDataTracker.colorHEX = tracker.color.toHexString()
         coreDataTracker.createdAt = tracker.createdAt
 
-        let weekDaySet = WeekDaySet(weekDays: tracker.day ?? Set())
-        let scheduleData = weekDaySet.toString()
-        coreDataTracker.schedule = scheduleData
+        if let weekDays = tracker.day, !weekDays.isEmpty {
+            let weekDaySet = WeekDaySet(weekDays: weekDays)
+            let scheduleData = weekDaySet.toString()
+            coreDataTracker.schedule = scheduleData
+        } else {
+            coreDataTracker.schedule = "no_schedule"
+        }
 
         return coreDataTracker
     }
