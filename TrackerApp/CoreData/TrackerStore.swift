@@ -189,18 +189,13 @@ final class TrackerStore: NSObject {
         }
 
         let selectedWeekDayValue = selectedWeekDayEnum.rawValue
-        let searchString = "\"weekDays\":[\(selectedWeekDayValue)]"
+        let searchString = "\"weekDays\":"
+        
+        let containsSelectedWeekDay = NSPredicate(format: "schedule CONTAINS %@ AND schedule CONTAINS[cd] %@", searchString, String(selectedWeekDayValue))
 
-        // Предикат для проверки наличия выбранного дня недели в schedule
-        let containsSelectedWeekDay = NSPredicate(format: "schedule CONTAINS %@", searchString)
-
-        // Предикат для проверки наличия маркера "no_schedule"
-        let noSchedulePredicate = NSPredicate(format: "schedule == 'no_schedule'")
-
-        // Объединение двух предикатов с использованием OR
-        let combinedPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
-
-        return combinedPredicate
+        let noSchedulePredicate = NSPredicate(format: "schedule == %@", "no_schedule")
+        
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
     }
 
     // Fetch

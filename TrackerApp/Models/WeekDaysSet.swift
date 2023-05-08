@@ -11,6 +11,7 @@ class WeekDaySet: NSObject, Codable {
 extension WeekDaySet {
 
     func toString() -> String {
+        
         let encoder = JSONEncoder()
 
         guard
@@ -25,7 +26,13 @@ extension WeekDaySet {
     }
 
     static func fromString(_ string: String) -> WeekDaySet? {
+        
+        if string == "no_schedule" {
+            return WeekDaySet(weekDays: Set())
+        }
+        
         let decoder = JSONDecoder()
+        
         guard let data = string.data(using: .utf8) else {
             print("Error converting JSON string to data")
             return nil
