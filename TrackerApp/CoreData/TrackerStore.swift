@@ -198,8 +198,9 @@ final class TrackerStore: NSObject {
         return NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
     }
 
-    // Fetch
     
+    // MARK: - Fetching methods
+
     private func performFetch() {
         do {
             try fetchedResultsController?.performFetch()

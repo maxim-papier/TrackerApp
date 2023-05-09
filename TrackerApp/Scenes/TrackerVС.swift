@@ -7,6 +7,7 @@ enum FilterType {
 
 final class TrackerVC: UIViewController {
 
+    
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     private var selectedDate = Date()
@@ -42,7 +43,6 @@ final class TrackerVC: UIViewController {
         filterResults(with: Date())
         setup()
     }
-
 
     private func setup() {
         view.backgroundColor = .mainColorYP(.whiteYP)
@@ -179,6 +179,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath) as? TrackerHeader else { return .init() }
 
         header.categoryLabel.text = fetchedResultsController.sections?[indexPath.section].name
+                
         return header
     }
 }
@@ -234,12 +235,14 @@ extension TrackerVC: UISearchResultsUpdating {
         reloadCollectionAfterFiltering(filterType: .search)
     }
 
-
     private func reloadCollectionAfterFiltering(filterType: FilterType) {
         updatePlaceholder(for: filterType)
         collectionView.reloadData()
     }
 
+    
+// MARK: - Placeholder State
+    
     private func updatePlaceholder(for filterType: FilterType) {
         switch filterType {
         case .search: placeholder.placeholderType = .noSearchResults

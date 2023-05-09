@@ -3,27 +3,29 @@ import CoreData
 
 final class TrackerRecordStore: NSObject {
 
+    // MARK: - Properties
+    
     private let context: NSManagedObjectContext
-
+    
+    // MARK: - Initialization
+    
     init(context: NSManagedObjectContext) {
         self.context = context
     }
 
-    // MARK: - CRUD methods
-
+    // MARK: - Main method
     
     func toggleRecord(forTrackerWithID trackerID: UUID) {
-        
-        // Check if a tracker with an ID is already done
         if let recordID = getRecordID(forTrackerWithID: trackerID) {
             deleteRecord(by: recordID)
         } else {
             addRecord(forTrackerWithID: trackerID)
         }
     }
-
+    
+    // MARK: - CRUD methods
+    
     private func addRecord(forTrackerWithID trackerID: UUID) {
-        
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
 
@@ -45,7 +47,6 @@ final class TrackerRecordStore: NSObject {
     }
     
     private func deleteRecord(by id: UUID) {
-
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
 
@@ -60,7 +61,9 @@ final class TrackerRecordStore: NSObject {
             print("Error deleting tracker record: \(error)")
         }
     }
-
+    
+    // MARK: - Fetching methods
+    
     func fetchAllRecords() -> [TrackerRecord] {
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
 
@@ -73,9 +76,7 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    
     func getRecordID(forTrackerWithID trackerID: UUID) -> UUID? {
-        
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
         request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
 
@@ -87,13 +88,10 @@ final class TrackerRecordStore: NSObject {
             return nil
         }
     }
-
-
-
-    //MARK: - Clear all records
-
+    
+    // MARK: - Clear all records
+    
     func clearRecordData() {
-
         print("Clearing records data...")
 
         let request: NSFetchRequest<NSFetchRequestResult> = TrackerRecordData.fetchRequest()
@@ -107,16 +105,15 @@ final class TrackerRecordStore: NSObject {
     }
 
     // MARK: - Conversion method
-
+    
     private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
-
-            guard
-                let id = coreDataRecord.id,
-                let date = coreDataRecord.doneDate
-            else {
-                return nil
-            }
-
-            return TrackerRecord(id: id, date: date)
+        guard
+            let id = coreDataRecord.id,
+            let date = coreDataRecord.doneDate
+        else {
+            return nil
         }
+
+        return TrackerRecord(id: id, date: date)
+    }
 }

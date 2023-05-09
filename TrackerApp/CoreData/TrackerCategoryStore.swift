@@ -156,7 +156,7 @@ final class TrackerCategoryStore: NSObject {
             let newTrackerData = coreDataTracker(from: tracker)
             coreDataCategory.addToTrackers(newTrackerData)
             
-            print("CHECKING 📅 BEFORE SAVING TO CONTEXT:  \(newTrackerData.schedule)")
+            print("CHECKING 📅 BEFORE SAVING TO CONTEXT:  \(String(describing: newTrackerData.schedule))")
             
             try context.save()
             
