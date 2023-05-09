@@ -44,10 +44,14 @@ final class TrackerStore: NSObject {
 
     private func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
         let sortDescriptor = "createdAt"
+        let categorySortDescriptor = "category.name"
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: false)]
+        request.sortDescriptors = [
+            NSSortDescriptor(key: categorySortDescriptor, ascending: true),
+            NSSortDescriptor(key: sortDescriptor, ascending: false)
+        ]
 
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: "category.name", cacheName: nil)
         return fetchedResultsController
     }
 

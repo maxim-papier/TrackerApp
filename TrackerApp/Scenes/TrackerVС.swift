@@ -99,6 +99,7 @@ final class TrackerVC: UIViewController {
         searchController.obscuresBackgroundDuringPresentation = true
         searchController.searchBar.searchTextField.textColor = .mainColorYP(.grayYP)
         searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.delegate = self
     }
     
     @objc private func addNewTracker() {
@@ -141,7 +142,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
        
-        return dependencies.trackerStore.fetchedResultsControllerForTracker().fetchedObjects?.count ?? 0
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
         }
     
     // Cell
@@ -225,6 +226,10 @@ extension TrackerVC: UISearchResultsUpdating {
         }
     }
     
+    private func resetSearchFilter() {
+        filterResults(with: selectedDate)
+    }
+    
     private func filterResults(with date: Date) {
         dependencies.trackerStore.updatePredicateForWeekDayFilter(date: date)
         reloadCollectionAfterFiltering(filterType: .date)
@@ -239,6 +244,7 @@ extension TrackerVC: UISearchResultsUpdating {
         updatePlaceholder(for: filterType)
         collectionView.reloadData()
     }
+    
 
     
 // MARK: - Placeholder State
@@ -298,3 +304,15 @@ extension TrackerVC: TrackerStoreDelegate {
         collectionView.reloadData()
     }
 }
+
+// MARK: - Searchbar Delegate
+
+extension TrackerVC: UISearchBarDelegate {
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if searchBar.text?.isEmpty ?? true {
+            resetSearchFilter()
+        }
+    }
+}
+
