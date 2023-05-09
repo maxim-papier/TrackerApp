@@ -6,6 +6,10 @@ final class TrackerCell: UICollectionViewCell {
 
     var delegate: TrackerCellDelegate?
 
+    func setInitialDoneButtonState(isDone: Bool) {
+        doneButtonStateChange = isDone
+    }
+
     var doneButtonStateChange: Bool = false {
         didSet { updateDoneButton() }
     }

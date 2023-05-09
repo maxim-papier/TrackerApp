@@ -11,52 +11,40 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - CRUD methods
 
-    func addOrUpdateRecord(forTrackerWithID trackerID: UUID) {
-        
-        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
-        request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
     
+    func toggleRecord(forTrackerWithID trackerID: UUID) {
+        
+        // Check if a tracker with an ID is already done
+        if let recordID = getRecordID(forTrackerWithID: trackerID) {
+            deleteRecord(by: recordID)
+        } else {
+            addRecord(forTrackerWithID: trackerID)
+        }
+    }
+
+    private func addRecord(forTrackerWithID trackerID: UUID) {
+        
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
 
         do {
-            let fetchedRecords = try context.fetch(request)
+            let fetchedTrackers = try context.fetch(request)
+            guard let coreDataTracker = fetchedTrackers.first else { return }
 
-            if let coreDataRecord = fetchedRecords.first {
-                coreDataRecord.doneDate = Date()
-            } else {
-                let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
-                request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
-
-                let fetchedTrackers = try context.fetch(request)
-                guard let coreDataTracker = fetchedTrackers.first else { return }
-
-                let record = TrackerRecordData(context: context)
-                record.doneDate = Date()
-                record.tracker = coreDataTracker
-            }
+            let record = TrackerRecordData(context: context)
+            record.id = UUID()
+            record.doneDate = Date()
+            record.tracker = coreDataTracker
 
             try context.save()
-            
+            print("Tracker is done now")
+
         } catch {
-            print("Error adding or updating tracker record: \(error)")
+            print("Error adding tracker record: \(error)")
         }
     }
     
-    func recordExists(forTrackerWithID trackerID: UUID) -> Bool {
-        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
-        request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
-
-        do {
-            let fetchedRecords = try context.fetch(request)
-            return !fetchedRecords.isEmpty
-        } catch {
-            print("Error checking if tracker record exists: \(error)")
-            return false
-        }
-    }
-
-
-
-    func deleteRecord(by id: UUID) {
+    private func deleteRecord(by id: UUID) {
 
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -65,7 +53,9 @@ final class TrackerRecordStore: NSObject {
             let coreDataRecords = try context.fetch(request)
             guard let coreDataRecord = coreDataRecords.first else { return }
             context.delete(coreDataRecord)
+            
             try context.save()
+            print("Tracker is not done now")
         } catch {
             print("Error deleting tracker record: \(error)")
         }
@@ -82,6 +72,22 @@ final class TrackerRecordStore: NSObject {
             return []
         }
     }
+    
+    
+    func getRecordID(forTrackerWithID trackerID: UUID) -> UUID? {
+        
+        let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+        request.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
+
+        do {
+            let fetchedRecords = try context.fetch(request)
+            return fetchedRecords.first?.id
+        } catch {
+            print("Error getting tracker record ID: \(error)")
+            return nil
+        }
+    }
+
 
 
     //MARK: - Clear all records
@@ -100,16 +106,17 @@ final class TrackerRecordStore: NSObject {
         }
     }
 
-    // MARK: - Conversion methods
+    // MARK: - Conversion method
 
     private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
 
             guard
+                let id = coreDataRecord.id,
                 let date = coreDataRecord.doneDate
             else {
                 return nil
             }
 
-            return TrackerRecord(date: date)
+            return TrackerRecord(id: id, date: date)
         }
 }

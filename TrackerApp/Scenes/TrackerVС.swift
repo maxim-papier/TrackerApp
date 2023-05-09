@@ -160,6 +160,11 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.daysLabel.text = "0 дней"
 
             cell.delegate = self
+            
+            // Check if a record exists for the tracker and set the initial done button state accordingly
+            let trackerID = tracker.id
+            let recordID = dependencies.trackerRecordStore.getRecordID(forTrackerWithID: trackerID)
+            cell.setInitialDoneButtonState(isDone: recordID != nil)
         }
         return cell
     }
@@ -205,7 +210,7 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
 }
 
 
-// MARK: - SEARCH LOGIC
+// MARK: - Filtering
 
 extension TrackerVC: UISearchResultsUpdating {
     
@@ -260,7 +265,7 @@ extension TrackerVC: CreateTrackerVCDelegate {
 }
 
 
-// MARK: - TrackerCellDelegate
+// MARK: - TrackerCellDelegate (Record tracker)
 
 extension TrackerVC: TrackerCellDelegate {
 
@@ -272,12 +277,13 @@ extension TrackerVC: TrackerCellDelegate {
             print("Error: Tracker ID is nil")
             return
         }
-
-        if dependencies.trackerRecordStore.recordExists(forTrackerWithID: trackerID) {
-            dependencies.trackerRecordStore.deleteRecord(by: trackerID)
-        } else {
-            dependencies.trackerRecordStore.addOrUpdateRecord(forTrackerWithID: trackerID)
-        }
+        
+        let recordStore = dependencies.trackerRecordStore
+        recordStore.toggleRecord(forTrackerWithID: trackerID)
+    }
+    
+    func trackerIsDone(trackerID: UUID) -> Bool {
+        return dependencies.trackerRecordStore.getRecordID(forTrackerWithID: trackerID) != nil
     }
 }
 
