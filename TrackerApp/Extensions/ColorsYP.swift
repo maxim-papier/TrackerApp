@@ -40,3 +40,54 @@ extension UIColor {
         return UIColor(named: color.rawValue)
     }
 }
+
+
+// MARK: - CONVERTERS
+
+extension UIColor {
+
+    // HEX to String
+
+    func toHexString() -> String {
+
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        let redInt = Int(red * 255.0)
+        let greenInt = Int(green * 255.0)
+        let blueInt = Int(blue * 255.0)
+        let alphaInt = Int(alpha * 255.0)
+
+        let hexString = String(format: "#%02X%02X%02X%02X", redInt, greenInt, blueInt, alphaInt)
+        return hexString.uppercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+
+extension UIColor {
+
+    // String to HEX
+
+    convenience init(hexString: String) {
+
+        let scanner = Scanner(string: hexString)
+
+        if hexString.hasPrefix("#") {
+            scanner.currentIndex = hexString.index(after: hexString.startIndex)
+        }
+
+        var hexNumber: UInt64 = 0
+        scanner.scanHexInt64(&hexNumber)
+
+        let red = CGFloat((hexNumber & 0xFF000000) >> 24) / 255.0
+        let green = CGFloat((hexNumber & 0x00FF0000) >> 16) / 255.0
+        let blue = CGFloat((hexNumber & 0x0000FF00) >> 8) / 255.0
+        let alpha = CGFloat(hexNumber & 0x000000FF) / 255.0
+
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
+    }
+}

@@ -4,13 +4,19 @@ struct TrackerCategory {
 
     let name: String
     let trackers: [Tracker]
+    let createdAt: Date
+    let id: UUID
 
-    init(name: String, trackers: [Tracker]) {
+    init(id: UUID = UUID(), name: String, trackers: [Tracker], createdAt: Date = Date()) {
+        self.id = id
         self.name = name
         self.trackers = trackers
+        self.createdAt = createdAt
     }
 }
 
+
+// MARK: - MOCKS
 
 extension TrackerCategory {
     static var mockCategory1: Self {
@@ -26,18 +32,3 @@ extension TrackerCategory: Sequence {
         return trackers.makeIterator()
     }
 }
-
-extension TrackerCategory {
-    var startIndex: Int {
-        return trackers.startIndex
-    }
-
-    var endIndex: Int {
-        return trackers.endIndex
-    }
-
-    subscript(index: Int) -> Tracker {
-        return trackers[index]
-    }
-}
-

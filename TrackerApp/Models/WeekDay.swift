@@ -1,4 +1,4 @@
-enum WeekDay: Int, CaseIterable {
+enum WeekDay: Int, CaseIterable, Codable {
     case sunday = 1
     case monday, tuesday, wednesday, thursday, friday, saturday
 
@@ -41,9 +41,10 @@ enum WeekDay: Int, CaseIterable {
     }
 }
 
-
 extension WeekDay {
     static var mock01: Set<WeekDay> = [.monday, .friday, .sunday]
     static var mock02: Set<WeekDay> = [.sunday, .monday, .tuesday, .wednesday, .tuesday, .friday]
     static var mock03: Set<WeekDay> = [.tuesday, .thursday]
 }
+
+

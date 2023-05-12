@@ -4,6 +4,17 @@ final class TrackerOrEventVC: UIViewController {
 
     var trackerVC: TrackerVC?
 
+    private var dependencies: DependencyContainer
+
+    init(dependencies: DependencyContainer) {
+        self.dependencies = dependencies
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -21,13 +32,23 @@ final class TrackerOrEventVC: UIViewController {
         }()
 
         let habitButton = Button(type: .primary(isActive: true), title: "Привычка") { [weak self] in
-            let vc = CreateTrackerVC()
-            vc.delegate = self?.trackerVC
-            self?.present(vc, animated: true)
+            guard let self = self else { return }
+
+            let vc = CreateTrackerVC(dependencies: self.dependencies)
+            vc.isCreatingEvent = false
+            vc.delegate = self.trackerVC
+
+            self.present(vc, animated: true)
         }
 
         let eventButton = Button(type: .primary(isActive: true), title: "Нерегулярное событие") { [weak self] in
-            self?.dismiss(animated: true)
+            guard let self = self else { return }
+
+            let vc = CreateTrackerVC(dependencies: self.dependencies)
+            vc.isCreatingEvent = true
+            vc.delegate = self.trackerVC
+
+            present(vc, animated: true, completion: nil)
         }
 
         let vStack: UIStackView = {
@@ -53,15 +74,5 @@ final class TrackerOrEventVC: UIViewController {
             vStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hInset),
             vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
-    }
-}
-
-
-// MARK: - SHOW PREVIEW
-
-import SwiftUI
-struct NewTrackerVCProvider: PreviewProvider {
-    static var previews: some View {
-        TrackerOrEventVC().showPreview()
     }
 }

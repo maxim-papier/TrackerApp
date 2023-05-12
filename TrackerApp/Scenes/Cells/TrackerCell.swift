@@ -1,14 +1,23 @@
 import UIKit
 
+protocol TrackerCellDelegate: AnyObject {
+    func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell)
+}
+
 final class TrackerCell: UICollectionViewCell {
 
+
+    // MARK: - Properties
+    
     static let identifier = "TrackerCell"
 
     var delegate: TrackerCellDelegate?
-
+    
     var doneButtonStateChange: Bool = false {
         didSet { updateDoneButton() }
     }
+
+    // MARK: - Setup UI elements
 
     let backgroundShape: UIView = {
         let view = UIView()
@@ -61,24 +70,6 @@ final class TrackerCell: UICollectionViewCell {
         return button
     }()
 
-    private func updateDoneButton() {
-        if doneButtonStateChange {
-            doneButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
-            doneButton.alpha = 0.5
-
-        } else {
-            doneButton.setImage(UIImage(systemName: "plus"), for: .normal)
-            doneButton.alpha = 1
-        }
-    }
-
-    @objc func doneButtonPressed() {
-        let isDone = !doneButtonStateChange
-        doneButtonStateChange = isDone
-        delegate?.didCompleteTracker(isDone, in: self)
-    }
-
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -95,7 +86,6 @@ final class TrackerCell: UICollectionViewCell {
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             backgroundShape.topAnchor.constraint(equalTo: contentView.topAnchor),
-            // backgroundShape.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
@@ -122,6 +112,29 @@ final class TrackerCell: UICollectionViewCell {
     }
 }
 
-protocol TrackerCellDelegate: AnyObject {
-    func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell)
+// MARK: - Button state control
+
+extension TrackerCell {
+        
+    func setInitialDoneButtonState(isDone: Bool) {
+        doneButtonStateChange = isDone
+    }
+
+    
+    private func updateDoneButton() {
+        if doneButtonStateChange {
+            doneButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+            doneButton.alpha = 0.5
+
+        } else {
+            doneButton.setImage(UIImage(systemName: "plus"), for: .normal)
+            doneButton.alpha = 1
+        }
+    }
+
+    @objc func doneButtonPressed() {
+        let isDone = !doneButtonStateChange
+        doneButtonStateChange = isDone
+        delegate?.didCompleteTracker(isDone, in: self)
+    }
 }
