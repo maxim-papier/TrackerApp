@@ -25,24 +25,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data
 
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "TrackerDataModel")
+    private lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: K.trackerDataModel)
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                assertionFailure("Unresolved error \(error), \(error.userInfo)")
             }
         }
         return container
     }()
 
-    func saveData() {
+    private func saveData() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
             } catch {
                 let errorNS = error as NSError
-                fatalError("Unresolved error \(errorNS), \(errorNS.userInfo)")
+                assertionFailure("Unresolved error \(errorNS), \(errorNS.userInfo)")
             }
         }
     }
@@ -54,5 +54,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return persistentContainer.viewContext
     }
 }
-
-

@@ -52,7 +52,7 @@ final class TrackerCategoryStore: NSObject {
         do {
             try fetchedResultsController?.performFetch()
         } catch {
-            print("Error setting up fetched results controller: \(error)")
+            assertionFailure("Error setting up fetched results controller: \(error)")
         }
     }
 
@@ -73,7 +73,7 @@ final class TrackerCategoryStore: NSObject {
                 return true
             }
         } catch {
-            print("Error checking or creating category: \(error)")
+            assertionFailure("Error checking or creating category: \(error)")
             return false
         }
     }
@@ -86,7 +86,7 @@ final class TrackerCategoryStore: NSObject {
             let coreDataCategories = try context.fetch(request)
             return coreDataCategories.compactMap { trackerCategory(from: $0) }
         } catch {
-            print("Error fetching categories: \(error)")
+            assertionFailure("Error fetching categories: \(error)")
             return []
         }
     }
@@ -104,7 +104,7 @@ final class TrackerCategoryStore: NSObject {
 
             try context.save()
         } catch {
-            print("Error updating category: \(error)")
+            assertionFailure("Error updating category: \(error)")
         }
     }
 
@@ -119,7 +119,7 @@ final class TrackerCategoryStore: NSObject {
             context.delete(coreDataCategory)
             try context.save()
         } catch {
-            print("Error deleting category: \(error)")
+            assertionFailure("Error deleting category: \(error)")
         }
     }
 
@@ -161,7 +161,7 @@ final class TrackerCategoryStore: NSObject {
             try context.save()
             
         } catch {
-            print("Error updating category: \(error)")
+            assertionFailure("Error updating category: \(error)")
         }
         
     }
@@ -177,7 +177,7 @@ final class TrackerCategoryStore: NSObject {
             guard let coreDataCategory = coreDataCategories.first else { return nil }
             return trackerCategory(from: coreDataCategory)
         } catch {
-            print("Error fetching category by id: \(error)")
+            assertionFailure("Error fetching category by id: \(error)")
             return nil
         }
     }
@@ -194,7 +194,7 @@ final class TrackerCategoryStore: NSObject {
         do {
             try context.execute(deleteRequest)
         } catch {
-            print("Error deleting category data: \(error)")
+            assertionFailure("Error deleting category data: \(error)")
         }
     }
 

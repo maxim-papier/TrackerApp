@@ -161,7 +161,11 @@ extension CategoryVC: UITableViewDataSource {
 
         let category = fetchedResultsController.object(at: indexPath)
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as! CategoryCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else {
+            assertionFailure("Error: Failed to cast cell to CategoryCell type.")
+            return UITableViewCell()
+        }
+
         cell.labelMenu.text = category.name
         cell.checkmarkImageView.isHidden = indexPath != selectedIndexPath
 

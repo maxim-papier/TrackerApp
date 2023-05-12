@@ -18,7 +18,7 @@ final class CategoryCell: UITableViewCell {
         separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
     }
 
-    let backgroundShape: UIView = {
+    private let backgroundShape: UIView = {
         let view = UIView()
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
@@ -27,7 +27,7 @@ final class CategoryCell: UITableViewCell {
         return view
     }()
 
-    let selectedView: UIView = {
+    private let selectedView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
         view.layer.masksToBounds = true

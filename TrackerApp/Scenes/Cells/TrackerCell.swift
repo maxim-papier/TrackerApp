@@ -132,7 +132,7 @@ extension TrackerCell {
         }
     }
 
-    @objc func doneButtonPressed() {
+    @objc private func doneButtonPressed() {
         let isDone = !doneButtonStateChange
         doneButtonStateChange = isDone
         delegate?.didCompleteTracker(isDone, in: self)

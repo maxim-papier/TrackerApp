@@ -42,7 +42,7 @@ final class TrackerRecordStore: NSObject {
             print("Tracker is done now")
 
         } catch {
-            print("Error adding tracker record: \(error)")
+            assertionFailure("Error adding tracker record: \(error)")
         }
     }
     
@@ -58,7 +58,7 @@ final class TrackerRecordStore: NSObject {
             try context.save()
             print("Tracker is not done now")
         } catch {
-            print("Error deleting tracker record: \(error)")
+            assertionFailure("Error deleting tracker record: \(error)")
         }
     }
     
@@ -71,7 +71,7 @@ final class TrackerRecordStore: NSObject {
             let coreDataRecords = try context.fetch(request)
             return coreDataRecords.compactMap { self.trackerRecord(from: $0) }
         } catch {
-            print("Error fetching all tracker records: \(error)")
+            assertionFailure("Error fetching all tracker records: \(error)")
             return []
         }
     }
@@ -84,7 +84,7 @@ final class TrackerRecordStore: NSObject {
             let fetchedRecords = try context.fetch(request)
             return fetchedRecords.first?.id
         } catch {
-            print("Error getting tracker record ID: \(error)")
+            assertionFailure("Error getting tracker record ID: \(error)")
             return nil
         }
     }
@@ -100,7 +100,7 @@ final class TrackerRecordStore: NSObject {
         do {
             try context.execute(deleteRequest)
         } catch let error as NSError {
-            print("Error deleting record data: \(error.localizedDescription)")
+            assertionFailure("Error deleting record data: \(error.localizedDescription)")
         }
     }
 
