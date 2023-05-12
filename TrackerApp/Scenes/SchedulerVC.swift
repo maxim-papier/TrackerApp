@@ -100,7 +100,8 @@ extension SchedulerVC: UITableViewDataSource {
         let cellID = SchedulerCell.identifier
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? SchedulerCell else {
-            fatalError("Unable to dequeue \(cellID)")
+            assertionFailure("Unable to dequeue \(cellID)")
+            return .init()
         }
 
         let weekday = weekdays[indexPath.row]

@@ -36,7 +36,8 @@ final class TrackerStore: NSObject {
         } else {
             setupFetchedResultsController()
             guard let fetchedResultsController = fetchedResultsController else {
-                fatalError("Failed to initialize fetchedResultsController")
+                assertionFailure("Failed to initialize fetchedResultsController")
+                return .init()
             }
             return fetchedResultsController
         }
@@ -62,7 +63,7 @@ final class TrackerStore: NSObject {
         do {
             try fetchedResultsController?.performFetch()
         } catch {
-            print("Error setting up fetched results controller: \(error)")
+            assertionFailure("Error setting up fetched results controller: \(error)")
         }
     }
 
@@ -74,7 +75,7 @@ final class TrackerStore: NSObject {
         do {
             try context.save()
         } catch {
-            print("Error saving tracker: \(error)")
+            assertionFailure("Error saving tracker: \(error)")
         }
     }
 
@@ -84,7 +85,7 @@ final class TrackerStore: NSObject {
             let coreDataTrackers = try context.fetch(request)
             return coreDataTrackers.compactMap { tracker(from: $0) }
         } catch {
-            print("Error fetching trackers: \(error)")
+            assertionFailure("Error fetching trackers: \(error)")
             return []
         }
     }
@@ -99,7 +100,7 @@ final class TrackerStore: NSObject {
             context.delete(coreDataTracker)
             try context.save()
         } catch {
-            print("Error deleting tracker: \(error)")
+            assertionFailure("Error deleting tracker: \(error)")
         }
     }
 
@@ -160,7 +161,7 @@ final class TrackerStore: NSObject {
         do {
             try context.execute(deleteRequest)
         } catch let error as NSError {
-            print("Error deleting category data: \(error.localizedDescription)")
+            assertionFailure("Error deleting category data: \(error.localizedDescription)")
         }
     }
 
@@ -209,7 +210,7 @@ final class TrackerStore: NSObject {
         do {
             try fetchedResultsController?.performFetch()
         } catch {
-            print("Error performing fetch after updating predicate: \(error)")
+            assertionFailure("Error performing fetch after updating predicate: \(error)")
         }
     }
 }

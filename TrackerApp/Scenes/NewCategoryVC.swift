@@ -40,7 +40,7 @@ final class NewCategoryVC: UIViewController {
             do {
                 try fetchedResultsController.performFetch()
             } catch {
-                print("An error occurred while fetching the updated data: \(error)")
+                assertionFailure("An error occurred while fetching the updated data: \(error)")
             }
 
             delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)

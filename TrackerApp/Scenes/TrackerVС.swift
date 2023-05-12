@@ -283,7 +283,7 @@ extension TrackerVC: TrackerCellDelegate {
         let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
         
         guard let trackerID = trackerData.id else {
-            print("Error: Tracker ID is nil")
+            assertionFailure("Error: Tracker ID is nil")
             return
         }
         
@@ -315,4 +315,3 @@ extension TrackerVC: UISearchBarDelegate {
         }
     }
 }
-

@@ -305,7 +305,9 @@ extension CreateTrackerVC: UICollectionViewDataSource {
         case 1: return isCreatingEvent ? 1 : 2
         case 2: return emojis.count
         case 3: return SelectionColorStyle.allCases.count
-        default: fatalError("Unsupported section in numberOfItemsInSection")
+        default:
+            assertionFailure("Unsupported section in numberOfItemsInSection")
+            return .init()
         }
     }
 
@@ -321,7 +323,8 @@ extension CreateTrackerVC: UICollectionViewDataSource {
         case 3:
             return colorCell(for: indexPath, collectionView: collectionView)
         default:
-            fatalError("Unsupported section in cellForItemAt")
+            assertionFailure("Unsupported section in cellForItemAt")
+            return .init()
         }
     }
 
@@ -397,7 +400,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
         case 2: header.sectionLabel.text = "Emoji"
         case 3: header.sectionLabel.text = "Цвет"
         default:
-            fatalError("Unsupported section in viewForSupplementaryElementOfKind")
+            assertionFailure("Unsupported section in viewForSupplementaryElementOfKind")
         }
         return header
     }
