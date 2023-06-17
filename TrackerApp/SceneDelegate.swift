@@ -13,17 +13,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        
         let window = UIWindow(windowScene: windowScene)
-
-        let vc = HomeVC(dependencies: dependencyContainer!)
-        window.rootViewController = vc
+        
+        let shouldShowOnboarding = UserDefaults.standard.bool(forKey: "didCompleteOnboarding")
+        
+        if shouldShowOnboarding {
+            let homeVC = HomeVC(dependencies: dependencyContainer!)
+            window.rootViewController = homeVC
+        } else {
+            let onboardingViewModel = OnboardingViewModel()
+            let onboardingVC = OnboardingViewController(viewModel: onboardingViewModel)
+            window.rootViewController = onboardingVC
+        }
+        
         window.makeKeyAndVisible()
-
         self.window = window
     }
-
+    
     func sceneDidDisconnect(_ scene: UIScene) {}
     func sceneDidBecomeActive(_ scene: UIScene) {}
     func sceneWillResignActive(_ scene: UIScene) {}

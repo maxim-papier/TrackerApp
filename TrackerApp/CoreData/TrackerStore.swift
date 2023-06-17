@@ -29,7 +29,7 @@ final class TrackerStore: NSObject {
 
     // MARK: - FetchedResultsController
 
-    /// Initialize and return fetchedResultsController
+    // Initialize and return fetchedResultsController
     func fetchedResultsControllerForTracker() -> NSFetchedResultsController<TrackerData> {
         if let fetchedResultsController = fetchedResultsController {
             return fetchedResultsController
