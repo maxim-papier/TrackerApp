@@ -2,6 +2,7 @@ import UIKit
 
 class OnboardingPageView: UIViewController {
     var pageData: OnboardingPageData
+    var closeButtonAction: (() -> Void)
     
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -26,13 +27,16 @@ class OnboardingPageView: UIViewController {
         button.titleLabel?.font = FontYP.medium16
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
 
-    init(pageData: OnboardingPageData) {
+    init(pageData: OnboardingPageData,
+         closeButtonAction: @escaping (() -> Void)) {
         self.pageData = pageData
+        self.closeButtonAction = closeButtonAction
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -45,7 +49,15 @@ class OnboardingPageView: UIViewController {
         setupViews()
         setData()
     }
-
+    
+    // MARK: Action
+    @objc private func closeButtonTapped() {
+        closeButtonAction()
+        dismiss(animated: true)
+    }
+    
+    // MARK: Private Methods
+    
     private func setupViews() {
         view.addSubview(backgroundImageView)
         view.addSubview(titleLabel)

@@ -1,8 +1,9 @@
 import UIKit
 
 class OnboardingViewController: UIPageViewController {
-
+    
     private var viewModel: OnboardingViewModel
+    private var currentPageView: OnboardingPageView?
     
     private var pageControl: UIPageControl = {
         let control = UIPageControl()
@@ -11,7 +12,7 @@ class OnboardingViewController: UIPageViewController {
         control.translatesAutoresizingMaskIntoConstraints = false
         return control
     }()
-
+    
     init(viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -24,18 +25,27 @@ class OnboardingViewController: UIPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setViewControllers(
-            [OnboardingPageView(pageData: viewModel.getCurrentPage())],
-            direction: .forward,
-            animated: true,
-            completion: nil
-        )
+        if let firstPageData = viewModel.pages.first {
+            currentPageView = OnboardingPageView(
+                pageData: firstPageData,
+                closeButtonAction: { [weak self] in
+                    self?.viewModel.onboardingComplete()
+                })
+            
+            if let currentPageView {
+                setViewControllers(
+                    [currentPageView],
+                    direction: .forward,
+                    animated: true)
+            }
+        }
+        
         dataSource = self
         delegate = self
         
         pageControl.numberOfPages = viewModel.numberOfPages()
         view.addSubview(pageControl)
-
+        
         let guide = view.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
@@ -45,30 +55,28 @@ class OnboardingViewController: UIPageViewController {
     }
 }
 
-// MARK: -  Data Source Methods
-
 extension OnboardingViewController: UIPageViewControllerDataSource {
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        
-        let currentPageView = viewController as? OnboardingPageView
         guard let pageData = currentPageView?.pageData else { return nil }
-
-        return viewModel.getPreviousPageData(after: pageData).map { OnboardingPageView(pageData: $0) }
+        return viewModel.getPreviousPageData(after: pageData).map { OnboardingPageView(pageData: $0, closeButtonAction: { [weak self] in
+            guard let self else { return }
+            self.viewModel.onboardingComplete() }
+        ) }
     }
-
+    
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-
-        let currentPageView = viewController as? OnboardingPageView
         guard let pageData = currentPageView?.pageData else { return nil }
-        
-        return viewModel.getNextPageData(before: pageData).map { OnboardingPageView(pageData: $0) }
+        return viewModel.getNextPageData(before: pageData).map { OnboardingPageView(pageData: $0, closeButtonAction: { [weak self] in
+            guard let self else { return }
+            self.viewModel.onboardingComplete() }
+        ) }
     }
 }
 
@@ -77,7 +85,11 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
 extension OnboardingViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
-            pageControl.currentPage = viewModel.currentPageIndex
+            currentPageView = pageViewController.viewControllers?.first as? OnboardingPageView
+            
+            guard let currentPageView else { return }
+            pageControl.currentPage = viewModel.pages.firstIndex(of: currentPageView.pageData) ?? 0
         }
     }
 }
+

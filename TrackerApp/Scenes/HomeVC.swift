@@ -4,9 +4,13 @@ final class HomeVC: UITabBarController {
 
 
     private let dependencies: DependencyContainer
-
-    init(dependencies: DependencyContainer) {
+    private let onboardingPersistenceService: OnboardingPersistenceService
+    
+    init(dependencies: DependencyContainer,
+         onboardingPersistenceService: OnboardingPersistenceService
+    ) {
         self.dependencies = dependencies
+        self.onboardingPersistenceService = onboardingPersistenceService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -36,7 +40,20 @@ final class HomeVC: UITabBarController {
 //            print("All data has been cleared")
 //        }
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let shouldShowOnboarding = onboardingPersistenceService.hasCompletedOnboarding()
+        
+        if !shouldShowOnboarding {
+            let onboardingViewModel = OnboardingViewModel(onboardingPersistenceService: onboardingPersistenceService)
+            let onboardingVC = OnboardingViewController(viewModel: onboardingViewModel)
+            onboardingVC.modalPresentationStyle = .fullScreen
+            present(onboardingVC, animated: true, completion: nil)
+        }
+        
+    }
 
     // MARK: - Clear Core Data
 
