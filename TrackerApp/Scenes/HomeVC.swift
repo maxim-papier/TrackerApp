@@ -50,7 +50,7 @@ final class HomeVC: UITabBarController {
             let onboardingViewModel = OnboardingViewModel(onboardingPersistenceService: onboardingPersistenceService)
             let onboardingVC = OnboardingViewController(viewModel: onboardingViewModel)
             onboardingVC.modalPresentationStyle = .fullScreen
-            present(onboardingVC, animated: true, completion: nil)
+            present(onboardingVC, animated: false, completion: nil)
         }
         
     }
