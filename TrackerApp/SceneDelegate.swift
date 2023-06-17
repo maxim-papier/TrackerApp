@@ -3,7 +3,8 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var dependencyContainer: DependencyContainer?
+    var dependencyContainer: DependencyContainer
+    private let onboardingPersistenceService = OnboardingPersistenceService()
 
     override init() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -13,14 +14,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
+            
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        
         let window = UIWindow(windowScene: windowScene)
+        
+        let homeVC = HomeVC(dependencies: dependencyContainer, onboardingPersistenceService: onboardingPersistenceService)
+        window.rootViewController = homeVC
 
-        let vc = HomeVC(dependencies: dependencyContainer!)
-        window.rootViewController = vc
         window.makeKeyAndVisible()
-
         self.window = window
     }
 

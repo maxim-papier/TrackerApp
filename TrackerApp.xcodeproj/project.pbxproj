@@ -46,6 +46,12 @@
 		8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */; };
 		8DE2666429EF88F8003D9FB1 /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE2666329EF88F8003D9FB1 /* CategoryCell.swift */; };
 		8DE6446929EAA61000D1A7B6 /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE6446829EAA61000D1A7B6 /* DependencyContainer.swift */; };
+		8DEE447D2A3C9EB600780EC6 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */; };
+		8DEE447F2A3C9F5C00780EC6 /* OnboardingPageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE447E2A3C9F5C00780EC6 /* OnboardingPageData.swift */; };
+		8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */; };
+		8DEE44832A3CB16B00780EC6 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */; };
+		8DEE44862A3D45E200780EC6 /* LogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44852A3D45E200780EC6 /* LogService.swift */; };
+		8DEE44882A3D7F3800780EC6 /* OnboardingPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */; };
 		8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A62997283500B7D148 /* TrackerHeader.swift */; };
 		8DF313AA2997507900B7D148 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A92997507900B7D148 /* TrackerCategory.swift */; };
 		8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */; };
@@ -107,6 +113,12 @@
 		8DDE29C12993DF2E00D4A4DD /* TrackerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCell.swift; sourceTree = "<group>"; };
 		8DE2666329EF88F8003D9FB1 /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		8DE6446829EAA61000D1A7B6 /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
+		8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		8DEE447E2A3C9F5C00780EC6 /* OnboardingPageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageData.swift; sourceTree = "<group>"; };
+		8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
+		8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		8DEE44852A3D45E200780EC6 /* LogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogService.swift; sourceTree = "<group>"; };
+		8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPersistence.swift; sourceTree = "<group>"; };
 		8DF313A62997283500B7D148 /* TrackerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerHeader.swift; sourceTree = "<group>"; };
 		8DF313A92997507900B7D148 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
@@ -190,6 +202,7 @@
 				8DF313AB29975F7D00B7D148 /* TrackerRecord.swift */,
 				8DB392B129952B340031D2E1 /* WeekDay.swift */,
 				8DAE17BA29E63BAD00DFBC9A /* WeekDaysSet.swift */,
+				8DEE447E2A3C9F5C00780EC6 /* OnboardingPageData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -227,6 +240,7 @@
 				8DB392A829941B680031D2E1 /* Fonts */,
 				8DBA05362993873E00E3604E /* LaunchScreen.storyboard */,
 				8DBA05392993873E00E3604E /* Info.plist */,
+				8DEE44842A3D45C300780EC6 /* Services */,
 				8DBA052B2993873E00E3604E /* AppDelegate.swift */,
 				8DBA052D2993873E00E3604E /* SceneDelegate.swift */,
 			);
@@ -263,6 +277,7 @@
 		8DDE29C32993E1B500D4A4DD /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				8DEE447B2A3C9E9700780EC6 /* Onboarding */,
 				8DC07966299F639F00AC6C10 /* Cells */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
 				8DBA052F2993873E00E3604E /* TrackerVС.swift */,
@@ -274,6 +289,25 @@
 				8DA8DA2929F51C91009AAAC9 /* NewCategoryVC.swift */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		8DEE447B2A3C9E9700780EC6 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */,
+				8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */,
+				8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		8DEE44842A3D45C300780EC6 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8DEE44852A3D45E200780EC6 /* LogService.swift */,
+				8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -394,6 +428,7 @@
 				8D2A1C0C299CB29A00213C8D /* ListCell.swift in Sources */,
 				8D11528929C1B5CC00687C5C /* TrackerCategoryStore.swift in Sources */,
 				8D2A1C10299D0BE700213C8D /* SchedulerVC.swift in Sources */,
+				8DEE447D2A3C9EB600780EC6 /* OnboardingViewModel.swift in Sources */,
 				8D2A1C12299D0CB500213C8D /* CategoryVC.swift in Sources */,
 				8DA8DA2A29F51C91009AAAC9 /* NewCategoryVC.swift in Sources */,
 				8DBA05302993873E00E3604E /* TrackerVС.swift in Sources */,
@@ -403,15 +438,20 @@
 				8DADE0B1299D3184005942E2 /* InputCell.swift in Sources */,
 				8DA0CB5C299B383F004BFE73 /* Button.swift in Sources */,
 				8DF313AC29975F7D00B7D148 /* TrackerRecord.swift in Sources */,
+				8DEE44882A3D7F3800780EC6 /* OnboardingPersistence.swift in Sources */,
 				8DD760DC29E430AE00C07D2A /* Constants.swift in Sources */,
 				8D9FF56A299E490A009E91A8 /* SchedulerCell.swift in Sources */,
 				8DE6446929EAA61000D1A7B6 /* DependencyContainer.swift in Sources */,
 				8DE2666429EF88F8003D9FB1 /* CategoryCell.swift in Sources */,
 				8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */,
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
+				8DEE44862A3D45E200780EC6 /* LogService.swift in Sources */,
+				8DEE447F2A3C9F5C00780EC6 /* OnboardingPageData.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
+				8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */,
 				8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
+				8DEE44832A3CB16B00780EC6 /* OnboardingViewController.swift in Sources */,
 				8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */,
 				8DAE17BB29E63BAD00DFBC9A /* WeekDaysSet.swift in Sources */,
 				8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */,
