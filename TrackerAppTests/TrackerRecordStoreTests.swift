@@ -5,7 +5,7 @@ import XCTest
 final class TrackerRecordStoreTests: XCTestCase {
 
     var context: NSManagedObjectContext!
-    var recordStore: TrackerRecordStore!
+    var recordStore: RecordStore!
 
     override func setUp() {
         super.setUp()
@@ -26,7 +26,7 @@ final class TrackerRecordStoreTests: XCTestCase {
         }
 
         context = container.viewContext
-        recordStore = TrackerRecordStore(context: context)
+        recordStore = RecordStore(context: context)
     }
 
     override func tearDown() {
@@ -36,7 +36,7 @@ final class TrackerRecordStoreTests: XCTestCase {
 
     func testCreateRecord() {
 
-        let record = TrackerRecord(id: UUID(), date: Date())
+        let record = Record(id: UUID(), date: Date())
 
         recordStore.createTrackerRecord(record: record)
 
@@ -46,7 +46,7 @@ final class TrackerRecordStoreTests: XCTestCase {
 
     func testReadRecord() {
 
-        let record = TrackerRecord(id: UUID(), date: Date())
+        let record = Record(id: UUID(), date: Date())
 
         recordStore.createTrackerRecord(record: record)
 
@@ -56,11 +56,11 @@ final class TrackerRecordStoreTests: XCTestCase {
     }
 
     func testUpdateRecord() {
-        let record = TrackerRecord(id: UUID(), date: Date())
+        let record = Record(id: UUID(), date: Date())
         recordStore.createTrackerRecord(record: record)
 
         let updatedDate = Date().addingTimeInterval(60 * 60 * 24)
-        let updatedRecord = TrackerRecord(id: record.id, date: updatedDate)
+        let updatedRecord = Record(id: record.id, date: updatedDate)
         recordStore.updateTrackerRecord(record: updatedRecord)
 
         let readRecords = recordStore.readTrackerRecord()
@@ -71,7 +71,7 @@ final class TrackerRecordStoreTests: XCTestCase {
 
     func testDeleteRecord() {
 
-        let record = TrackerRecord(id: UUID(), date: Date())
+        let record = Record(id: UUID(), date: Date())
         recordStore.createTrackerRecord(record: record)
 
         recordStore.deleteTrackerRecord(by: record.id)

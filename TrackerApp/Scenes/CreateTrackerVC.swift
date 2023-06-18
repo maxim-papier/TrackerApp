@@ -8,7 +8,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     var isCreatingEvent: Bool = false
 
     var selectedTitle: String?
-    var selectedCategory: TrackerCategory?
+    var selectedCategory: Category?
     var selectedSchedule = WeekDaySet(weekDays: [])
     var selectedEmoji: String?
     var selectedColor: SelectionColorStyle?
@@ -552,7 +552,7 @@ extension CreateTrackerVC {
 }
 
 extension CreateTrackerVC: CategorySelectionDelegate {
-    func categorySelected(category: TrackerCategory) {
+    func categorySelected(category: Category) {
         selectedCategory = category
         let sectionToReload = 1
         collectionView.reloadSections(IndexSet(integer: sectionToReload))
@@ -567,5 +567,5 @@ protocol CreateTrackerVCDelegate: AnyObject {
 }
 
 protocol CategorySelectionDelegate: AnyObject {
-    func categorySelected(category: TrackerCategory)
+    func categorySelected(category: Category)
 }

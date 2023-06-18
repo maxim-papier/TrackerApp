@@ -3,16 +3,16 @@ import CoreData
 
 // MARK: - TrackerCategoryStoreDelegate
 
-protocol TrackerCategoryStoreDelegate: AnyObject {
+protocol CategoryStoreDelegate: AnyObject {
     func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath)
     func trackerCategoryStoreDidDeleteCategory(at indexPath: IndexPath)
 }
 
 // MARK: - TrackerCategoryStore
 
-final class TrackerCategoryStore: NSObject {
+final class CategoryStore: NSObject {
 
-    weak var delegate: TrackerCategoryStoreDelegate?
+    weak var delegate: CategoryStoreDelegate?
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<CategoryData>?
 
@@ -59,7 +59,7 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - CRUD methods
 
     // Create a new TrackerCategory in the store
-    func createTrackerCategory(category: TrackerCategory) -> Bool {
+    func createTrackerCategory(category: Category) -> Bool {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", category.name)
 
@@ -79,7 +79,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
     // Read all TrackerCategories from the store
-    func readTrackerCategories() -> [TrackerCategory] {
+    func readTrackerCategories() -> [Category] {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
 
         do {
@@ -92,7 +92,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
     // Update an existing TrackerCategory in the store
-    func updateTrackerCategory(category: TrackerCategory) {
+    func updateTrackerCategory(category: Category) {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
 
@@ -137,7 +137,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
     private func createNewCategory(with tracker: Tracker) {
-        let newCategory = TrackerCategory(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
+        let newCategory = Category(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
         _ = createTrackerCategory(category: newCategory)
     }
 
@@ -167,7 +167,7 @@ final class TrackerCategoryStore: NSObject {
     }
 
     // Get a TrackerCategory by id from the store
-    func getTrackerCategory(by id: UUID) -> TrackerCategory? {
+    func getTrackerCategory(by id: UUID) -> Category? {
         
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -200,7 +200,7 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - Conversion methods
 
-    private func coreDataTrackerCategory(from category: TrackerCategory) -> CategoryData {
+    private func coreDataTrackerCategory(from category: Category) -> CategoryData {
 
         let coreDataCategory = CategoryData(context: context)
         coreDataCategory.id = category.id
@@ -213,7 +213,7 @@ final class TrackerCategoryStore: NSObject {
         return coreDataCategory
     }
 
-    func trackerCategory(from coreDataCategory: CategoryData) -> TrackerCategory? {
+    func trackerCategory(from coreDataCategory: CategoryData) -> Category? {
         guard
             let id = coreDataCategory.id,
             let name = coreDataCategory.name,
@@ -225,7 +225,7 @@ final class TrackerCategoryStore: NSObject {
 
         let trackers = coreDataTrackers.compactMap { $0 as? TrackerData }.compactMap { tracker(from: $0) }
 
-        return TrackerCategory(id: id, name: name, trackers: trackers, createdAt: createdAt)
+        return Category(id: id, name: name, trackers: trackers, createdAt: createdAt)
     }
 
     private func coreDataTracker(from tracker: Tracker) -> TrackerData {
@@ -272,7 +272,7 @@ final class TrackerCategoryStore: NSObject {
 
 }
 
-extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
+extension CategoryStore: NSFetchedResultsControllerDelegate {
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
                     didChange anObject: Any,

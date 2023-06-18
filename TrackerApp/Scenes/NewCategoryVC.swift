@@ -33,8 +33,8 @@ final class NewCategoryVC: UIViewController {
     }()
 
     @objc private func readyButtonTapped() {
-        let newCategory = TrackerCategory(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
-        let success = dependencies.trackerCategoryStore.createTrackerCategory(category: newCategory)
+        let newCategory = Category(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
+        let success = dependencies.сategoryStore.createTrackerCategory(category: newCategory)
         if success {
             // Обновление fetchedResultsController после создания новой категории
             do {
@@ -74,7 +74,7 @@ final class NewCategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.trackerCategoryStore.setupFetchedResultsController()
+        dependencies.сategoryStore.setupFetchedResultsController()
         inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
 
         configure()

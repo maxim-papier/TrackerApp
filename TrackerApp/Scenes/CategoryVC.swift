@@ -10,7 +10,7 @@ final class CategoryVC: UIViewController {
 
     private var selectedIndexPath: IndexPath?
     private var selectedCategoryId: UUID?
-    private var selectedCategory: TrackerCategory?
+    private var selectedCategory: Category?
 
     private let tableView: UITableView = {
         let table = UITableView()
@@ -70,8 +70,8 @@ final class CategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.trackerCategoryStore.setupFetchedResultsController()
-        dependencies.trackerCategoryStore.delegate = self
+        dependencies.сategoryStore.setupFetchedResultsController()
+        dependencies.сategoryStore.delegate = self
         configure()
     }
 
@@ -213,7 +213,7 @@ extension CategoryVC {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        let categoryStore = dependencies.trackerCategoryStore
+        let categoryStore = dependencies.сategoryStore
         let categoryData = fetchedResultsController.object(at: indexPath)
 
         if let previousIndexPath = selectedIndexPath,
@@ -241,7 +241,7 @@ extension CategoryVC {
 
 // MARK: - Category Tracker Store Delegate
 
-extension CategoryVC: TrackerCategoryStoreDelegate {
+extension CategoryVC: CategoryStoreDelegate {
 
     func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath) {
         tableView.reloadData()

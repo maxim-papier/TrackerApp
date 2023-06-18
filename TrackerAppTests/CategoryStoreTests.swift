@@ -5,7 +5,7 @@ import XCTest
 final class CategoryStoreTests: XCTestCase {
 
     var context: NSManagedObjectContext!
-    var categoryStore: TrackerCategoryStore!
+    var categoryStore: CategoryStore!
     var trackerStore: TrackerStore!
 
     override func setUp() {
@@ -26,7 +26,7 @@ final class CategoryStoreTests: XCTestCase {
             }
         }
         context = container.viewContext
-        categoryStore = TrackerCategoryStore(context: context)
+        categoryStore = CategoryStore(context: context)
     }
 
     override func tearDown() {
@@ -36,7 +36,7 @@ final class CategoryStoreTests: XCTestCase {
 
     func testCreateReadCategory() {
 
-        let category = TrackerCategory.mockCategory1
+        let category = Category.mockCategory1
         categoryStore.createTrackerCategory(category: category)
 
         let readCategories = categoryStore.readTrackerCategories()
@@ -46,10 +46,10 @@ final class CategoryStoreTests: XCTestCase {
 
     func testUpdateCategory() {
 
-        let category = TrackerCategory.mockCategory1
+        let category = Category.mockCategory1
         categoryStore.createTrackerCategory(category: category)
 
-        let updatedCategory = TrackerCategory(id: category.id,
+        let updatedCategory = Category(id: category.id,
                                               name: "Updated Category",
                                               trackers: category.trackers,
                                               createdAt: category.createdAt)
@@ -62,7 +62,7 @@ final class CategoryStoreTests: XCTestCase {
 
     func testDeleteCategory() {
 
-        let category = TrackerCategory.mockCategory1
+        let category = Category.mockCategory1
         categoryStore.createTrackerCategory(category: category)
 
         categoryStore.deleteTrackerCategory(by: category.id)

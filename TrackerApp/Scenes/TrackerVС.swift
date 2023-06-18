@@ -164,7 +164,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
-            let recordID = dependencies.trackerRecordStore.getRecordID(forTrackerWithID: trackerID)
+            let recordID = dependencies.recordStore.getRecordID(forTrackerWithID: trackerID)
             cell.setInitialDoneButtonState(isDone: recordID != nil)
         }
         return cell
@@ -267,7 +267,7 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
     // Save tracker to the category with current ID
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
-        dependencies.trackerCategoryStore.addTrackerToCategory(tracker: newTracker,
+        dependencies.сategoryStore.addTrackerToCategory(tracker: newTracker,
                                                                categoryID: categoryID)
         reloadCollectionAfterFiltering(filterType: .date)
     }
@@ -287,12 +287,12 @@ extension TrackerVC: TrackerCellDelegate {
             return
         }
         
-        let recordStore = dependencies.trackerRecordStore
+        let recordStore = dependencies.recordStore
         recordStore.toggleRecord(forTrackerWithID: trackerID)
     }
     
     func trackerIsDone(trackerID: UUID) -> Bool {
-        return dependencies.trackerRecordStore.getRecordID(forTrackerWithID: trackerID) != nil
+        return dependencies.recordStore.getRecordID(forTrackerWithID: trackerID) != nil
     }
 }
 

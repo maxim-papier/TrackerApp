@@ -1,7 +1,7 @@
 import UIKit
 import CoreData
 
-final class TrackerRecordStore: NSObject {
+final class RecordStore: NSObject {
 
     // MARK: - Properties
     
@@ -64,7 +64,7 @@ final class TrackerRecordStore: NSObject {
     
     // MARK: - Fetching methods
     
-    func fetchAllRecords() -> [TrackerRecord] {
+    func fetchAllRecords() -> [Record] {
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
 
         do {
@@ -106,7 +106,7 @@ final class TrackerRecordStore: NSObject {
 
     // MARK: - Conversion method
     
-    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
+    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> Record? {
         guard
             let id = coreDataRecord.id,
             let date = coreDataRecord.doneDate
@@ -114,6 +114,6 @@ final class TrackerRecordStore: NSObject {
             return nil
         }
 
-        return TrackerRecord(id: id, date: date)
+        return Record(id: id, date: date)
     }
 }
