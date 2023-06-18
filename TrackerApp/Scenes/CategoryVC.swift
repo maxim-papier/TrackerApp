@@ -214,7 +214,6 @@ extension CategoryVC {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         let categoryStore = dependencies.сategoryStore
-        let categoryData = fetchedResultsController.object(at: indexPath)
 
         if let previousIndexPath = selectedIndexPath,
            let previousCell = tableView.cellForRow(at: previousIndexPath) as? CategoryCell {

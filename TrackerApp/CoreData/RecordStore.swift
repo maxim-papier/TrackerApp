@@ -39,8 +39,7 @@ final class RecordStore: NSObject {
             record.tracker = coreDataTracker
 
             try context.save()
-            print("Tracker is done now")
-
+            
         } catch {
             assertionFailure("Error adding tracker record: \(error)")
         }
@@ -56,7 +55,7 @@ final class RecordStore: NSObject {
             context.delete(coreDataRecord)
             
             try context.save()
-            print("Tracker is not done now")
+
         } catch {
             assertionFailure("Error deleting tracker record: \(error)")
         }
