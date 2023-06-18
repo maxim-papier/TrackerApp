@@ -14,7 +14,7 @@ final class DependencyContainer {
     }
 
     var fetchedResultsControllerForCategory: NSFetchedResultsController<CategoryData> {
-        return сategoryStore.fetchedResultsControllerForCategory()
+        return сategoryStore.retrieveFetchedResultsController()
     }
 
     var fetchedResultsControllerForTrackers: NSFetchedResultsController<TrackerData> {

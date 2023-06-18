@@ -34,7 +34,7 @@ final class NewCategoryVC: UIViewController {
 
     @objc private func readyButtonTapped() {
         let newCategory = Category(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
-        let success = dependencies.сategoryStore.createTrackerCategory(category: newCategory)
+        let success = dependencies.сategoryStore.create(category: newCategory)
         if success {
             // Обновление fetchedResultsController после создания новой категории
             do {

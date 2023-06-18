@@ -228,7 +228,7 @@ extension CategoryVC {
             buttonToShow = .add
         } else {
             selectedIndexPath = indexPath
-            selectedCategory = categoryStore.trackerCategory(from: categoryData)
+            selectedCategory = categoryStore.getCategory(at: indexPath)
             buttonToShow = .ready
 
             if let cell = tableView.cellForRow(at: indexPath) as? CategoryCell {

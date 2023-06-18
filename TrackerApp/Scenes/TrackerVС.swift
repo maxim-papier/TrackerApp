@@ -267,8 +267,8 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
     // Save tracker to the category with current ID
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
-        dependencies.сategoryStore.addTrackerToCategory(tracker: newTracker,
-                                                               categoryID: categoryID)
+        dependencies.сategoryStore.add(tracker: newTracker,
+                                                               toCategoryWithId: categoryID)
         reloadCollectionAfterFiltering(filterType: .date)
     }
 }

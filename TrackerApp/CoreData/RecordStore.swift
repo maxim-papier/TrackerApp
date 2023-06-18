@@ -89,20 +89,6 @@ final class RecordStore: NSObject {
         }
     }
     
-    // MARK: - Clear all records
-    
-    func clearRecordData() {
-        print("Clearing records data...")
-
-        let request: NSFetchRequest<NSFetchRequestResult> = TrackerRecordData.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            try context.execute(deleteRequest)
-        } catch let error as NSError {
-            assertionFailure("Error deleting record data: \(error.localizedDescription)")
-        }
-    }
 
     // MARK: - Conversion method
     
