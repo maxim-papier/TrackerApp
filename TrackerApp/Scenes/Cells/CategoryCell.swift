@@ -7,7 +7,9 @@ enum CategoryButtonPosition {
 final class CategoryCell: UITableViewCell {
 
     static let identifier = "CategoryCell"
+    
     var toggleValueChanged: ((Bool) -> Void)?
+
     var categoryButtonPosition: CategoryButtonPosition = .middle {
         didSet { updateAppearance()
         }
@@ -15,7 +17,8 @@ final class CategoryCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
+        let inset: CGFloat = 32
+        separatorInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
     }
 
     private let backgroundShape: UIView = {
@@ -95,6 +98,12 @@ final class CategoryCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("Old people love new Clint Eastwood movies")
     }
+    
+    func configure(with viewModel: CategoryCellViewModel) {
+        labelMenu.text = viewModel.title
+        checkmarkImageView.isHidden = !viewModel.isSelected
+    }
+    
 }
 
 // MARK: - Configuration
