@@ -2,7 +2,7 @@ import UIKit
 
 final class NewCategoryVC: UIViewController {
 
-    weak var delegate: NewCategoryDelegate?
+    weak var delegate: NewCategoryVCDelegate?
 
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
@@ -33,8 +33,8 @@ final class NewCategoryVC: UIViewController {
     }()
 
     @objc private func readyButtonTapped() {
-        let newCategory = Category(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
-        let success = dependencies.сategoryStore.create(category: newCategory)
+        let newCategory = TrackerCategory(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
+        let success = dependencies.trackerCategoryStore.createTrackerCategory(category: newCategory)
         if success {
             // Обновление fetchedResultsController после создания новой категории
             do {
@@ -43,7 +43,7 @@ final class NewCategoryVC: UIViewController {
                 assertionFailure("An error occurred while fetching the updated data: \(error)")
             }
 
-            delegate?.newCategoryController(self, didCreateNewCategoryWithId: newCategory.id)
+            delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)
             onCategoryCreated?(newCategory.id)
             dismiss(animated: true)
         } else {
@@ -74,7 +74,7 @@ final class NewCategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.сategoryStore.setupFetchedResultsController()
+        dependencies.trackerCategoryStore.setupFetchedResultsController()
         inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
 
         configure()
@@ -147,7 +147,9 @@ extension NewCategoryVC: UICollectionViewDelegateFlowLayout {
 
 extension NewCategoryVC: UICollectionViewDelegate {}
 
+
 // MARK: - NewCategory Delegate
-protocol NewCategoryDelegate: AnyObject {
-    func newCategoryController(_ controller: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
+
+protocol NewCategoryVCDelegate: AnyObject {
+    func newCategoryVC(_ newCategoryVC: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
 }

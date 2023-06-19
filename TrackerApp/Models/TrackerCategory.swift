@@ -1,6 +1,6 @@
 import Foundation
 
-struct Category {
+struct TrackerCategory {
 
     let name: String
     let trackers: [Tracker]
@@ -18,7 +18,7 @@ struct Category {
 
 // MARK: - MOCKS
 
-extension Category {
+extension TrackerCategory {
     static var mockCategory1: Self {
         .init(name: "Спорт", trackers: [.mockCase1, .mockCase2,.mockCase3])
     }
@@ -27,7 +27,7 @@ extension Category {
     }
 }
 
-extension Category: Sequence {
+extension TrackerCategory: Sequence {
     func makeIterator() -> IndexingIterator<[Tracker]> {
         return trackers.makeIterator()
     }

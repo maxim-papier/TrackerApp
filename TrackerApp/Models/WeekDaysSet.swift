@@ -20,12 +20,13 @@ extension WeekDaySet {
         else {
             fatalError("Error encoding WeekDaySet")
         }
-        LogService.shared.log("Encoded WeekDaySet: \(jsonString)", level: .info)
+
+        print("Encoded WeekDaySet: \(jsonString)")
         return jsonString
     }
 
     static func fromString(_ string: String) -> WeekDaySet? {
-
+        
         if string == "no_schedule" {
             return WeekDaySet(weekDays: Set())
         }
@@ -33,16 +34,16 @@ extension WeekDaySet {
         let decoder = JSONDecoder()
         
         guard let data = string.data(using: .utf8) else {
-            LogService.shared.log("Error converting JSON string to data", level: .error)
+            print("Error converting JSON string to data")
             return nil
         }
 
         do {
             let weekDaySet = try decoder.decode(WeekDaySet.self, from: data)
-            //LogService.shared.log("Decoded WeekDaySet: \(weekDaySet)", level: .info)
+            print("Decoded WeekDaySet: \(weekDaySet)")
             return weekDaySet
         } catch {
-            LogService.shared.log("Error decoding WeekDaySet: \(error)", level: .error)
+            print("Error decoding WeekDaySet: \(error)")
             return nil
         }
     }
