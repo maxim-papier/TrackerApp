@@ -432,9 +432,11 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
     private func handleListSelection(at indexPath: IndexPath) {
 
+        let viewModel = CategoryViewModel(dependencies: dependencies)
+        
         if indexPath.row == 0 {
-            let vc = CategoryVC(dependencies: dependencies)
-            vc.delegate = self
+            let vc = CategoryView(dependencies: dependencies, viewModel: viewModel)
+            vc.categorySelectionDelegate = self
             present(vc, animated: true, completion: nil)
         } else if indexPath.row == 1 {
             let vc = SchedulerVC(selectedDays: Array(selectedSchedule.weekDays))
@@ -526,8 +528,8 @@ extension CreateTrackerVC {
 }
 
 extension CreateTrackerVC: CategorySelectionDelegate {
-    func categorySelected(category: Category) {
-        selectedCategory = category
+    func categorySelected(category: CategoryData) {
+        selectedCategory = dependencies.сategoryStore.trackerCategory(from: category)
         let sectionToReload = 1
         collectionView.reloadSections(IndexSet(integer: sectionToReload))
     }
@@ -538,8 +540,4 @@ extension CreateTrackerVC: CategorySelectionDelegate {
 
 protocol CreateTrackerVCDelegate: AnyObject {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID)
-}
-
-protocol CategorySelectionDelegate: AnyObject {
-    func categorySelected(category: Category)
 }

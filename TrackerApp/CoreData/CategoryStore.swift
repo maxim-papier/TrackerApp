@@ -156,7 +156,7 @@ final class CategoryStore: NSObject {
         return coreDataCategory
     }
 
-    private func trackerCategory(from coreDataCategory: CategoryData) -> Category? {
+    func trackerCategory(from coreDataCategory: CategoryData) -> Category? {
         guard
             let id = coreDataCategory.id,
             let name = coreDataCategory.name,

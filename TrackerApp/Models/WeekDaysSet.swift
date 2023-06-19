@@ -39,7 +39,7 @@ extension WeekDaySet {
 
         do {
             let weekDaySet = try decoder.decode(WeekDaySet.self, from: data)
-            LogService.shared.log("Decoded WeekDaySet: \(weekDaySet)", level: .info)
+            //LogService.shared.log("Decoded WeekDaySet: \(weekDaySet)", level: .info)
             return weekDaySet
         } catch {
             LogService.shared.log("Error decoding WeekDaySet: \(error)", level: .error)

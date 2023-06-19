@@ -1,27 +1,17 @@
 import UIKit
 
-enum CategoryButtonPosition {
-    case first, middle, last, single
-}
-
-final class CategoryCell: UITableViewCell {
+final class CategoryCellView: UITableViewCell {
 
     static let identifier = "CategoryCell"
     
     var toggleValueChanged: ((Bool) -> Void)?
-
+    
     var categoryButtonPosition: CategoryButtonPosition = .middle {
         didSet { updateAppearance()
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        let inset: CGFloat = 32
-        separatorInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
-    }
-
-    private let backgroundShape: UIView = {
+    private lazy var backgroundShape: UIView = {
         let view = UIView()
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
@@ -30,15 +20,7 @@ final class CategoryCell: UITableViewCell {
         return view
     }()
 
-    private let selectedView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-        view.layer.masksToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    let labelMenu: UILabel = {
+    private lazy var labelMenu: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
         label.font = FontYP.regular17
@@ -46,7 +28,7 @@ final class CategoryCell: UITableViewCell {
         return label
     }()
 
-    let checkmarkImageView: UIImageView = {
+    private lazy var checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "checkmark")
         imageView.tintColor = UIColor.mainColorYP(.blueYP)
@@ -54,11 +36,20 @@ final class CategoryCell: UITableViewCell {
         imageView.isHidden = true
         return imageView
     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        labelMenu.text = nil
+        checkmarkImageView.isHidden = true
+        categoryButtonPosition = .middle
+    }
 
 
     private func updateAppearance() {
 
         let radius: CGFloat = 16
+        let inset: CGFloat = 32
 
         switch categoryButtonPosition {
 
@@ -66,11 +57,11 @@ final class CategoryCell: UITableViewCell {
             backgroundShape.layer.cornerRadius = radius
             backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
-            selectedView.layer.cornerRadius = radius
-            selectedView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
         case .middle:
             backgroundShape.layer.maskedCorners = []
+            
+            separatorInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+
 
         case .last:
             backgroundShape.layer.cornerRadius = radius
@@ -78,21 +69,18 @@ final class CategoryCell: UITableViewCell {
 
             separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
 
-            selectedView.layer.cornerRadius = radius
-            selectedView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
 
         case .single:
             backgroundShape.layer.cornerRadius = radius
 
             separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
 
-            selectedView.layer.cornerRadius = radius
         }
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configure()
+        configureLayout()
     }
 
     required init?(coder: NSCoder) {
@@ -102,20 +90,21 @@ final class CategoryCell: UITableViewCell {
     func configure(with viewModel: CategoryCellViewModel) {
         labelMenu.text = viewModel.title
         checkmarkImageView.isHidden = !viewModel.isSelected
+        LogService.shared.log("Checkmarks for the name \(viewModel.title) is selected == \(viewModel.isSelected)", level: .info)
+        categoryButtonPosition = viewModel.position
+
+        updateAppearance()
     }
-    
 }
 
 // MARK: - Configuration
 
-extension CategoryCell {
+extension CategoryCellView {
 
-    func configure() {
+    func configureLayout() {
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(labelMenu)
         backgroundShape.addSubview(checkmarkImageView)
-
-        selectedBackgroundView = selectedView
 
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
