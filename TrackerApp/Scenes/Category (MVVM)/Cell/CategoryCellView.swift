@@ -22,17 +22,27 @@ final class CategoryCellView: UITableViewCell {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
         label.font = FontYP.regular17
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "checkmark")
+        imageView.image = UIImage(named: "checkmarkIcon")
         imageView.tintColor = UIColor.mainColorYP(.blueYP)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.isHidden = true
         return imageView
+    }()
+    
+    private lazy var hStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [labelMenu, checkmarkImageView])
+        stack.axis = .horizontal
+        stack.distribution = .fill
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
     
     private lazy var customSeparator: UIView = {
@@ -47,7 +57,7 @@ final class CategoryCellView: UITableViewCell {
         
         labelMenu.text = nil
         checkmarkImageView.isHidden = true
-        categoryButtonPosition = .middle
+        categoryButtonPosition = .single
         
     }
     
@@ -96,22 +106,21 @@ extension CategoryCellView {
     
     func configureLayout() {
         contentView.addSubview(backgroundShape)
-        backgroundShape.addSubview(labelMenu)
-        backgroundShape.addSubview(checkmarkImageView)
+        backgroundShape.addSubview(hStack)
         backgroundShape.addSubview(customSeparator)
         
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
         
         NSLayoutConstraint.activate([
-            labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
-            labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),
-            labelMenu.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
-            labelMenu.trailingAnchor.constraint(equalTo: checkmarkImageView.leadingAnchor, constant: -hInset),
+            checkmarkImageView.widthAnchor.constraint(equalToConstant: 24),
+            checkmarkImageView.heightAnchor.constraint(equalToConstant: 24),
             
-            checkmarkImageView.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
-            checkmarkImageView.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
+            hStack.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
+            hStack.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
+            hStack.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
             
+            backgroundShape.heightAnchor.constraint(equalToConstant: 75),
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
             backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),
             backgroundShape.topAnchor.constraint(equalTo: contentView.topAnchor),
