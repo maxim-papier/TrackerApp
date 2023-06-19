@@ -147,6 +147,26 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		8D9A66952A3FFB29000125AF /* Category MVVM */ = {
+			isa = PBXGroup;
+			children = (
+				8D9A66962A3FFB52000125AF /* Cell */,
+				8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */,
+				8D9A66912A3EEDC3000125AF /* CategoryView.swift */,
+				8D9A66932A3F50D3000125AF /* Observable.swift */,
+			);
+			path = "Category MVVM";
+			sourceTree = "<group>";
+		};
+		8D9A66962A3FFB52000125AF /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				8D6A94022A3ED77500DCED90 /* CategoryCellViewModel.swift */,
+				8DE2666329EF88F8003D9FB1 /* CategoryCellView.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		8DA0CB59299A6377004BFE73 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -246,11 +266,7 @@
 		8DDE29C32993E1B500D4A4DD /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				8D6A94022A3ED77500DCED90 /* CategoryCellViewModel.swift */,
-				8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */,
-				8DE2666329EF88F8003D9FB1 /* CategoryCellView.swift */,
-				8D9A66912A3EEDC3000125AF /* CategoryView.swift */,
-				8D9A66932A3F50D3000125AF /* Observable.swift */,
+				8D9A66952A3FFB29000125AF /* Category MVVM */,
 				8DEE447B2A3C9E9700780EC6 /* Onboarding */,
 				8DC07966299F639F00AC6C10 /* Cells */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,

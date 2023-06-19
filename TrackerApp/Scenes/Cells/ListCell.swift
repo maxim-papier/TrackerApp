@@ -67,8 +67,10 @@ final class ListCell: UICollectionViewCell {
             backgroundShape.layer.cornerRadius = 16
             backgroundShape.layer.masksToBounds = true
             backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            separator.isHidden = false
         case .middle:
             backgroundShape.layer.maskedCorners = []
+            separator.isHidden = false
         case .last:
             backgroundShape.layer.cornerRadius = 16
             backgroundShape.layer.masksToBounds = true

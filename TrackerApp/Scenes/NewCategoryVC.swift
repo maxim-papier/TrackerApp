@@ -2,7 +2,7 @@ import UIKit
 
 final class NewCategoryVC: UIViewController {
 
-    weak var delegate: NewCategoryVCDelegate?
+    weak var delegate: NewCategoryDelegate?
 
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
@@ -43,7 +43,7 @@ final class NewCategoryVC: UIViewController {
                 assertionFailure("An error occurred while fetching the updated data: \(error)")
             }
 
-            delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)
+            delegate?.newCategoryController(self, didCreateNewCategoryWithId: newCategory.id)
             onCategoryCreated?(newCategory.id)
             dismiss(animated: true)
         } else {
@@ -147,9 +147,7 @@ extension NewCategoryVC: UICollectionViewDelegateFlowLayout {
 
 extension NewCategoryVC: UICollectionViewDelegate {}
 
-
 // MARK: - NewCategory Delegate
-
-protocol NewCategoryVCDelegate: AnyObject {
-    func newCategoryVC(_ newCategoryVC: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
+protocol NewCategoryDelegate: AnyObject {
+    func newCategoryController(_ controller: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
 }

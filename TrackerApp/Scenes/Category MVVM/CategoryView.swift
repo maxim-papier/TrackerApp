@@ -14,7 +14,7 @@ final class CategoryView: UIViewController {
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.register(CategoryCellView.self, forCellReuseIdentifier: CategoryCellView.identifier)
-        table.layer.masksToBounds = true
+        table.separatorStyle = .none
         table.translatesAutoresizingMaskIntoConstraints = false
         return table
     }()
@@ -105,6 +105,7 @@ final class CategoryView: UIViewController {
     @objc private func performButtonAction() {
         if viewModel.buttonState == .add {
             let vc = NewCategoryVC(dependencies: dependencies)
+            vc.delegate = self
             present(vc, animated: true)
         } else {
             dismiss(animated: true)
@@ -135,6 +136,20 @@ extension CategoryView: UITableViewDataSource {
 extension CategoryView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.selectCategory(at: indexPath)
+        
+        if let selectedCategory = viewModel.selectedCategory {
+            categorySelectionDelegate?.categorySelected(category: selectedCategory)
+        }
+        tableView.reloadData()
+    }
+}
+
+// New Category Delegate
+extension CategoryView: NewCategoryDelegate {
+    func newCategoryController(_ newCategoryVC: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID) {
+        viewModel.fetchCategories()
+        viewModel.selectCategory(withId: categoryId)
+        
         if let selectedCategory = viewModel.selectedCategory {
             categorySelectionDelegate?.categorySelected(category: selectedCategory)
         }

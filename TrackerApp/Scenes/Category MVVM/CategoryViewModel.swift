@@ -41,14 +41,10 @@ final class CategoryViewModel {
     
     private func getCategoryButtonPosition(for index: Int) -> CategoryButtonPosition {
         switch index {
-        case 0 where categories.count == 1:
-            return .single
-        case 0:
-            return .first
-        case categories.count - 1:
-            return .last
-        default:
-            return .middle
+        case 0 where categories.count == 1: return .single
+        case 0: return .first
+        case categories.count - 1: return .last
+        default: return .middle
         }
     }
     
@@ -63,4 +59,13 @@ final class CategoryViewModel {
             buttonState = .ready
         }
     }
+    
+    func selectCategory(withId id: UUID) {
+        guard let index = categories.firstIndex(where: { $0.id == id }) else { return }
+        
+        let category = categories[index]
+        
+        selectedCategory = category
+        buttonState = .ready
+        }
 }
