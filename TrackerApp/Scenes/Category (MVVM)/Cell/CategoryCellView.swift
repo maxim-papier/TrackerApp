@@ -110,7 +110,6 @@ extension CategoryCellView {
         backgroundShape.addSubview(customSeparator)
         
         let hInset = CGFloat(16)
-        let vInset = CGFloat(26)
         
         NSLayoutConstraint.activate([
             checkmarkImageView.widthAnchor.constraint(equalToConstant: 24),
