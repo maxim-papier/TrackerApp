@@ -1,7 +1,7 @@
-import Foundation
+import UIKit
 import CoreData
 
-final class RecordStore: NSObject {
+final class TrackerRecordStore: NSObject {
 
     // MARK: - Properties
     
@@ -39,7 +39,8 @@ final class RecordStore: NSObject {
             record.tracker = coreDataTracker
 
             try context.save()
-            
+            print("Tracker is done now")
+
         } catch {
             assertionFailure("Error adding tracker record: \(error)")
         }
@@ -55,7 +56,7 @@ final class RecordStore: NSObject {
             context.delete(coreDataRecord)
             
             try context.save()
-
+            print("Tracker is not done now")
         } catch {
             assertionFailure("Error deleting tracker record: \(error)")
         }
@@ -63,7 +64,7 @@ final class RecordStore: NSObject {
     
     // MARK: - Fetching methods
     
-    func fetchAllRecords() -> [Record] {
+    func fetchAllRecords() -> [TrackerRecord] {
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
 
         do {
@@ -88,10 +89,24 @@ final class RecordStore: NSObject {
         }
     }
     
+    // MARK: - Clear all records
+    
+    func clearRecordData() {
+        print("Clearing records data...")
+
+        let request: NSFetchRequest<NSFetchRequestResult> = TrackerRecordData.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        do {
+            try context.execute(deleteRequest)
+        } catch let error as NSError {
+            assertionFailure("Error deleting record data: \(error.localizedDescription)")
+        }
+    }
 
     // MARK: - Conversion method
     
-    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> Record? {
+    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
         guard
             let id = coreDataRecord.id,
             let date = coreDataRecord.doneDate
@@ -99,6 +114,6 @@ final class RecordStore: NSObject {
             return nil
         }
 
-        return Record(id: id, date: date)
+        return TrackerRecord(id: id, date: date)
     }
 }

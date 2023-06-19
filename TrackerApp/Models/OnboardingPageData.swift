@@ -1,6 +1,6 @@
 import Foundation
 
-struct OnboardingPage: Equatable {
+struct OnboardingPageData: Equatable {
     let backgroundImageName: String
     let title: String
     let buttonLabel: String

@@ -122,10 +122,14 @@ extension SchedulerVC: UITableViewDataSource {
             let weekDay = self.weekdays[indexPath.row]
             if isOn {
                 self.selectedDays.weekDays.insert(weekDay)
+                print("AFTER (+) — \(self.selectedDays.weekDays)")
             } else {
                 self.selectedDays.weekDays.remove(weekDay)
+                print("AFTER (-) — \(self.selectedDays.weekDays)")
             }
         }
+
+        print("SELECTED - \(selectedDays)")
         return cell
     }
 }

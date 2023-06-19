@@ -8,7 +8,7 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
     var isCreatingEvent: Bool = false
 
     var selectedTitle: String?
-    var selectedCategory: Category?
+    var selectedCategory: TrackerCategory?
     var selectedSchedule = WeekDaySet(weekDays: [])
     var selectedEmoji: String?
     var selectedColor: SelectionColorStyle?
@@ -90,10 +90,13 @@ final class CreateTrackerVC: UIViewController, UICollectionViewDelegateFlowLayou
         }()
 
         let cancelButton = Button(type: .cancel, title: "Отменить") {
+            print("CANCEL is tapped")
             self.dismiss(animated: true)
         }
 
-        readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {            
+        readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
+            print("readyButton is ready")
+            
             let newTracker = self.createNewTracker()
             guard let selectedCategoryID = self.selectedCategory?.id else { return }
             self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
@@ -354,6 +357,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
             listCell.buttonPosition = .last
             if !selectedSchedule.weekDays.isEmpty {
                 let days = selectedSchedule.weekDays.map { $0.shortLabel }
+                print("DAYS \(days)")
                 let daysString = days.joined(separator: ", ")
                 listCell.subtitleLabel.text = daysString
             }
@@ -420,6 +424,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         switch indexPath.section {
+        case 0: handleInputSelection()
         case 1: handleListSelection(at: indexPath)
         case 2: handleEmojiSelection(at: indexPath)
         case 3: handleColorSelection(at: indexPath)
@@ -430,13 +435,15 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
     }
 
+    private func handleInputSelection() {
+        print("Ready to input")
+    }
+
     private func handleListSelection(at indexPath: IndexPath) {
 
-        let viewModel = CategoryViewModel(dependencies: dependencies)
-        
         if indexPath.row == 0 {
-            let vc = CategoryView(dependencies: dependencies, viewModel: viewModel)
-            vc.categorySelectionDelegate = self
+            let vc = CategoryVC(dependencies: dependencies)
+            vc.delegate = self
             present(vc, animated: true, completion: nil)
         } else if indexPath.row == 1 {
             let vc = SchedulerVC(selectedDays: Array(selectedSchedule.weekDays))
@@ -502,15 +509,32 @@ extension CreateTrackerVC: AddSchedulerDelegate {
 extension CreateTrackerVC {
 
     func isTrackerReadyToBeCreated() {
-        let isScheduleValid = isCreatingEvent || !selectedSchedule.weekDays.isEmpty
+        
         guard let title = selectedTitle, !title.isEmpty,
-              selectedCategory != nil,
-              selectedEmoji != nil,
-              selectedColor != nil,
-              isScheduleValid else {
+              let category = selectedCategory,
+              let emoji = selectedEmoji,
+              let color = selectedColor else {
             readyButton?.isActive = false
             return
         }
+
+        switch isCreatingEvent {
+        case false:
+            guard !selectedSchedule.weekDays.isEmpty else {
+                readyButton?.isActive = false
+                return
+            }
+        case true:
+            break
+        }
+
+        print("DATA IS READY TO SAVE:")
+        print("selectedTitle === \(title)")
+        print("selectedCategory === \(category)")
+        print("selectedEmoji === \(emoji)")
+        print("selectedColor === \(color)")
+        print("selectedSchedule === \(selectedSchedule)")
+
         readyButton?.isActive = true
     }
 
@@ -528,8 +552,8 @@ extension CreateTrackerVC {
 }
 
 extension CreateTrackerVC: CategorySelectionDelegate {
-    func categorySelected(category: CategoryData) {
-        selectedCategory = dependencies.сategoryStore.trackerCategory(from: category)
+    func categorySelected(category: TrackerCategory) {
+        selectedCategory = category
         let sectionToReload = 1
         collectionView.reloadSections(IndexSet(integer: sectionToReload))
     }
@@ -540,4 +564,8 @@ extension CreateTrackerVC: CategorySelectionDelegate {
 
 protocol CreateTrackerVCDelegate: AnyObject {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID)
+}
+
+protocol CategorySelectionDelegate: AnyObject {
+    func categorySelected(category: TrackerCategory)
 }
