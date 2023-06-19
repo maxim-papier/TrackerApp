@@ -3,18 +3,18 @@ import CoreData
 final class DependencyContainer {
 
     let trackerStore: TrackerStore
-    let trackerCategoryStore: TrackerCategoryStore
-    let trackerRecordStore: TrackerRecordStore
+    let сategoryStore: CategoryStore
+    let recordStore: RecordStore
 
     init(context: NSManagedObjectContext) {
 
         trackerStore = TrackerStore(context: context)
-        trackerCategoryStore = TrackerCategoryStore(context: context)
-        trackerRecordStore = TrackerRecordStore(context: context)
+        сategoryStore = CategoryStore(context: context)
+        recordStore = RecordStore(context: context)
     }
 
     var fetchedResultsControllerForCategory: NSFetchedResultsController<CategoryData> {
-        return trackerCategoryStore.fetchedResultsControllerForCategory()
+        return сategoryStore.retrieveFetchedResultsController()
     }
 
     var fetchedResultsControllerForTrackers: NSFetchedResultsController<TrackerData> {

@@ -1,18 +1,16 @@
 import UIKit
 import CoreData
 
-// MARK: - TrackerCategoryStoreDelegate
-
-protocol TrackerCategoryStoreDelegate: AnyObject {
+protocol CategoryStoreDelegate: AnyObject {
     func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath)
     func trackerCategoryStoreDidDeleteCategory(at indexPath: IndexPath)
 }
 
 // MARK: - TrackerCategoryStore
 
-final class TrackerCategoryStore: NSObject {
+final class CategoryStore: NSObject {
 
-    weak var delegate: TrackerCategoryStoreDelegate?
+    weak var delegate: CategoryStoreDelegate?
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<CategoryData>?
 
@@ -23,14 +21,15 @@ final class TrackerCategoryStore: NSObject {
 
     // MARK: - FetchedResultsController
 
-    /// Initialize and return fetchedResultsController
-    func fetchedResultsControllerForCategory() -> NSFetchedResultsController<CategoryData> {
+    // Initialize and return fetchedResultsController
+    func retrieveFetchedResultsController() -> NSFetchedResultsController<CategoryData> {
         if let fetchedResultsController = fetchedResultsController {
             return fetchedResultsController
         } else {
             setupFetchedResultsController()
             guard let fetchedResultsController = fetchedResultsController else {
-                fatalError("Failed to initialize fetchedResultsController")
+                LogService.shared.log("Failed to initialize fetchedResultsController", level: .error)
+                return .init()
             }
             return fetchedResultsController
         }
@@ -52,14 +51,24 @@ final class TrackerCategoryStore: NSObject {
         do {
             try fetchedResultsController?.performFetch()
         } catch {
-            assertionFailure("Error setting up fetched results controller: \(error)")
+            LogService.shared.log("Error setting up fetched results controller: \(error)", level: .error)
         }
+    }
+    
+    func getCategory(at indexPath: IndexPath) -> Category? {
+        guard let fetchedResultsController = fetchedResultsController else {
+            LogService.shared.log("FetchedResultsController is not initialized.", level: .error)
+            return nil
+        }
+
+        let categoryData = fetchedResultsController.object(at: indexPath)
+        return trackerCategory(from: categoryData)
     }
 
     // MARK: - CRUD methods
 
     // Create a new TrackerCategory in the store
-    func createTrackerCategory(category: TrackerCategory) -> Bool {
+    func create(category: Category) -> Bool {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", category.name)
 
@@ -73,62 +82,30 @@ final class TrackerCategoryStore: NSObject {
                 return true
             }
         } catch {
-            assertionFailure("Error checking or creating category: \(error)")
+            LogService.shared.log("Error checking or creating category: \(error)", level: .error)
             return false
         }
     }
 
     // Read all TrackerCategories from the store
-    func readTrackerCategories() -> [TrackerCategory] {
+    func retrieveAllCategories() -> [Category] {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
 
         do {
             let coreDataCategories = try context.fetch(request)
             return coreDataCategories.compactMap { trackerCategory(from: $0) }
         } catch {
-            assertionFailure("Error fetching categories: \(error)")
+            LogService.shared.log("Error fetching categories: \(error)", level: .error)
             return []
-        }
-    }
-
-    // Update an existing TrackerCategory in the store
-    func updateTrackerCategory(category: TrackerCategory) {
-        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
-
-        do {
-            let coreDataCategories = try context.fetch(request)
-            guard let coreDataCategory = coreDataCategories.first else { return }
-
-            coreDataCategory.name = category.name
-
-            try context.save()
-        } catch {
-            assertionFailure("Error updating category: \(error)")
-        }
-    }
-
-    // Delete a TrackerCategory by id from the store
-    func deleteTrackerCategory(by id: UUID) {
-        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-
-        do {
-            let coreDataCategories = try context.fetch(request)
-            guard let coreDataCategory = coreDataCategories.first else { return }
-            context.delete(coreDataCategory)
-            try context.save()
-        } catch {
-            assertionFailure("Error deleting category: \(error)")
         }
     }
 
     // MARK: - Adding new tracker into category
 
     // Add a tracker to an existing category or create a new category if categoryId is not provided
-    func addTrackerToCategory(tracker: Tracker, categoryID: UUID? = nil) {
+    func add(tracker: Tracker, toCategoryWithId categoryId: UUID? = nil) {
         
-        guard let categoryId = categoryID else {
+        guard let categoryId = categoryId else {
             createNewCategory(with: tracker)
             return
         }
@@ -137,8 +114,8 @@ final class TrackerCategoryStore: NSObject {
     }
 
     private func createNewCategory(with tracker: Tracker) {
-        let newCategory = TrackerCategory(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
-        _ = createTrackerCategory(category: newCategory)
+        let newCategory = Category(id: UUID(), name: "New Category", trackers: [tracker], createdAt: Date())
+        _ = create(category: newCategory)
     }
 
     private func addToExistingCategory(tracker: Tracker, categoryId: UUID) {
@@ -149,58 +126,23 @@ final class TrackerCategoryStore: NSObject {
         do {
             let coreDataCategories = try context.fetch(request)
             guard let coreDataCategory = coreDataCategories.first else {
-                print("Category with id \(categoryId) not found")
+                LogService.shared.log("Category with id \(categoryId) not found", level: .error)
                 return
             }
             
             let newTrackerData = coreDataTracker(from: tracker)
             coreDataCategory.addToTrackers(newTrackerData)
-            
-            print("CHECKING 📅 BEFORE SAVING TO CONTEXT:  \(String(describing: newTrackerData.schedule))")
-            
+        
             try context.save()
             
         } catch {
-            assertionFailure("Error updating category: \(error)")
-        }
-        
-    }
-
-    // Get a TrackerCategory by id from the store
-    func getTrackerCategory(by id: UUID) -> TrackerCategory? {
-        
-        let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-
-        do {
-            let coreDataCategories = try context.fetch(request)
-            guard let coreDataCategory = coreDataCategories.first else { return nil }
-            return trackerCategory(from: coreDataCategory)
-        } catch {
-            assertionFailure("Error fetching category by id: \(error)")
-            return nil
+            LogService.shared.log("Error updating category: \(error)", level: .error)
         }
     }
-
-    // MARK: - Clean all categories data
-
-    // Clear all category data from the store
-    func clearCategoryData() {
-        print("Clearing category data...")
-
-        let request: NSFetchRequest<NSFetchRequestResult> = CategoryData.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            try context.execute(deleteRequest)
-        } catch {
-            assertionFailure("Error deleting category data: \(error)")
-        }
-    }
-
+    
     // MARK: - Conversion methods
 
-    private func coreDataTrackerCategory(from category: TrackerCategory) -> CategoryData {
+    private func coreDataTrackerCategory(from category: Category) -> CategoryData {
 
         let coreDataCategory = CategoryData(context: context)
         coreDataCategory.id = category.id
@@ -213,7 +155,7 @@ final class TrackerCategoryStore: NSObject {
         return coreDataCategory
     }
 
-    func trackerCategory(from coreDataCategory: CategoryData) -> TrackerCategory? {
+    func trackerCategory(from coreDataCategory: CategoryData) -> Category? {
         guard
             let id = coreDataCategory.id,
             let name = coreDataCategory.name,
@@ -222,10 +164,9 @@ final class TrackerCategoryStore: NSObject {
         else {
             return nil
         }
-
         let trackers = coreDataTrackers.compactMap { $0 as? TrackerData }.compactMap { tracker(from: $0) }
 
-        return TrackerCategory(id: id, name: name, trackers: trackers, createdAt: createdAt)
+        return Category(id: id, name: name, trackers: trackers, createdAt: createdAt)
     }
 
     private func coreDataTracker(from tracker: Tracker) -> TrackerData {
@@ -243,7 +184,6 @@ final class TrackerCategoryStore: NSObject {
         } else {
             coreDataTracker.schedule = "no_schedule"
         }
-
         return coreDataTracker
     }
 
@@ -266,13 +206,13 @@ final class TrackerCategoryStore: NSObject {
                 schedule = weekDaySet.weekDays
             }
         }
-
         return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
     }
-
 }
 
-extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
+// MARK: - FetchedResults Delegate
+
+extension CategoryStore: NSFetchedResultsControllerDelegate {
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
                     didChange anObject: Any,
@@ -291,7 +231,5 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
         default:
             break
         }
-
     }
-
 }

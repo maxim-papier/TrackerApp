@@ -1,24 +1,15 @@
 import UIKit
 
-enum CategoryButtonPosition {
-    case first, middle, last, single
-}
-
-final class CategoryCell: UITableViewCell {
-
+final class CategoryCellView: UITableViewCell {
+    
     static let identifier = "CategoryCell"
-    var toggleValueChanged: ((Bool) -> Void)?
+    
     var categoryButtonPosition: CategoryButtonPosition = .middle {
         didSet { updateAppearance()
         }
     }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        separatorInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
-    }
-
-    private let backgroundShape: UIView = {
+    
+    private lazy var backgroundShape: UIView = {
         let view = UIView()
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.backgroundYP)
@@ -26,24 +17,16 @@ final class CategoryCell: UITableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
-    private let selectedView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-        view.layer.masksToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    let labelMenu: UILabel = {
+    
+    private lazy var labelMenu: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
         label.font = FontYP.regular17
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
-    let checkmarkImageView: UIImageView = {
+    
+    private lazy var checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "checkmark")
         imageView.tintColor = UIColor.mainColorYP(.blueYP)
@@ -51,79 +34,93 @@ final class CategoryCell: UITableViewCell {
         imageView.isHidden = true
         return imageView
     }()
-
-
+    
+    private lazy var customSeparator: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.mainColorYP(.grayYP)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        labelMenu.text = nil
+        checkmarkImageView.isHidden = true
+        categoryButtonPosition = .middle
+        
+    }
+    
     private func updateAppearance() {
-
         let radius: CGFloat = 16
-
+        
         switch categoryButtonPosition {
-
         case .first:
             backgroundShape.layer.cornerRadius = radius
             backgroundShape.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
-            selectedView.layer.cornerRadius = radius
-            selectedView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
+            customSeparator.isHidden = false
         case .middle:
+            backgroundShape.layer.cornerRadius = 0
             backgroundShape.layer.maskedCorners = []
-
+            customSeparator.isHidden = false
         case .last:
             backgroundShape.layer.cornerRadius = radius
             backgroundShape.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-
-            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-
-            selectedView.layer.cornerRadius = radius
-            selectedView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-
+            customSeparator.isHidden = true
         case .single:
             backgroundShape.layer.cornerRadius = radius
-
-            separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-
-            selectedView.layer.cornerRadius = radius
+            customSeparator.isHidden = true
         }
     }
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configure()
+        configureLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("Old people love new Clint Eastwood movies")
+    }
+    
+    func configure(with viewModel: CategoryCellViewModel) {
+        labelMenu.text = viewModel.title
+        checkmarkImageView.isHidden = !viewModel.isSelected
+        categoryButtonPosition = viewModel.position
+        updateAppearance()
     }
 }
 
 // MARK: - Configuration
 
-extension CategoryCell {
-
-    func configure() {
+extension CategoryCellView {
+    
+    func configureLayout() {
         contentView.addSubview(backgroundShape)
         backgroundShape.addSubview(labelMenu)
         backgroundShape.addSubview(checkmarkImageView)
-
-        selectedBackgroundView = selectedView
-
+        backgroundShape.addSubview(customSeparator)
+        
         let hInset = CGFloat(16)
         let vInset = CGFloat(26)
-
+        
         NSLayoutConstraint.activate([
             labelMenu.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: vInset),
             labelMenu.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -vInset),
             labelMenu.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
             labelMenu.trailingAnchor.constraint(equalTo: checkmarkImageView.leadingAnchor, constant: -hInset),
-
+            
             checkmarkImageView.centerYAnchor.constraint(equalTo: backgroundShape.centerYAnchor),
             checkmarkImageView.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
-
+            
             backgroundShape.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: hInset),
             backgroundShape.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -hInset),
             backgroundShape.topAnchor.constraint(equalTo: contentView.topAnchor),
             backgroundShape.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            customSeparator.heightAnchor.constraint(equalToConstant: 0.5),
+            customSeparator.leadingAnchor.constraint(equalTo: backgroundShape.leadingAnchor, constant: hInset),
+            customSeparator.trailingAnchor.constraint(equalTo: backgroundShape.trailingAnchor, constant: -hInset),
+            customSeparator.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor)
         ])
     }
 }

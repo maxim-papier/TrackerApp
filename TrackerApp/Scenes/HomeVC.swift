@@ -4,9 +4,13 @@ final class HomeVC: UITabBarController {
 
 
     private let dependencies: DependencyContainer
-
-    init(dependencies: DependencyContainer) {
+    private let onboardingPersistenceService: OnboardingPersistenceService
+    
+    init(dependencies: DependencyContainer,
+         onboardingPersistenceService: OnboardingPersistenceService
+    ) {
         self.dependencies = dependencies
+        self.onboardingPersistenceService = onboardingPersistenceService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -18,35 +22,20 @@ final class HomeVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
-        let categoriesInBase = dependencies.trackerCategoryStore.readTrackerCategories()
-        print("CORE DATA CURRENTLY CONTAINS:")
-        print("---------")
-        print("Categories: \(categoriesInBase.count) ")
-        print("---------")
-        print("Categories Names: \(categoriesInBase.map({ $0.name }))")
-        print("---------")
-        print("Trackers:")
-        categoriesInBase.forEach {
-            print($0.trackers.map { "Name — \($0.title) Schedule — \(String(describing: $0.day)) \($0.id)" }.joined(separator: "\n"))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let shouldShowOnboarding = onboardingPersistenceService.hasCompletedOnboarding()
+        
+        if !shouldShowOnboarding {
+            let onboardingViewModel = OnboardingViewModel(onboardingPersistenceService: onboardingPersistenceService)
+            let onboardingVC = OnboardingView(viewModel: onboardingViewModel)
+            onboardingVC.modalPresentationStyle = .fullScreen
+            present(onboardingVC, animated: false, completion: nil)
         }
-        let recordsInBase = dependencies.trackerRecordStore.fetchAllRecords()
-        print("REC: \(String(describing: recordsInBase.first))")
-        print("---------")
-//        cleanCoreData {
-//            print("All data has been cleared")
-//        }
     }
-
-
-    // MARK: - Clear Core Data
-
-    private func cleanCoreData(completion: @escaping() -> Void) {
-        self.dependencies.trackerCategoryStore.clearCategoryData()
-        self.dependencies.trackerStore.clearTrackerData()
-        self.dependencies.trackerRecordStore.clearRecordData()
-        completion()
-    }
-
 
     // MARK: - Setup
 

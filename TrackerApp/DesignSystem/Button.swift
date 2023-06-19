@@ -36,7 +36,6 @@ final class Button: UIButton {
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
 
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -47,7 +46,6 @@ final class Button: UIButton {
 }
 
 extension Button {
-
     private func didSetButtonActivityAndStyle(_ isActive: Bool) {
         let backgroundColor = isActive ? UIColor.mainColorYP(.blackYP) : UIColor.mainColorYP(.grayYP)
         self.backgroundColor = backgroundColor
@@ -60,5 +58,3 @@ enum TypeOfButton {
     case primary(isActive: Bool)
     case cancel
 }
-
-
