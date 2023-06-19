@@ -49,7 +49,7 @@
 		8DEE447D2A3C9EB600780EC6 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */; };
 		8DEE447F2A3C9F5C00780EC6 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE447E2A3C9F5C00780EC6 /* OnboardingPage.swift */; };
 		8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */; };
-		8DEE44832A3CB16B00780EC6 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */; };
+		8DEE44832A3CB16B00780EC6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44822A3CB16B00780EC6 /* OnboardingView.swift */; };
 		8DEE44862A3D45E200780EC6 /* LogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44852A3D45E200780EC6 /* LogService.swift */; };
 		8DEE44882A3D7F3800780EC6 /* OnboardingPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */; };
 		8DF313A72997283500B7D148 /* TrackerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF313A62997283500B7D148 /* TrackerHeader.swift */; };
@@ -105,7 +105,7 @@
 		8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		8DEE447E2A3C9F5C00780EC6 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
 		8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageView.swift; sourceTree = "<group>"; };
-		8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		8DEE44822A3CB16B00780EC6 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		8DEE44852A3D45E200780EC6 /* LogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogService.swift; sourceTree = "<group>"; };
 		8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPersistence.swift; sourceTree = "<group>"; };
 		8DF313A62997283500B7D148 /* TrackerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerHeader.swift; sourceTree = "<group>"; };
@@ -147,15 +147,14 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
-		8D9A66952A3FFB29000125AF /* Category MVVM */ = {
+		8D9A66952A3FFB29000125AF /* Category (MVVM) */ = {
 			isa = PBXGroup;
 			children = (
 				8D9A66962A3FFB52000125AF /* Cell */,
 				8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */,
 				8D9A66912A3EEDC3000125AF /* CategoryView.swift */,
-				8D9A66932A3F50D3000125AF /* Observable.swift */,
 			);
-			path = "Category MVVM";
+			path = "Category (MVVM)";
 			sourceTree = "<group>";
 		};
 		8D9A66962A3FFB52000125AF /* Cell */ = {
@@ -266,7 +265,7 @@
 		8DDE29C32993E1B500D4A4DD /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				8D9A66952A3FFB29000125AF /* Category MVVM */,
+				8D9A66952A3FFB29000125AF /* Category (MVVM) */,
 				8DEE447B2A3C9E9700780EC6 /* Onboarding */,
 				8DC07966299F639F00AC6C10 /* Cells */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
@@ -283,9 +282,9 @@
 		8DEE447B2A3C9E9700780EC6 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */,
 				8DEE447C2A3C9EB600780EC6 /* OnboardingViewModel.swift */,
-				8DEE44822A3CB16B00780EC6 /* OnboardingViewController.swift */,
+				8DEE44802A3C9F9A00780EC6 /* OnboardingPageView.swift */,
+				8DEE44822A3CB16B00780EC6 /* OnboardingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -293,6 +292,7 @@
 		8DEE44842A3D45C300780EC6 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				8D9A66932A3F50D3000125AF /* Observable.swift */,
 				8DEE44852A3D45E200780EC6 /* LogService.swift */,
 				8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */,
 			);
@@ -403,7 +403,7 @@
 				8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */,
 				8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
-				8DEE44832A3CB16B00780EC6 /* OnboardingViewController.swift in Sources */,
+				8DEE44832A3CB16B00780EC6 /* OnboardingView.swift in Sources */,
 				8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */,
 				8DAE17BB29E63BAD00DFBC9A /* WeekDaysSet.swift in Sources */,
 				8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */,

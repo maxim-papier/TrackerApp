@@ -85,9 +85,7 @@ final class CategoryCellView: UITableViewCell {
     func configure(with viewModel: CategoryCellViewModel) {
         labelMenu.text = viewModel.title
         checkmarkImageView.isHidden = !viewModel.isSelected
-        LogService.shared.log("Checkmarks for the name \(viewModel.title) is selected == \(viewModel.isSelected)", level: .info)
         categoryButtonPosition = viewModel.position
-        
         updateAppearance()
     }
 }

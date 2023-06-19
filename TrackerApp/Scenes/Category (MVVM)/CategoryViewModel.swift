@@ -1,5 +1,9 @@
 import Foundation
 
+enum AppError: Error {
+    case databaseError(String)
+}
+
 enum ButtonState {
     case add
     case ready

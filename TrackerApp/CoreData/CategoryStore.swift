@@ -1,8 +1,6 @@
 import UIKit
 import CoreData
 
-// MARK: - TrackerCategoryStoreDelegate
-
 protocol CategoryStoreDelegate: AnyObject {
     func trackerCategoryStoreDidInsertCategory(at indexPath: IndexPath)
     func trackerCategoryStoreDidDeleteCategory(at indexPath: IndexPath)
@@ -30,7 +28,8 @@ final class CategoryStore: NSObject {
         } else {
             setupFetchedResultsController()
             guard let fetchedResultsController = fetchedResultsController else {
-                fatalError("Failed to initialize fetchedResultsController")
+                LogService.shared.log("Failed to initialize fetchedResultsController", level: .error)
+                return .init()
             }
             return fetchedResultsController
         }
@@ -52,13 +51,13 @@ final class CategoryStore: NSObject {
         do {
             try fetchedResultsController?.performFetch()
         } catch {
-            assertionFailure("Error setting up fetched results controller: \(error)")
+            LogService.shared.log("Error setting up fetched results controller: \(error)", level: .error)
         }
     }
     
     func getCategory(at indexPath: IndexPath) -> Category? {
         guard let fetchedResultsController = fetchedResultsController else {
-            assertionFailure("FetchedResultsController is not initialized.")
+            LogService.shared.log("FetchedResultsController is not initialized.", level: .error)
             return nil
         }
 
@@ -83,7 +82,7 @@ final class CategoryStore: NSObject {
                 return true
             }
         } catch {
-            assertionFailure("Error checking or creating category: \(error)")
+            LogService.shared.log("Error checking or creating category: \(error)", level: .error)
             return false
         }
     }
@@ -96,7 +95,7 @@ final class CategoryStore: NSObject {
             let coreDataCategories = try context.fetch(request)
             return coreDataCategories.compactMap { trackerCategory(from: $0) }
         } catch {
-            assertionFailure("Error fetching categories: \(error)")
+            LogService.shared.log("Error fetching categories: \(error)", level: .error)
             return []
         }
     }
@@ -137,7 +136,7 @@ final class CategoryStore: NSObject {
             try context.save()
             
         } catch {
-            assertionFailure("Error updating category: \(error)")
+            LogService.shared.log("Error updating category: \(error)", level: .error)
         }
     }
     
@@ -210,6 +209,8 @@ final class CategoryStore: NSObject {
         return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
     }
 }
+
+// MARK: - FetchedResults Delegate
 
 extension CategoryStore: NSFetchedResultsControllerDelegate {
 
