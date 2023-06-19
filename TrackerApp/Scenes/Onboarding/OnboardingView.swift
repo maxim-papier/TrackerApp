@@ -1,6 +1,6 @@
 import UIKit
 
-class OnboardingViewController: UIPageViewController {
+class OnboardingView: UIPageViewController {
     
     private var viewModel: OnboardingViewModel
     private var currentPageView: OnboardingPageView?
@@ -55,7 +55,7 @@ class OnboardingViewController: UIPageViewController {
     }
 }
 
-extension OnboardingViewController: UIPageViewControllerDataSource {
+extension OnboardingView: UIPageViewControllerDataSource {
     
     func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -82,7 +82,7 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
 
 // MARK: - Delegate Methods
 
-extension OnboardingViewController: UIPageViewControllerDelegate {
+extension OnboardingView: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
             currentPageView = pageViewController.viewControllers?.first as? OnboardingPageView

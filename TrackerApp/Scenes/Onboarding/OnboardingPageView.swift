@@ -1,7 +1,7 @@
 import UIKit
 
 class OnboardingPageView: UIViewController {
-    var pageData: OnboardingPageData
+    var pageData: OnboardingPage
     var closeButtonAction: (() -> Void)
     
     private lazy var backgroundImageView: UIImageView = {
@@ -33,7 +33,7 @@ class OnboardingPageView: UIViewController {
     }()
     
 
-    init(pageData: OnboardingPageData,
+    init(pageData: OnboardingPage,
          closeButtonAction: @escaping (() -> Void)) {
         self.pageData = pageData
         self.closeButtonAction = closeButtonAction

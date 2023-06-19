@@ -149,21 +149,6 @@ final class TrackerStore: NSObject {
     }
 
 
-    // MARK: - Clean all trackers data
-
-    func clearTrackerData() {
-
-        print("Clearing trackers data...")
-
-        let request: NSFetchRequest<NSFetchRequestResult> = TrackerData.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            try context.execute(deleteRequest)
-        } catch let error as NSError {
-            assertionFailure("Error deleting category data: \(error.localizedDescription)")
-        }
-    }
 
     // MARK: - Filtering methods
 

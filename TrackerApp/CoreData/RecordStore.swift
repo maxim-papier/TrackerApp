@@ -1,7 +1,7 @@
-import UIKit
+import Foundation
 import CoreData
 
-final class TrackerRecordStore: NSObject {
+final class RecordStore: NSObject {
 
     // MARK: - Properties
     
@@ -39,8 +39,7 @@ final class TrackerRecordStore: NSObject {
             record.tracker = coreDataTracker
 
             try context.save()
-            print("Tracker is done now")
-
+            
         } catch {
             assertionFailure("Error adding tracker record: \(error)")
         }
@@ -56,7 +55,7 @@ final class TrackerRecordStore: NSObject {
             context.delete(coreDataRecord)
             
             try context.save()
-            print("Tracker is not done now")
+
         } catch {
             assertionFailure("Error deleting tracker record: \(error)")
         }
@@ -64,7 +63,7 @@ final class TrackerRecordStore: NSObject {
     
     // MARK: - Fetching methods
     
-    func fetchAllRecords() -> [TrackerRecord] {
+    func fetchAllRecords() -> [Record] {
         let request: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
 
         do {
@@ -89,24 +88,10 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    // MARK: - Clear all records
-    
-    func clearRecordData() {
-        print("Clearing records data...")
-
-        let request: NSFetchRequest<NSFetchRequestResult> = TrackerRecordData.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            try context.execute(deleteRequest)
-        } catch let error as NSError {
-            assertionFailure("Error deleting record data: \(error.localizedDescription)")
-        }
-    }
 
     // MARK: - Conversion method
     
-    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> TrackerRecord? {
+    private func trackerRecord(from coreDataRecord: TrackerRecordData) -> Record? {
         guard
             let id = coreDataRecord.id,
             let date = coreDataRecord.doneDate
@@ -114,6 +99,6 @@ final class TrackerRecordStore: NSObject {
             return nil
         }
 
-        return TrackerRecord(id: id, date: date)
+        return Record(id: id, date: date)
     }
 }
