@@ -34,7 +34,7 @@ class OnboardingPageView: UIViewController {
     
 
     init(pageData: OnboardingPage,
-         closeButtonAction: @escaping (() -> Void)) {
+        closeButtonAction: @escaping (() -> Void)) {
         self.pageData = pageData
         self.closeButtonAction = closeButtonAction
         super.init(nibName: nil, bundle: nil)
