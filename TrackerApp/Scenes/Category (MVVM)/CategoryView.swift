@@ -14,6 +14,7 @@ final class CategoryView: UIViewController {
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.register(CategoryCellView.self, forCellReuseIdentifier: CategoryCellView.identifier)
+        table.backgroundColor = .none
         table.separatorStyle = .none
         table.translatesAutoresizingMaskIntoConstraints = false
         return table

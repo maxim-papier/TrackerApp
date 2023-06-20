@@ -13,7 +13,7 @@ final class NewCategoryVC: UIViewController {
         layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(InputCell.self, forCellWithReuseIdentifier: InputCell.identifier)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor.mainColorYP(.whiteYP)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -74,7 +74,7 @@ final class NewCategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.сategoryStore.setupFetchedResultsController()
+        _ = dependencies.сategoryStore.fetchedResultsController
         inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
 
         configure()

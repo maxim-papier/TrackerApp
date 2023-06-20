@@ -1,25 +1,17 @@
 import Foundation
 
-enum AppError: Error {
-    case databaseError(String)
-}
-
-enum ButtonState {
-    case add
-    case ready
-}
+private enum AppError: Error { case databaseError(String) }
 
 final class CategoryViewModel {
+    enum ButtonState { case add, ready }
     
     private var dependencies: DependencyContainer
     
     @Observable private(set) var categories: [CategoryData] = []
-    @Observable private(set) var buttonState: ButtonState = .add
+    @Observable private(set) var buttonState: CategoryViewModel.ButtonState = .add
     @Observable private(set) var selectedCategory: CategoryData?
     
-    var numberOfCategories: Int {
-        return categories.count
-    }
+    var numberOfCategories: Int { categories.count }
     
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies

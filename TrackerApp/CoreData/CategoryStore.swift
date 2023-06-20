@@ -12,7 +12,6 @@ final class CategoryStore: NSObject {
 
     weak var delegate: CategoryStoreDelegate?
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<CategoryData>?
 
     init(context: NSManagedObjectContext) {
         self.context = context
@@ -21,51 +20,29 @@ final class CategoryStore: NSObject {
 
     // MARK: - FetchedResultsController
 
-    // Initialize and return fetchedResultsController
-    func retrieveFetchedResultsController() -> NSFetchedResultsController<CategoryData> {
-        if let fetchedResultsController = fetchedResultsController {
-            return fetchedResultsController
-        } else {
-            setupFetchedResultsController()
-            guard let fetchedResultsController = fetchedResultsController else {
-                LogService.shared.log("Failed to initialize fetchedResultsController", level: .error)
-                return .init()
-            }
-            return fetchedResultsController
-        }
-    }
-
-    private func createFetchedResultsController() -> NSFetchedResultsController<CategoryData> {
+    lazy var fetchedResultsController: NSFetchedResultsController<CategoryData> = {
         let sortDescriptor = "createdAt"
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: sortDescriptor, ascending: false)]
 
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-        return fetchedResultsController
-    }
-
-    func setupFetchedResultsController() {
-        fetchedResultsController = createFetchedResultsController()
-        fetchedResultsController?.delegate = self
+        fetchedResultsController.delegate = self
 
         do {
-            try fetchedResultsController?.performFetch()
+            try fetchedResultsController.performFetch()
         } catch {
             LogService.shared.log("Error setting up fetched results controller: \(error)", level: .error)
         }
-    }
+
+        return fetchedResultsController
+    }()
+
+    // MARK: - CRUD methods
     
     func getCategory(at indexPath: IndexPath) -> Category? {
-        guard let fetchedResultsController = fetchedResultsController else {
-            LogService.shared.log("FetchedResultsController is not initialized.", level: .error)
-            return nil
-        }
-
         let categoryData = fetchedResultsController.object(at: indexPath)
         return trackerCategory(from: categoryData)
     }
-
-    // MARK: - CRUD methods
 
     // Create a new TrackerCategory in the store
     func create(category: Category) -> Bool {
