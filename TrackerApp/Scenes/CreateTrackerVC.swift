@@ -320,7 +320,7 @@ extension CreateTrackerVC: UICollectionViewDataSource {
         case 3:
             return colorCell(for: indexPath, collectionView: collectionView)
         default:
-            assertionFailure("Unsupported section in cellForItemAt")
+            LogService.shared.log("Unsupported section in cellForItemAt", level: .error)
             return .init()
         }
     }

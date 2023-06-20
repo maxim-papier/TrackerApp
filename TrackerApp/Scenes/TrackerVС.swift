@@ -7,25 +7,21 @@ enum FilterType {
 
 final class TrackerVC: UIViewController {
 
-    
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-
-    private var selectedDate = Date()
-
+    
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchText = ""
-
-    var placeholder = PlaceholderType.noSearchResults.placeholder
-
-
-    // CoreData properties
+    private var selectedDate = Date()
+    private lazy var placeholder = PlaceholderType.noSearchResults.placeholder
 
     weak var delegate: TrackerStoreDelegate?
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
     }()
-
+    
+    
+    // MARK: - Init
 
     init(dependencies: DependencyContainer) {
         self.dependencies = dependencies
@@ -35,6 +31,9 @@ final class TrackerVC: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,16 +43,17 @@ final class TrackerVC: UIViewController {
         setup()
     }
 
+    
+    // Setup UI and layout
+    
     private func setup() {
         view.backgroundColor = .mainColorYP(.whiteYP)
-
         setCollectionView()
         setNavBarElements()
         setConstraints()
     }
 
     private func setCollectionView() {
-
         collectionView.dataSource = self
         collectionView.delegate = self
 
@@ -69,7 +69,7 @@ final class TrackerVC: UIViewController {
     
     private func setNavBarElements() {
         
-        let addNewTrackerButton: UIBarButtonItem = {
+        lazy var addNewTrackerButton: UIBarButtonItem = {
             let barButton = UIBarButtonItem()
             barButton.tintColor = .mainColorYP(.blackYP)
             barButton.style = .plain
@@ -79,11 +79,11 @@ final class TrackerVC: UIViewController {
             return barButton
         }()
 
-        let dateFormatter = DateFormatter()
+        lazy var dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy"
         dateFormatter.locale = Locale(identifier: "ru_RU")
 
-        let datePicker = UIDatePicker()
+        lazy var datePicker = UIDatePicker()
         datePicker.locale = dateFormatter.locale
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
@@ -142,14 +142,15 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-       
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
         }
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrackerCell", for: indexPath) as! TrackerCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrackerCell", for: indexPath) as? TrackerCell else {
+            LogService.shared.log("Could not dequeue cell as TrackerCell", level: .error)
+            return .init()
+        }
 
         let trackerData = dependencies.trackerStore.fetchedResultsControllerForTracker().object(at: indexPath)
 
@@ -158,18 +159,17 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.doneButton.backgroundColor = tracker.color
             cell.titleLabel.text = tracker.title
             cell.emojiLabel.text = tracker.emoji
-            
             cell.delegate = self
             
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
             let recordID = dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
-            
             let recordsCount = dependencies.recordStore.fetchRecordsCount(forTrackerWithID: trackerID)
-            cell.daysLabel.text = "\(recordsCount) дней"
             
+            cell.daysLabel.text = "\(recordsCount) дней"
             cell.setInitialDoneButtonState(isDone: recordID != nil)
         }
+        
         return cell
     }
 
@@ -201,7 +201,6 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return .init(9)
     }
-    
     
     // Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -247,7 +246,6 @@ extension TrackerVC: UISearchResultsUpdating {
         updatePlaceholder(for: filterType)
         collectionView.reloadData()
     }
-    
 
     
 // MARK: - Placeholder State
@@ -263,15 +261,13 @@ extension TrackerVC: UISearchResultsUpdating {
     }
 }
 
+
 // MARK: - CreateTrackerVC delegate
 
-
 extension TrackerVC: CreateTrackerVCDelegate {
-
-    // Save tracker to the category with current ID
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
         dependencies.сategoryStore.add(tracker: newTracker,
-                                                               toCategoryWithId: categoryID)
+                                       toCategoryWithId: categoryID)
         reloadCollectionAfterFiltering(filterType: .date)
     }
 }
@@ -286,7 +282,7 @@ extension TrackerVC: TrackerCellDelegate {
         let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
         
         guard let trackerID = trackerData.id else {
-            assertionFailure("Error: Tracker ID is nil")
+            LogService.shared.log("Error: Tracker ID is nil", level: .error)
             return
         }
         
@@ -307,6 +303,7 @@ extension TrackerVC: TrackerStoreDelegate {
         collectionView.reloadData()
     }
 }
+
 
 // MARK: - Searchbar Delegate
 
