@@ -19,7 +19,7 @@ final class TrackerCell: UICollectionViewCell {
 
     // MARK: - Setup UI elements
 
-    let backgroundShape: UIView = {
+    lazy var backgroundShape: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
         view.clipsToBounds = true
@@ -27,7 +27,7 @@ final class TrackerCell: UICollectionViewCell {
         return view
     }()
 
-    let emojiLabel: UILabel = {
+    lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .white.withAlphaComponent(0.3)
         label.layer.cornerRadius = 12
@@ -38,7 +38,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
 
-    let titleLabel: UILabel = {
+    lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.textColor = .white
@@ -49,7 +49,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
 
-    let daysLabel: UILabel = {
+    lazy var daysLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.textColor = .mainColorYP(.blackYP)
@@ -60,7 +60,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
 
-    let doneButton: UIButton = {
+    lazy var doneButton: UIButton = {
         let button = UIButton()
         button.tintColor = .mainColorYP(.whiteYP)
         button.layer.cornerRadius = 17
@@ -72,7 +72,6 @@ final class TrackerCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
 
         doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
 

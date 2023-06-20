@@ -87,6 +87,7 @@ final class TrackerVC: UIViewController {
         datePicker.locale = dateFormatter.locale
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
+        datePicker.maximumDate = Date()
         datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
 
         title = "Трекеры"
@@ -157,14 +158,16 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.doneButton.backgroundColor = tracker.color
             cell.titleLabel.text = tracker.title
             cell.emojiLabel.text = tracker.emoji
-
-            cell.daysLabel.text = "0 дней"
-
+            
             cell.delegate = self
             
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
-            let recordID = dependencies.recordStore.getRecordID(forTrackerWithID: trackerID)
+            let recordID = dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
+            
+            let recordsCount = dependencies.recordStore.fetchRecordsCount(forTrackerWithID: trackerID)
+            cell.daysLabel.text = "\(recordsCount) дней"
+            
             cell.setInitialDoneButtonState(isDone: recordID != nil)
         }
         return cell
@@ -288,11 +291,11 @@ extension TrackerVC: TrackerCellDelegate {
         }
         
         let recordStore = dependencies.recordStore
-        recordStore.toggleRecord(forTrackerWithID: trackerID)
+        recordStore.toggleRecord(forTrackerWithID: trackerID, onDate: selectedDate)
     }
     
     func trackerIsDone(trackerID: UUID) -> Bool {
-        return dependencies.recordStore.getRecordID(forTrackerWithID: trackerID) != nil
+        return dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate) != nil
     }
 }
 
