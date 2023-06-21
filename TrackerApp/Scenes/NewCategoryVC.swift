@@ -2,7 +2,7 @@ import UIKit
 
 final class NewCategoryVC: UIViewController {
 
-    weak var delegate: NewCategoryVCDelegate?
+    weak var delegate: NewCategoryDelegate?
 
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = { dependencies.fetchedResultsControllerForCategory }()
@@ -13,7 +13,7 @@ final class NewCategoryVC: UIViewController {
         layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(InputCell.self, forCellWithReuseIdentifier: InputCell.identifier)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor.mainColorYP(.whiteYP)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -33,8 +33,8 @@ final class NewCategoryVC: UIViewController {
     }()
 
     @objc private func readyButtonTapped() {
-        let newCategory = TrackerCategory(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
-        let success = dependencies.trackerCategoryStore.createTrackerCategory(category: newCategory)
+        let newCategory = Category(id: UUID(), name: categoryName, trackers: [], createdAt: Date())
+        let success = dependencies.сategoryStore.create(category: newCategory)
         if success {
             // Обновление fetchedResultsController после создания новой категории
             do {
@@ -43,7 +43,7 @@ final class NewCategoryVC: UIViewController {
                 assertionFailure("An error occurred while fetching the updated data: \(error)")
             }
 
-            delegate?.newCategoryVC(self, didCreateNewCategoryWithId: newCategory.id)
+            delegate?.newCategoryController(self, didCreateNewCategoryWithId: newCategory.id)
             onCategoryCreated?(newCategory.id)
             dismiss(animated: true)
         } else {
@@ -74,7 +74,7 @@ final class NewCategoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
-        dependencies.trackerCategoryStore.setupFetchedResultsController()
+        _ = dependencies.сategoryStore.fetchedResultsController
         inputCell.userInputField.addTarget(self, action: #selector(inputFieldDidChange(_:)), for: .editingChanged)
 
         configure()
@@ -147,9 +147,7 @@ extension NewCategoryVC: UICollectionViewDelegateFlowLayout {
 
 extension NewCategoryVC: UICollectionViewDelegate {}
 
-
 // MARK: - NewCategory Delegate
-
-protocol NewCategoryVCDelegate: AnyObject {
-    func newCategoryVC(_ newCategoryVC: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
+protocol NewCategoryDelegate: AnyObject {
+    func newCategoryController(_ controller: NewCategoryVC, didCreateNewCategoryWithId categoryId: UUID)
 }
