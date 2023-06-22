@@ -21,6 +21,7 @@ final class TrackersVC: UIViewController {
     }()
 
     private let localization = LocalizationService()
+
     
     
     // MARK: - Init
