@@ -2,7 +2,7 @@ import UIKit
 
 final class TrackerOrEventVC: UIViewController {
 
-    var trackerVC: TrackerVC?
+    var trackerVC: TrackersVC?
 
     private var dependencies: DependencyContainer
 

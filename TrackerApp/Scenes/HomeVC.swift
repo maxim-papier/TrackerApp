@@ -5,6 +5,7 @@ final class HomeVC: UITabBarController {
 
     private let dependencies: DependencyContainer
     private let onboardingPersistenceService: OnboardingPersistenceService
+    private let localization = LocalizationService()
     
     init(dependencies: DependencyContainer,
          onboardingPersistenceService: OnboardingPersistenceService
@@ -43,7 +44,7 @@ final class HomeVC: UITabBarController {
         tabBar.backgroundColor = UIColor.mainColorYP(.whiteYP)
 
         // Setup Tabs
-        let firstVC = UINavigationController(rootViewController: TrackerVC(dependencies: dependencies))
+        let firstVC = UINavigationController(rootViewController: TrackersVC(dependencies: dependencies))
         let secondVC = UINavigationController(rootViewController: StatisticVC())
         let controllers = [firstVC, secondVC]
         viewControllers = controllers
@@ -53,10 +54,21 @@ final class HomeVC: UITabBarController {
         let textAttributes = [NSAttributedString.Key.font: font]
 
         firstVC.tabBarItem.setTitleTextAttributes(textAttributes, for: .normal)
-        firstVC.tabBarItem = UITabBarItem(title: "Trackers", image: UIImage(named: "trackersIcon28x28"), selectedImage: nil)
+        firstVC.tabBarItem = UITabBarItem(
+            title: localization.localized(
+                "tabbar.trackers.title",
+                comment: "Tabbar Tracker Tab"),
+            image: UIImage(named: "trackersIcon28x28"),
+            selectedImage: nil
+        )
 
         secondVC.tabBarItem.setTitleTextAttributes(textAttributes, for: .normal)
-        secondVC.tabBarItem = UITabBarItem(title: "Statistics", image: UIImage(named: "statisticIcon28x28"), selectedImage: nil)
+        secondVC.tabBarItem = UITabBarItem(
+            title: localization.localized(
+                "tabbar.statistic.title",
+                comment: "Tabbar Tracker Tab"),
+            image: UIImage(named: "statisticIcon28x28"),
+            selectedImage: nil)
 
         // Cast shadow
         tabBar.layer.shadowColor = UIColor.black.cgColor
