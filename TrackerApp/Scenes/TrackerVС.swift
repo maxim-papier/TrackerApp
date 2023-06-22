@@ -5,7 +5,7 @@ enum FilterType {
     case date
 }
 
-final class TrackerVC: UIViewController {
+final class TrackersVC: UIViewController {
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
@@ -19,6 +19,9 @@ final class TrackerVC: UIViewController {
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
     }()
+
+    private let localization = LocalizationService()
+
     
     
     // MARK: - Init
@@ -79,18 +82,28 @@ final class TrackerVC: UIViewController {
             return barButton
         }()
 
-        lazy var dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
-        dateFormatter.locale = Locale(identifier: "ru_RU")
+        lazy var dateFormatter: DateFormatter = {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd.MM.yyyy"
+            dateFormatter.dateStyle = .short
+            dateFormatter.locale = .current
+            return dateFormatter
+        }()
 
-        lazy var datePicker = UIDatePicker()
-        datePicker.locale = dateFormatter.locale
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .compact
-        datePicker.maximumDate = Date()
-        datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
+        lazy var datePicker: UIDatePicker = {
+            let datePicker = UIDatePicker()
+            datePicker.locale = dateFormatter.locale
+            datePicker.datePickerMode = .date
+            datePicker.preferredDatePickerStyle = .compact
+            datePicker.maximumDate = Date()
+            datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
+            return datePicker
+        }()
 
-        title = "Трекеры"
+        title = localization.localized(
+            "trackersvc.title",
+            comment: "Page title"
+        )
         navigationItem.leftBarButtonItem = addNewTrackerButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -99,7 +112,10 @@ final class TrackerVC: UIViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = true
         searchController.searchBar.searchTextField.textColor = .mainColorYP(.grayYP)
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = localization.localized(
+            "trackersvc.search_placeholder.title",
+            comment: "Search bar placeholder"
+        )
         searchController.searchBar.delegate = self
     }
     
@@ -135,7 +151,7 @@ final class TrackerVC: UIViewController {
 
 // MARK: - DataSource
 
-extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
+extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
@@ -165,8 +181,9 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let trackerID = tracker.id
             let recordID = dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
             let recordsCount = dependencies.recordStore.fetchRecordsCount(forTrackerWithID: trackerID)
-            
-            cell.daysLabel.text = "\(recordsCount) дней"
+                        
+            cell.daysLabel.text = localization.pluralized(
+                "days", count: recordsCount)
             cell.setInitialDoneButtonState(isDone: recordID != nil)
         }
         
@@ -191,7 +208,7 @@ extension TrackerVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 // MARK: - Layout
 
-extension TrackerVC: UICollectionViewDelegateFlowLayout {
+extension TrackersVC: UICollectionViewDelegateFlowLayout {
     
     // Section
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -216,7 +233,7 @@ extension TrackerVC: UICollectionViewDelegateFlowLayout {
 
 // MARK: - Filtering
 
-extension TrackerVC: UISearchResultsUpdating {
+extension TrackersVC: UISearchResultsUpdating {
     
     internal func updateSearchResults(for searchController: UISearchController) {
 
@@ -264,7 +281,7 @@ extension TrackerVC: UISearchResultsUpdating {
 
 // MARK: - CreateTrackerVC delegate
 
-extension TrackerVC: CreateTrackerVCDelegate {
+extension TrackersVC: CreateTrackerVCDelegate {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
         dependencies.сategoryStore.add(tracker: newTracker,
                                        toCategoryWithId: categoryID)
@@ -275,7 +292,7 @@ extension TrackerVC: CreateTrackerVCDelegate {
 
 // MARK: - TrackerCellDelegate (Record tracker)
 
-extension TrackerVC: TrackerCellDelegate {
+extension TrackersVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
@@ -298,7 +315,7 @@ extension TrackerVC: TrackerCellDelegate {
 
 // MARK: - Tracker Store Delegate
 
-extension TrackerVC: TrackerStoreDelegate {
+extension TrackersVC: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
         collectionView.reloadData()
     }
@@ -307,7 +324,7 @@ extension TrackerVC: TrackerStoreDelegate {
 
 // MARK: - Searchbar Delegate
 
-extension TrackerVC: UISearchBarDelegate {
+extension TrackersVC: UISearchBarDelegate {
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if searchBar.text?.isEmpty ?? true {
