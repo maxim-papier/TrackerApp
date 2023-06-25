@@ -91,7 +91,7 @@
 		8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPreviewUI.swift; sourceTree = "<group>"; };
 		8DB392B129952B340031D2E1 /* WeekDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDay.swift; sourceTree = "<group>"; };
 		8DB392B329952DA90031D2E1 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
-		8DBA05282993873E00E3604E /* TrackerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DBA05282993873E00E3604E /* TrackerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = TrackerApp.app; path = "/Users/maximbrykov/Documents/TheHiveOfTherDev/PRJS/TrackerApp/build/Debug-iphoneos/TrackerApp.app"; sourceTree = "<absolute>"; };
 		8DBA052B2993873E00E3604E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8DBA052D2993873E00E3604E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8DBA052F2993873E00E3604E /* TrackerVС.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackerVС.swift"; sourceTree = "<group>"; };
@@ -214,17 +214,8 @@
 				8D11528229C1AEEF00687C5C /* TrackerDataModel.xcdatamodeld */,
 				8DD760DB29E430AE00C07D2A /* Constants.swift */,
 				8DBA052A2993873E00E3604E /* TrackerApp */,
-				8DBA05292993873E00E3604E /* Products */,
 				8D11527F29C1AE9F00687C5C /* Frameworks */,
 			);
-			sourceTree = "<group>";
-		};
-		8DBA05292993873E00E3604E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8DBA05282993873E00E3604E /* TrackerApp.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		8DBA052A2993873E00E3604E /* TrackerApp */ = {
@@ -363,7 +354,7 @@
 				ru,
 			);
 			mainGroup = 8DBA051F2993873E00E3604E;
-			productRefGroup = 8DBA05292993873E00E3604E /* Products */;
+			productRefGroup = 8DBA051F2993873E00E3604E;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
