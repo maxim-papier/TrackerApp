@@ -19,15 +19,17 @@ final class TrackersVC: UIViewController {
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
     }()
-
+    
+    private let analytic: YandexMetricaService
     private let localization = LocalizationService()
 
-    
-    
+
     // MARK: - Init
 
-    init(dependencies: DependencyContainer) {
+    init(dependencies: DependencyContainer,
+         analytic: YandexMetricaService) {
         self.dependencies = dependencies
+        self.analytic = analytic
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -44,6 +46,12 @@ final class TrackersVC: UIViewController {
         dependencies.trackerStore.delegate = self
         filterResults(with: Date())
         setup()
+        analytic.log(event: .open(screen: .main))
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        analytic.log(event: .close(screen: .main))
     }
 
     
@@ -123,6 +131,7 @@ final class TrackersVC: UIViewController {
         let vc = TrackerOrEventVC(dependencies: dependencies)
         vc.trackerVC = self
         present(vc, animated: true)
+        analytic.log(event: .click(screen: .main, item: "add_track"))
     }
     
     @objc func didTapDatePickerButton(_ date: UIDatePicker) {
@@ -295,6 +304,8 @@ extension TrackersVC: CreateTrackerVCDelegate {
 extension TrackersVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
+        analytic.log(event: .click(screen: .main, item: "track"))
+        
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
         

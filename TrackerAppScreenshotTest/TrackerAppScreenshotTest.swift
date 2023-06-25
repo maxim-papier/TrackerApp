@@ -13,7 +13,7 @@ final class TrackerTests: XCTestCase {
         let dependencyContainer = DependencyContainer(context: context)
         
         let vc = UINavigationController(
-            rootViewController: TrackersVC(dependencies: dependencyContainer)
+            rootViewController: TrackersVC(dependencies: dependencyContainer, analytic: YandexMetricaService())
         )
 
         assertSnapshots(matching: vc, as: [.image(traits: .init(userInterfaceStyle: .light))])
@@ -28,7 +28,7 @@ final class TrackerTests: XCTestCase {
         let dependencyContainer = DependencyContainer(context: context)
 
         let vc = UINavigationController(
-            rootViewController: TrackersVC(dependencies: dependencyContainer)
+            rootViewController: TrackersVC(dependencies: dependencyContainer, analytic: YandexMetricaService())
         )
 
         assertSnapshots(matching: vc, as: [.image(traits: .init(userInterfaceStyle: .dark))])

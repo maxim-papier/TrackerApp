@@ -13,6 +13,8 @@ final class TrackerCell: UICollectionViewCell {
 
     var delegate: TrackerCellDelegate?
     
+    
+    
     var doneButtonStateChange: Bool = false {
         didSet { updateDoneButton() }
     }

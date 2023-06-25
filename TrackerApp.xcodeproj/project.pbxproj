@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		7E586B29733FA2A0035F58F5 /* Pods_TrackerApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4CEFCBE6F87F072E3661DBD /* Pods_TrackerApp.framework */; };
+		8D00A4672A4828EE003E4FA3 /* Analytic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D00A4662A4828EE003E4FA3 /* Analytic.swift */; };
+		8D00A4692A482A35003E4FA3 /* YandexMetricaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D00A4682A482A35003E4FA3 /* YandexMetricaService.swift */; };
 		8D11528129C1AEA000687C5C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D11528029C1AEA000687C5C /* CoreData.framework */; };
 		8D11528429C1AEEF00687C5C /* TrackerDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8D11528229C1AEEF00687C5C /* TrackerDataModel.xcdatamodeld */; };
 		8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11528629C1B5BC00687C5C /* TrackerStore.swift */; };
@@ -81,6 +83,8 @@
 		1C500FE4A921BD17FDDF3B6E /* Pods-TrackerApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrackerApp.debug.xcconfig"; path = "Target Support Files/Pods-TrackerApp/Pods-TrackerApp.debug.xcconfig"; sourceTree = "<group>"; };
 		475221A9286ABDCA6204F271 /* Pods-TrackerApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrackerApp.release.xcconfig"; path = "Target Support Files/Pods-TrackerApp/Pods-TrackerApp.release.xcconfig"; sourceTree = "<group>"; };
 		4E49F77E31498A70717F0991 /* Pods-TrackerAppScreenshotTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrackerAppScreenshotTest.release.xcconfig"; path = "Target Support Files/Pods-TrackerAppScreenshotTest/Pods-TrackerAppScreenshotTest.release.xcconfig"; sourceTree = "<group>"; };
+		8D00A4662A4828EE003E4FA3 /* Analytic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytic.swift; sourceTree = "<group>"; };
+		8D00A4682A482A35003E4FA3 /* YandexMetricaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YandexMetricaService.swift; sourceTree = "<group>"; };
 		8D11528029C1AEA000687C5C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8D11528329C1AEEF00687C5C /* TrackerDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackerDataModel.xcdatamodel; sourceTree = "<group>"; };
 		8D11528629C1B5BC00687C5C /* TrackerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerStore.swift; sourceTree = "<group>"; };
@@ -93,7 +97,6 @@
 		8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
 		8D6A94022A3ED77500DCED90 /* CategoryCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCellViewModel.swift; sourceTree = "<group>"; };
 		8D773ABA2A47D9CC00EAA5BE /* TrackerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D773ABF2A47DBE600EAA5BE /* TrackerAppScreenshotTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TrackerAppScreenshotTest.xctest; path = "/Users/maximbrykov/Documents/TheHiveOfTherDev/PRJS/TrackerApp/build/Debug-iphoneos/TrackerAppScreenshotTest.xctest"; sourceTree = "<absolute>"; };
 		8D773AC12A47DBE600EAA5BE /* TrackerAppScreenshotTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerAppScreenshotTest.swift; sourceTree = "<group>"; };
 		8D9A66912A3EEDC3000125AF /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		8D9A66932A3F50D3000125AF /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -102,6 +105,7 @@
 		8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerOrEventVC.swift; sourceTree = "<group>"; };
 		8DA0CB60299B9C67004BFE73 /* CreateTrackerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerVC.swift; sourceTree = "<group>"; };
 		8DA8DA2929F51C91009AAAC9 /* NewCategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCategoryVC.swift; sourceTree = "<group>"; };
+		8DAA58F92A481BEB00CB3675 /* TrackerAppScreenshotTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerAppScreenshotTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DADE0B0299D3184005942E2 /* InputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCell.swift; sourceTree = "<group>"; };
 		8DADE0B2299D5530005942E2 /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
 		8DAE17BA29E63BAD00DFBC9A /* WeekDaysSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDaysSet.swift; sourceTree = "<group>"; };
@@ -176,7 +180,6 @@
 				A52A91E5EE140F291F21B77B /* Pods-TrackerAppScreenshotTest.debug.xcconfig */,
 				4E49F77E31498A70717F0991 /* Pods-TrackerAppScreenshotTest.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -258,6 +261,7 @@
 				8DB392B129952B340031D2E1 /* WeekDay.swift */,
 				8DAE17BA29E63BAD00DFBC9A /* WeekDaysSet.swift */,
 				8DEE447E2A3C9F5C00780EC6 /* OnboardingPage.swift */,
+				8D00A4662A4828EE003E4FA3 /* Analytic.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -272,6 +276,7 @@
 				8D11527F29C1AE9F00687C5C /* Frameworks */,
 				8D773ABA2A47D9CC00EAA5BE /* TrackerApp.app */,
 				70EFA83E201B9518D517BCA3 /* Pods */,
+				8DAA58F92A481BEB00CB3675 /* TrackerAppScreenshotTest.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -362,6 +367,7 @@
 				8DEE44852A3D45E200780EC6 /* LogService.swift */,
 				8DEE44872A3D7F3800780EC6 /* OnboardingPersistence.swift */,
 				8DE875EE2A43DE8300D2017E /* LocalizationService.swift */,
+				8D00A4682A482A35003E4FA3 /* YandexMetricaService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -388,7 +394,7 @@
 				8D773AC92A47DC3F00EAA5BE /* SnapshotTesting */,
 			);
 			productName = TrackerAppScreenshotTest;
-			productReference = 8D773ABF2A47DBE600EAA5BE /* TrackerAppScreenshotTest.xctest */;
+			productReference = 8DAA58F92A481BEB00CB3675 /* TrackerAppScreenshotTest.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8DBA05272993873E00E3604E /* TrackerApp */ = {
@@ -399,6 +405,7 @@
 				8DBA05242993873E00E3604E /* Sources */,
 				8DBA05252993873E00E3604E /* Frameworks */,
 				8DBA05262993873E00E3604E /* Resources */,
+				6FE2F57C67B402DBE6E8B571 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -439,7 +446,7 @@
 			);
 			mainGroup = 8DBA051F2993873E00E3604E;
 			packageReferences = (
-				8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */,
+				8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			productRefGroup = 8DBA051F2993873E00E3604E;
 			projectDirPath = "";
@@ -476,6 +483,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		6FE2F57C67B402DBE6E8B571 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrackerApp/Pods-TrackerApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrackerApp/Pods-TrackerApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrackerApp/Pods-TrackerApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		95CC4A32F695B4B35EBFA574 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -555,12 +579,14 @@
 				8DEE44882A3D7F3800780EC6 /* OnboardingPersistence.swift in Sources */,
 				8DD760DC29E430AE00C07D2A /* Constants.swift in Sources */,
 				8D9FF56A299E490A009E91A8 /* SchedulerCell.swift in Sources */,
+				8D00A4692A482A35003E4FA3 /* YandexMetricaService.swift in Sources */,
 				8DE6446929EAA61000D1A7B6 /* DependencyContainer.swift in Sources */,
 				8DE2666429EF88F8003D9FB1 /* CategoryCellView.swift in Sources */,
 				8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */,
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8DEE44862A3D45E200780EC6 /* LogService.swift in Sources */,
 				8D6A94012A3E9E6F00DCED90 /* CategoryViewModel.swift in Sources */,
+				8D00A4672A4828EE003E4FA3 /* Analytic.swift in Sources */,
 				8DEE447F2A3C9F5C00780EC6 /* OnboardingPage.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
 				8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */,
@@ -879,7 +905,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */ = {
+		8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
 			requirement = {
@@ -892,7 +918,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		8D773AC92A47DC3F00EAA5BE /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */;
+			package = 8D773AC82A47DC3F00EAA5BE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
