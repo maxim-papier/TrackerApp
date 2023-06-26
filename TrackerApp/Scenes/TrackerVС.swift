@@ -242,7 +242,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let editAction = UIAction(title: "Редактировать") { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
                 if let tracker = self.dependencies.trackerStore.tracker(from: trackerData) {
-                    let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, tracker: tracker)
+                    let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerID)
                     self.present(trackerEditVC, animated: true)
                 }
             }

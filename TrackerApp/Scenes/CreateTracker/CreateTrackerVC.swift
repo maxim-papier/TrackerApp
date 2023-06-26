@@ -280,10 +280,10 @@ extension CreateTrackerVC: UICollectionViewDataSource {
 
 
 extension CreateTrackerVC: UICollectionViewDelegate {
-    
+
     // Set colors for Colors section
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
+
         if indexPath.section == 3 {
             if let selectionCell = cell as? ColorCell {
                 let selectionColor = SelectionColorStyle.allCases[
@@ -292,22 +292,22 @@ extension CreateTrackerVC: UICollectionViewDelegate {
             }
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+
         switch indexPath.section {
         case 1: handleListSelection(at: indexPath)
         case 2: handleEmojiSelection(at: indexPath)
         case 3: handleColorSelection(at: indexPath)
         default: break
         }
-        
+
         collectionView.deselectItem(at: indexPath, animated: false)
-        
+
     }
-    
+
     private func handleListSelection(at indexPath: IndexPath) {
-        
+
         let viewModel = CategoryViewModel(dependencies: dependencies)
         
         if indexPath.row == 0 {
@@ -320,32 +320,35 @@ extension CreateTrackerVC: UICollectionViewDelegate {
             present(vc, animated: true, completion: nil)
         }
     }
-    
+
     private func handleEmojiSelection(at indexPath: IndexPath) {
+
         guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCell else { return }
-        
-        deselectCell(at: selectedEmojiIndexPath)
-        
-        cell.setSelected(true)
-        
+
+        if let selectedCell = collectionView.cellForItem(at: selectedEmojiIndexPath ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
+            selectedCell.backgroundShape.backgroundColor = UIColor.clear
+        }
+
+        cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
+
         selectedEmojiIndexPath = indexPath
         selectedEmoji = K.emojis[indexPath.row]
-        
+
         isTrackerReadyToBeCreated()
     }
-    
+
     private func handleColorSelection(at indexPath: IndexPath) {
+
         guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCell else { return }
-        
+
         let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
         let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-        
-        cell.setSelected(true, color: color ?? .yellow)
 
-        if let oldSelectedColorIndexPath = selectedColorIndexPath,
-            let oldCell = collectionView.cellForItem(at: oldSelectedColorIndexPath) as? ColorCell {
-            oldCell.setSelected(false, color: color ?? .cyan)
+        if let selectedColorIndexPath = collectionView.cellForItem(at: selectedColorIndexPath ?? IndexPath(item: -1, section: 0)) as? ColorCell {
+            selectedColorIndexPath.backgroundShape.layer.borderColor = UIColor.clear.cgColor
         }
+
+        cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
 
         selectedColorIndexPath = indexPath
         selectedColor = SelectionColorStyle.allCases[indexPath.row]
@@ -353,17 +356,6 @@ extension CreateTrackerVC: UICollectionViewDelegate {
         isTrackerReadyToBeCreated()
     }
 
-    private func deselectCell(at indexPath: IndexPath?) {
-        guard let indexPath = indexPath, let cell = collectionView.cellForItem(at: indexPath) else { return }
-        
-        if let emojiCell = cell as? EmojiCell {
-            emojiCell.setSelected(false)
-        } else if let colorCell = cell as? ColorCell {
-            let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
-            let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-            colorCell.setSelected(false, color: color ?? .green)
-        }
-    }
 }
 
 // MARK: - Add Scheduler Delegate

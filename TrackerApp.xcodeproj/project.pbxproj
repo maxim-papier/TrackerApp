@@ -23,6 +23,7 @@
 		8D2A1C0C299CB29A00213C8D /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0B299CB29A00213C8D /* ListCell.swift */; };
 		8D2A1C10299D0BE700213C8D /* SchedulerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */; };
 		8D6949F42A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */; };
+		8D6949F62A49296300DAD4DA /* EditTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */; };
 		8D6A94012A3E9E6F00DCED90 /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */; };
 		8D6A94032A3ED77500DCED90 /* CategoryCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A94022A3ED77500DCED90 /* CategoryCellViewModel.swift */; };
 		8D773AC22A47DBE600EAA5BE /* TrackerAppScreenshotTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D773AC12A47DBE600EAA5BE /* TrackerAppScreenshotTest.swift */; };
@@ -102,6 +103,7 @@
 		8D2A1C0B299CB29A00213C8D /* ListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
 		8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerVC.swift; sourceTree = "<group>"; };
 		8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerCollectionLayoutFactory.swift; sourceTree = "<group>"; };
+		8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTrackerViewModel.swift; sourceTree = "<group>"; };
 		8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
 		8D6A94022A3ED77500DCED90 /* CategoryCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCellViewModel.swift; sourceTree = "<group>"; };
 		8D773ABA2A47D9CC00EAA5BE /* TrackerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,6 +196,8 @@
 		8D00A46E2A48591F003E4FA3 /* EditTracker */ = {
 			isa = PBXGroup;
 			children = (
+				8D6949F72A4969CE00DAD4DA /* UI Elements */,
+				8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */,
 				8D00A46C2A485648003E4FA3 /* EditTrackerVC.swift */,
 				8D00A46F2A48593C003E4FA3 /* EditTrackerCollectionLayoutFactory.swift */,
 			);
@@ -228,6 +232,13 @@
 				8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */,
 			);
 			path = CreateTracker;
+			sourceTree = "<group>";
+		};
+		8D6949F72A4969CE00DAD4DA /* UI Elements */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "UI Elements";
 			sourceTree = "<group>";
 		};
 		8D773AC02A47DBE600EAA5BE /* TrackerAppScreenshotTest */ = {
@@ -621,6 +632,7 @@
 				8DEE447F2A3C9F5C00780EC6 /* OnboardingPage.swift in Sources */,
 				8DBA052C2993873E00E3604E /* AppDelegate.swift in Sources */,
 				8DEE44812A3C9F9A00780EC6 /* OnboardingPageView.swift in Sources */,
+				8D6949F62A49296300DAD4DA /* EditTrackerViewModel.swift in Sources */,
 				8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
 				8DEE44832A3CB16B00780EC6 /* OnboardingView.swift in Sources */,

@@ -21,6 +21,11 @@ final class TrackerStore: NSObject {
     weak var delegate: TrackerStoreDelegate?
     private let context: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<TrackerData>?
+    
+    enum TrackerStoreError: Error {
+        case notFound
+        case coreDataError(Error)
+    }
 
     init(context: NSManagedObjectContext) {
         self.context = context
@@ -87,6 +92,20 @@ final class TrackerStore: NSObject {
         } catch {
             assertionFailure("Error fetching trackers: \(error)")
             return []
+        }
+    }
+    
+    func readTracker(by id: UUID) throws -> Tracker {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+
+        do {
+            let coreDataTrackers = try context.fetch(request)
+            guard let coreDataTracker = coreDataTrackers.first else { throw TrackerStoreError.notFound }
+            guard let tracker = tracker(from: coreDataTracker) else { throw TrackerStoreError.notFound }
+            return tracker
+        } catch {
+            throw TrackerStoreError.coreDataError(error)
         }
     }
 
