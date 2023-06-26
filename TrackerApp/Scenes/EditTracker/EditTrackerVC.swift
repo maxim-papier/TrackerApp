@@ -142,6 +142,15 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
                 }
             }
             .store(in: &cancellables)
+
+        // Ready button state
+        viewModel.$isTrackerReady
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReady in
+                LogService.shared.log("Ready button state is \(isReady)", level: .info)
+                self?.readyButton?.isActive = isReady
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Setup UI and Collection
@@ -167,9 +176,10 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
     
     private func setupButtons() {
         readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
-            let newTracker = self.createNewTracker()
+// Todo!
+            //            let newTracker = self.createNewTracker()
             guard let selectedCategoryID = self.selectedCategory?.id else { return }
-            self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
+            //self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
             if let rootVC = UIApplication.shared.windows.first?.rootViewController {
                 rootVC.dismiss(animated: true, completion: nil)
             }
@@ -268,8 +278,9 @@ extension EditTrackerVC: UICollectionViewDataSource {
         inputCell.userInputField.text = selectedTitle
         inputCell.textFieldValueChanged = { inputText in
             self.selectedTitle = inputText
-            self.isTrackerReadyToBeCreated()
+            self.viewModel.trackerTitle = inputText
         }
+
         
         return inputCell
     }
@@ -285,12 +296,15 @@ extension EditTrackerVC: UICollectionViewDataSource {
             listCell.subtitleLabel.text = selectedCategory?.name
         } else if indexPath.item == 1 && !isCreatingEvent {
             listCell.buttonPosition = .last
-            if !selectedSchedule.weekDays.isEmpty {
+            if selectedSchedule.weekDays.isEmpty {
+                listCell.subtitleLabel.text = .none
+            } else {
                 let days = selectedSchedule.weekDays.map { $0.shortLabel }
                 let daysString = days.joined(separator: ", ")
                 listCell.subtitleLabel.text = daysString
             }
         }
+
         
         listCell.titleLabel.text = listCellItemName[indexPath.item]
         
@@ -379,7 +393,8 @@ extension EditTrackerVC: UICollectionViewDelegate {
     
     private func handleListSelection(at indexPath: IndexPath) {
         
-        let viewModel = CategoryViewModel(dependencies: dependencies)
+        
+        let viewModel = CategoryViewModel(dependencies: dependencies, previousSelectedCategory: selectedCategory?.id ?? .init())
         
         if indexPath.row == 0 {
             let vc = CategoryView(dependencies: dependencies, viewModel: viewModel)
@@ -405,8 +420,6 @@ extension EditTrackerVC: UICollectionViewDelegate {
         selectedEmoji = K.emojis[indexPath.row]
 
         viewModel.trackerEmoji = selectedEmoji ?? "🤢"
-
-        isTrackerReadyToBeCreated()
     }
 
     private func handleColorSelection(at indexPath: IndexPath) {
@@ -421,67 +434,32 @@ extension EditTrackerVC: UICollectionViewDelegate {
 
         selectedColorIndexPath = indexPath
         selectedColor = SelectionColorStyle.allCases[indexPath.row % SelectionColorStyle.allCases.count]
-
-        isTrackerReadyToBeCreated()
     }
 }
 
-// MARK: - Add Scheduler Delegate
+// MARK: - Selection Delegates
+
+extension EditTrackerVC: CategorySelectionDelegate {
+    func categorySelected(category: CategoryData) {
+        selectedCategory = dependencies.сategoryStore.trackerCategory(from: category)
+        viewModel.trackerCategory = selectedCategory
+        let sectionToReload = Section.list.rawValue
+        collection.reloadSections(IndexSet(integer: sectionToReload))
+    }
+}
 
 extension EditTrackerVC: AddSchedulerDelegate {
     
     func didUpdateSelectedDays(selectedDays: WeekDaySet) {
         self.selectedSchedule = selectedDays
-        
-        isTrackerReadyToBeCreated()
-        
+        viewModel.trackerSchedule = selectedSchedule.weekDays
         let sectionToReload = Section.list.rawValue
         collection.reloadSections(IndexSet(integer: sectionToReload))
     }
 }
 
-
-// MARK: - Create Tracker
-
-extension EditTrackerVC {
-    
-    func isTrackerReadyToBeCreated() {
-        let isScheduleValid = isCreatingEvent || !selectedSchedule.weekDays.isEmpty
-        guard let title = selectedTitle, !title.isEmpty,
-              selectedCategory != nil,
-              selectedEmoji != nil,
-              selectedColor != nil,
-              isScheduleValid else {
-            readyButton?.isActive = false
-            return
-        }
-        readyButton?.isActive = true
-    }
-    
-    func createNewTracker() -> Tracker {
-        
-        let title: String = selectedTitle!
-        let emoji: String = selectedEmoji!
-        let color: UIColor = UIColor.selectionColorYP(selectedColor!)!
-        let day: Set<WeekDay>? = Set(selectedSchedule.weekDays)
-        
-        let newTracker = Tracker(title: title, emoji: emoji, color: color, day: day)
-        
-        return newTracker
-    }
-}
-
-extension EditTrackerVC: CategorySelectionDelegate {
-    func categorySelected(category: CategoryData) {
-        selectedCategory = dependencies.сategoryStore.trackerCategory(from: category)
-        let sectionToReload = Section.list.rawValue
-        collection.reloadSections(IndexSet(integer: sectionToReload))
-    }
-}
-
-
-// MARK: - PROTOCOL
+// MARK: - DidEdit
 
 protocol EditTrackerVCDelegate: AnyObject {
-    func didEditNewTracker(newTracker: Tracker, categoryID: UUID)
+    func didEditTracker()
 }

@@ -308,7 +308,7 @@ extension CreateTrackerVC: UICollectionViewDelegate {
 
     private func handleListSelection(at indexPath: IndexPath) {
 
-        let viewModel = CategoryViewModel(dependencies: dependencies)
+        let viewModel = CategoryViewModel(dependencies: dependencies, previousSelectedCategory: selectedCategory?.id ?? .init())
         
         if indexPath.row == 0 {
             let vc = CategoryView(dependencies: dependencies, viewModel: viewModel)

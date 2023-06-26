@@ -3,3 +3,8 @@
 
 "tabbar.trackers.title" = "Trackers";
 "tabbar.statistic.title" = "Statistic";
+
+"menu.trackers.pin" = "Pin";
+"menu.trackers.unpin" = "Unpin";
+"menu.trackers.edit" = "Edit";
+"menu.trackers.delete" = "Delete";

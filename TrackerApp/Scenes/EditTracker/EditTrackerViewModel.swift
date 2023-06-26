@@ -7,11 +7,12 @@ final class EditTrackerViewModel {
     private let dependency: DependencyContainer
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var trackerTitle: String = "Unknown"
-    @Published var trackerEmoji: String = "🤮"
-    @Published var trackerColor: SelectionColorStyle = .selection01
-    @Published var trackerSchedule: Set<WeekDay> = []
-    @Published var trackerCategory: Category?
+    @Published var trackerTitle: String = "" { didSet { checkValidity() } }
+    @Published var trackerEmoji: String = "" { didSet { checkValidity() } }
+    @Published var trackerColor: SelectionColorStyle? { didSet { checkValidity() } }
+    @Published var trackerSchedule: Set<WeekDay> = [] { didSet { checkValidity() } }
+    @Published var trackerCategory: Category? { didSet { checkValidity() } }
+    @Published var isTrackerReady: Bool = false
     
     init(trackerID: UUID, dependency: DependencyContainer, cancellables: Set<AnyCancellable> = Set<AnyCancellable>()) {
         self.trackerID = trackerID
@@ -41,21 +42,29 @@ final class EditTrackerViewModel {
         }
     }
     
-//    func saveTrackerData() {
-//        let updatedTracker = Tracker(
-//            id: trackerID,
-//            title: trackerTitle,
-//            emoji: trackerEmoji,
-//            color: trackerColor.toColor(),
-//            day: trackerSchedule
-//        )
-//
-//        // Сохраняем трекер
+    private func checkValidity() {
+        print("Checking validity")
+        isTrackerReady = trackerTitle != "" &&
+        trackerEmoji != "" &&
+        trackerColor != nil &&
+        !trackerSchedule.isEmpty &&
+        trackerCategory != nil
+        print("Is tracker ready: \(isTrackerReady)")
+    }
+        
+    func saveTrackerData() {
+        let updatedTracker = Tracker(
+            id: trackerID,
+            title: trackerTitle,
+            emoji: trackerEmoji,
+            color: UIColor.selectionColorYP(trackerColor ?? .selection01) ?? .black,
+            day: trackerSchedule
+        )
+        
 //        do {
 //            try dependency.сategoryStore.update(tracker: updatedTracker)
 //        } catch {
 //            LogService.shared.log("Error updating tracker: \(error)", level: .error)
 //        }
-//    }
+    }
 }
-

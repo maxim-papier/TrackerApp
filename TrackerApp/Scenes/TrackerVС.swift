@@ -229,7 +229,11 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             
             // "Toggle pin" action
             let isPinned = self.pinService.isTrackerPinned(withId: trackerID)
-            let togglePinActionTitle = isPinned ? "Открепить" : "Закрепить"
+            
+            let togglePinActionTitle = isPinned
+            ? self.localization.localized("menu.trackers.unpin", comment: "")
+            : self.localization.localized("menu.trackers.pin", comment: "")
+            
             let togglePinAction = UIAction(title: togglePinActionTitle) { action in
                 if isPinned {
                     self.pinService.unpinTracker()
@@ -239,7 +243,8 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             }
 
             // "Edit" action
-            let editAction = UIAction(title: "Редактировать") { action in
+            let localizedEditTitle = self.localization.localized("menu.trackers.edit", comment: "")
+            let editAction = UIAction(title: localizedEditTitle) { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
                 if let tracker = self.dependencies.trackerStore.tracker(from: trackerData) {
                     let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerID)
@@ -248,7 +253,8 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             }
             
             // "Delete" action
-            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { action in
+            let localizedDeleteTitle = self.localization.localized("menu.trackers.delete", comment: "")
+            let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
                 self.dependencies.trackerStore.deleteTracker(by: trackerID)
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
@@ -340,6 +346,12 @@ extension TrackersVC: CreateTrackerVCDelegate {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
         dependencies.сategoryStore.add(tracker: newTracker,
                                        toCategoryWithId: categoryID)
+        reloadCollectionAfterFiltering(filterType: .date)
+    }
+}
+
+extension TrackersVC: EditTrackerVCDelegate {
+    func didEditTracker() {
         reloadCollectionAfterFiltering(filterType: .date)
     }
 }
