@@ -58,3 +58,13 @@ extension ColorCell {
         ])
     }
 }
+
+extension ColorCell {
+    func setSelected(_ isSelected: Bool, color: UIColor) {
+        if isSelected {
+            backgroundShape.layer.borderColor = color.withAlphaComponent(0.3).cgColor
+        } else {
+            backgroundShape.layer.borderColor = UIColor.clear.cgColor
+        }
+    }
+}

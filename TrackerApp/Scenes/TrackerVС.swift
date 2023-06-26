@@ -22,6 +22,7 @@ final class TrackersVC: UIViewController {
     
     private let analytic: YandexMetricaService
     private let localization = LocalizationService()
+    private let pinService = PinService()
 
 
     // MARK: - Init
@@ -211,6 +212,51 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
         header.categoryLabel.text = fetchedResultsController.sections?[indexPath.section].name
                 
         return header
+    }
+    
+    // MARK: - Contextual Menue
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+
+        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
+
+        guard let trackerID = trackerData.id else {
+            LogService.shared.log("Error: Tracker ID is nil", level: .error)
+            return nil
+        }
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+            
+            // "Toggle pin" action
+            let isPinned = self.pinService.isTrackerPinned(withId: trackerID)
+            let togglePinActionTitle = isPinned ? "Открепить" : "Закрепить"
+            let togglePinAction = UIAction(title: togglePinActionTitle) { action in
+                if isPinned {
+                    self.pinService.unpinTracker()
+                } else {
+                    self.pinService.pinTracker(withId: trackerID)
+                }
+            }
+
+            // "Edit" action
+            let editAction = UIAction(title: "Редактировать") { action in
+                let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
+                if let tracker = self.dependencies.trackerStore.tracker(from: trackerData) {
+                    let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, tracker: tracker)
+                    self.present(trackerEditVC, animated: true)
+                }
+            }
+            
+            // "Delete" action
+            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { action in
+                self.dependencies.trackerStore.deleteTracker(by: trackerID)
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            }
+
+            return UIMenu(title: "", children: [togglePinAction, editAction, deleteAction])
+        }
     }
 }
 

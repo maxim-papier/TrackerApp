@@ -90,3 +90,17 @@ extension UIColor {
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 }
+
+extension SelectionColorStyle {
+    static func fromColor(_ color: UIColor) -> SelectionColorStyle? {
+        let hexColor = color.toHexString()
+
+        for selectionStyle in SelectionColorStyle.allCases {
+            if let styleColor = UIColor.selectionColorYP(selectionStyle),
+               styleColor.toHexString() == hexColor {
+                return selectionStyle
+            }
+        }
+        return nil
+    }
+}

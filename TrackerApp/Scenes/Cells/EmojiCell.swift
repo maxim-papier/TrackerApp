@@ -42,4 +42,12 @@ class EmojiCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("No more storyboards!")
     }
+    
+    func setSelected(_ isSelected: Bool) {
+        if isSelected {
+            backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
+        } else {
+            backgroundShape.backgroundColor = UIColor.clear
+        }
+    }
 }
