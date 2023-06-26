@@ -11,7 +11,7 @@ final class EditTrackerViewModel {
     @Published var trackerEmoji: String = "🤮"
     @Published var trackerColor: SelectionColorStyle = .selection01
     @Published var trackerSchedule: Set<WeekDay> = []
-    @Published var trackerCategory: String = "No category"
+    @Published var trackerCategory: Category?
     
     init(trackerID: UUID, dependency: DependencyContainer, cancellables: Set<AnyCancellable> = Set<AnyCancellable>()) {
         self.trackerID = trackerID
@@ -28,6 +28,10 @@ final class EditTrackerViewModel {
             trackerColor = SelectionColorStyle.fromColor(tracker.color) ?? .selection01
             trackerSchedule = tracker.day ?? []
             
+            if let category = dependency.сategoryStore.getCategory(forTrackerId: tracker.id) {
+                trackerCategory = category
+            }
+            
         } catch TrackerStore.TrackerStoreError.notFound {
             LogService.shared.log("Tracker with \(trackerID) not found", level: .error)
         } catch TrackerStore.TrackerStoreError.coreDataError(let coreDataError) {
@@ -37,4 +41,21 @@ final class EditTrackerViewModel {
         }
     }
     
+//    func saveTrackerData() {
+//        let updatedTracker = Tracker(
+//            id: trackerID,
+//            title: trackerTitle,
+//            emoji: trackerEmoji,
+//            color: trackerColor.toColor(),
+//            day: trackerSchedule
+//        )
+//
+//        // Сохраняем трекер
+//        do {
+//            try dependency.сategoryStore.update(tracker: updatedTracker)
+//        } catch {
+//            LogService.shared.log("Error updating tracker: \(error)", level: .error)
+//        }
+//    }
 }
+

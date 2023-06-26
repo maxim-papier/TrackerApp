@@ -87,26 +87,47 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
     
     private func bindViewModel() {
         
+        // Tracker Title
         viewModel.$trackerTitle
             .sink { [weak self] in
                 self?.selectedTitle = $0
-                self?.collection.reloadData()
+                let titleIndexPath = IndexPath(item: 0, section: Section.list.rawValue)
+                self?.collection.reloadItems(at: [titleIndexPath])
             }
             .store(in: &cancellables)
         
+        // Category
+        viewModel.$trackerCategory
+            .sink { [weak self] newCategory in
+                self?.selectedCategory = newCategory
+                let categoryIndexPath = IndexPath(item: 0, section: Section.list.rawValue)
+                self?.collection.reloadItems(at: [categoryIndexPath])
+            }
+            .store(in: &cancellables)
+        
+        // Schedule
+        viewModel.$trackerSchedule
+            .sink { [weak self] newSchedule in
+                self?.selectedSchedule.weekDays = newSchedule
+                let scheduleIndexPath = IndexPath(item: 1, section: Section.list.rawValue)
+                self?.collection.reloadItems(at: [scheduleIndexPath])
+            }
+            .store(in: &cancellables)
+        
+        // Emoji
         viewModel.$trackerEmoji
             .sink { [weak self] newEmoji in
                 guard let self = self else { return }
                 self.selectedEmoji = newEmoji
-                
                 if let emojiIndex = K.emojis.firstIndex(of: newEmoji) {
                     let indexPath = IndexPath(item: emojiIndex, section: Section.emoji.rawValue)
                     self.selectedEmojiIndexPath = indexPath
-                    self.collection.reloadData()
+                    self.collection.reloadItems(at: [indexPath])
                 }
             }
             .store(in: &cancellables)
-        
+
+        // Color
         viewModel.$trackerColor
             .sink { [weak self] newColor in
                 guard let self = self else { return }
@@ -414,7 +435,7 @@ extension EditTrackerVC: AddSchedulerDelegate {
         
         isTrackerReadyToBeCreated()
         
-        let sectionToReload = 1
+        let sectionToReload = Section.list.rawValue
         collection.reloadSections(IndexSet(integer: sectionToReload))
     }
 }
@@ -453,7 +474,7 @@ extension EditTrackerVC {
 extension EditTrackerVC: CategorySelectionDelegate {
     func categorySelected(category: CategoryData) {
         selectedCategory = dependencies.сategoryStore.trackerCategory(from: category)
-        let sectionToReload = 1
+        let sectionToReload = Section.list.rawValue
         collection.reloadSections(IndexSet(integer: sectionToReload))
     }
 }

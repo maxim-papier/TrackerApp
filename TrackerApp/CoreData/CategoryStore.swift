@@ -39,10 +39,10 @@ final class CategoryStore: NSObject {
 
     // MARK: - CRUD methods
     
-    func getCategory(at indexPath: IndexPath) -> Category? {
-        let categoryData = fetchedResultsController.object(at: indexPath)
-        return trackerCategory(from: categoryData)
-    }
+//    func getCategory(at indexPath: IndexPath) -> Category? {
+//        let categoryData = fetchedResultsController.object(at: indexPath)
+//        return trackerCategory(from: categoryData)
+//    }
 
     // Create a new TrackerCategory in the store
     func create(category: Category) -> Bool {
@@ -75,6 +75,18 @@ final class CategoryStore: NSObject {
             LogService.shared.log("Error fetching categories: \(error)", level: .error)
             return []
         }
+    }
+    
+    func getCategory(forTrackerId id: UUID) -> Category? {
+        let categories = retrieveAllCategories()
+        for category in categories {
+            for tracker in category.trackers {
+                if tracker.id == id {
+                    return category
+                }
+            }
+        }
+        return nil
     }
 
     // MARK: - Adding new tracker into category
