@@ -3,7 +3,12 @@ import UIKit
 class ColorCell: UICollectionViewCell {
 
     static let identifier = "ColorCell"
-
+    
+    var cellColor: UIColor? {
+        didSet {
+            innerShape.backgroundColor = cellColor
+        }
+    }
 
     let backgroundShape: UIView = {
         let view = UIView()
@@ -24,7 +29,6 @@ class ColorCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,5 +60,13 @@ extension ColorCell {
             innerShape.topAnchor.constraint(equalTo: backgroundShape.topAnchor, constant: inset),
             innerShape.bottomAnchor.constraint(equalTo: backgroundShape.bottomAnchor, constant: -inset),
         ])
+    }
+    
+    func setSelected(_ isSelected: Bool) {
+        if isSelected {
+            backgroundShape.layer.borderColor = cellColor?.withAlphaComponent(0.3).cgColor
+        } else {
+            backgroundShape.layer.borderColor = UIColor.clear.cgColor
+        }
     }
 }

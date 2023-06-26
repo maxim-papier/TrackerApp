@@ -95,9 +95,30 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
             .store(in: &cancellables)
         
         viewModel.$trackerEmoji
-            .sink { [weak self] in
-                self?.selectedEmoji = $0
-                self?.collection.reloadData()
+            .sink { [weak self] newEmoji in
+                guard let self = self else { return }
+                self.selectedEmoji = newEmoji
+                
+                if let emojiIndex = K.emojis.firstIndex(of: newEmoji) {
+                    let indexPath = IndexPath(item: emojiIndex, section: Section.emoji.rawValue)
+                    self.selectedEmojiIndexPath = indexPath
+                    self.collection.reloadData()
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$trackerColor
+            .sink { [weak self] newColor in
+                guard let self = self else { return }
+                self.selectedColor = newColor
+                
+                if let colorIndex = SelectionColorStyle.allCases.firstIndex(of: self.selectedColor ?? .selection01) {
+                    
+                    let newIndexPath = IndexPath(item: colorIndex, section: Section.color.rawValue)
+                    self.selectedColorIndexPath = newIndexPath
+                    
+                    self.handleColorSelection(at: newIndexPath)
+                }
             }
             .store(in: &cancellables)
     }
@@ -259,21 +280,32 @@ extension EditTrackerVC: UICollectionViewDataSource {
         let emojiCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: EmojiCell.identifier,
             for: indexPath) as! EmojiCell
-        
+
         emojiCell.emojiLabel.text = K.emojis[indexPath.row]
-        emojiCell.backgroundShape.layer.cornerRadius = 16
-        
+
+        if indexPath == selectedEmojiIndexPath {
+            emojiCell.setSelected(true)
+        } else {
+            emojiCell.setSelected(false)
+        }
+
         return emojiCell
     }
-    
+
     func colorCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         let colorCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ColorCell.identifier,
             for: indexPath) as! ColorCell
-        
+
+        let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
+        let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
+        colorCell.cellColor = color
+
+        colorCell.setSelected(indexPath == selectedColorIndexPath)
+
         return colorCell
     }
-    
+
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
        
@@ -340,36 +372,34 @@ extension EditTrackerVC: UICollectionViewDelegate {
     }
     
     private func handleEmojiSelection(at indexPath: IndexPath) {
-
-        guard let cell = collection.cellForItem(at: indexPath) as? EmojiCell else { return }
-
-        if let selectedCell = collection.cellForItem(at: selectedEmojiIndexPath ?? IndexPath(item: -1, section: 0)) as? EmojiCell {
-            selectedCell.backgroundShape.backgroundColor = UIColor.clear
+        if let selectedIndexPath = selectedEmojiIndexPath,
+           let previousSelectedCell = collection.cellForItem(at: selectedIndexPath) as? EmojiCell {
+            previousSelectedCell.setSelected(false)
         }
 
-        cell.backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
+        guard let cell = collection.cellForItem(at: indexPath) as? EmojiCell else { return }
+        cell.setSelected(true)
 
         selectedEmojiIndexPath = indexPath
-        viewModel.trackerEmoji = K.emojis[indexPath.row]
+        selectedEmoji = K.emojis[indexPath.row]
+
+        viewModel.trackerEmoji = selectedEmoji ?? "🤢"
 
         isTrackerReadyToBeCreated()
     }
 
     private func handleColorSelection(at indexPath: IndexPath) {
 
-        guard let cell = collection.cellForItem(at: indexPath) as? ColorCell else { return }
-
-        let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
-        let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
-
-        if let selectedColorIndexPath = collection.cellForItem(at: selectedColorIndexPath ?? IndexPath(item: -1, section: 0)) as? ColorCell {
-            selectedColorIndexPath.backgroundShape.layer.borderColor = UIColor.clear.cgColor
+        if let selectedIndexPath = selectedColorIndexPath,
+           let previousSelectedCell = collection.cellForItem(at: selectedIndexPath) as? ColorCell {
+            previousSelectedCell.setSelected(false)
         }
 
-        cell.backgroundShape.layer.borderColor = color?.withAlphaComponent(0.3).cgColor
+        guard let cell = collection.cellForItem(at: indexPath) as? ColorCell else { return }
+        cell.setSelected(true)
 
         selectedColorIndexPath = indexPath
-        selectedColor = SelectionColorStyle.allCases[indexPath.row]
+        selectedColor = SelectionColorStyle.allCases[indexPath.row % SelectionColorStyle.allCases.count]
 
         isTrackerReadyToBeCreated()
     }

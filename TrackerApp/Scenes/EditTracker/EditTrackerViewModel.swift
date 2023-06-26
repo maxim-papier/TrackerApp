@@ -9,7 +9,7 @@ final class EditTrackerViewModel {
     
     @Published var trackerTitle: String = "Unknown"
     @Published var trackerEmoji: String = "🤮"
-    @Published var trackerColor: UIColor = .cyan
+    @Published var trackerColor: SelectionColorStyle = .selection01
     @Published var trackerSchedule: Set<WeekDay> = []
     @Published var trackerCategory: String = "No category"
     
@@ -25,7 +25,7 @@ final class EditTrackerViewModel {
             
             trackerTitle = tracker.title
             trackerEmoji = tracker.emoji
-            trackerColor = tracker.color
+            trackerColor = SelectionColorStyle.fromColor(tracker.color) ?? .selection01
             trackerSchedule = tracker.day ?? []
             
         } catch TrackerStore.TrackerStoreError.notFound {

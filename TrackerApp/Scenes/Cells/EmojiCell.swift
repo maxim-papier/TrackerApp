@@ -6,7 +6,7 @@ class EmojiCell: UICollectionViewCell {
 
     let backgroundShape: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 0
+        view.layer.cornerRadius = 16
         view.clipsToBounds = true
         view.backgroundColor = UIColor.mainColorYP(.whiteYP)
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +47,7 @@ class EmojiCell: UICollectionViewCell {
         if isSelected {
             backgroundShape.backgroundColor = UIColor.mainColorYP(.lightGrayYP)
         } else {
-            backgroundShape.backgroundColor = UIColor.clear
+            backgroundShape.backgroundColor = UIColor.mainColorYP(.whiteYP)
         }
     }
 }
