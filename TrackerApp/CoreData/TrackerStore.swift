@@ -48,19 +48,30 @@ final class TrackerStore: NSObject {
         }
     }
     
-    private func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
+    func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
         let sortDescriptor = "createdAt"
         let categorySortDescriptor = "category.name"
+        let pinnedSortDescriptor = "isPinned"
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+
         request.sortDescriptors = [
+            NSSortDescriptor(key: pinnedSortDescriptor, ascending: false),
             NSSortDescriptor(key: categorySortDescriptor, ascending: true),
             NSSortDescriptor(key: sortDescriptor, ascending: false)
         ]
+
+        let sectionNameKeyPath = getPinnedTrackersExist() ? "isPinned" : "category.name"
+
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: sectionNameKeyPath,
+            cacheName: nil
+        )
         
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: "category.name", cacheName: nil)
         return fetchedResultsController
     }
-    
+
     func setupFetchedResultsController() {
         fetchedResultsController = createFetchedResultsController()
         fetchedResultsController?.delegate = self
@@ -72,7 +83,16 @@ final class TrackerStore: NSObject {
         }
     }
     
-    
+    func updateFetchedResultsController() {
+        NSFetchedResultsController<TrackerData>.deleteCache(withName: nil)
+        fetchedResultsController = createFetchedResultsController()
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch let error {
+            LogService.shared.log("Unable to perform fetch: \(error)", level: .error)
+        }
+    }
+
     // MARK: - CRUD methods for Tracker
     
     func createTracker(tracker: Tracker) {
@@ -184,6 +204,22 @@ final class TrackerStore: NSObject {
         } catch {
             assertionFailure("Error unpinning tracker: \(error)")
         }
+    }
+    
+    func getPinnedTrackersExist() -> Bool {
+        let pinnedRequest: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        pinnedRequest.predicate = NSPredicate(format: "isPinned == true")
+        pinnedRequest.fetchLimit = 1
+
+        var hasPinnedTrackers = false
+        do {
+            let count = try context.count(for: pinnedRequest)
+            hasPinnedTrackers = (count > 0)
+        } catch {
+            print("Failed to fetch pinned trackers: \(error)")
+        }
+        
+        return hasPinnedTrackers
     }
 
     

@@ -1,4 +1,5 @@
 import UIKit
+import Combine
 
 enum FilterType {
     case search
@@ -16,10 +17,11 @@ final class TrackersVC: UIViewController {
     
     weak var trackerStoreDelegate: TrackerStoreDelegate?
     weak var editTrackerDelegate: EditTrackerDelegate?
+    private var cancellables = Set<AnyCancellable>()
     
-    private var dependencies: DependencyContainer
+    private var stores: DependencyContainer
     private lazy var fetchedResultsController = {
-        dependencies.fetchedResultsControllerForTrackers
+        stores.fetchedResultsControllerForTrackers
     }()
     
     private let analytic: YandexMetricaService
@@ -32,7 +34,7 @@ final class TrackersVC: UIViewController {
     init(dependencies: DependencyContainer,
          analytic: YandexMetricaService,
          pinSevice: PinService) {
-        self.dependencies = dependencies
+        self.stores = dependencies
         self.analytic = analytic
         self.pinService = pinSevice
         super.init(nibName: nil, bundle: nil)
@@ -47,10 +49,11 @@ final class TrackersVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        dependencies.trackerStore.setupFetchedResultsController()
-        dependencies.trackerStore.delegate = self
+        stores.trackerStore.setupFetchedResultsController()
+        stores.trackerStore.delegate = self
         filterResults(with: Date())
         setup()
+        bindPinningEvent()
         analytic.log(event: .open(screen: .main))
     }
     
@@ -60,7 +63,23 @@ final class TrackersVC: UIViewController {
     }
     
     
-    // Setup UI and layout
+    // MARK: - Bindings
+    
+    private func bindPinningEvent() {
+        pinService.isPinnedChanged
+            .sink { [weak self] _ in
+                self?.reloadFetchedResultsController()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func reloadFetchedResultsController() {
+        stores.trackerStore.updateFetchedResultsController()
+        collection.reloadData()
+    }
+    
+    
+    // MARK: - Setup UI and layout
     
     private func setup() {
         view.backgroundColor = .mainColorYP(.whiteYP)
@@ -133,7 +152,7 @@ final class TrackersVC: UIViewController {
     }
     
     @objc private func addNewTracker() {
-        let vc = TrackerOrEventVC(dependencies: dependencies)
+        let vc = TrackerOrEventVC(dependencies: stores)
         vc.trackerVC = self
         present(vc, animated: true)
         analytic.log(event: .click(screen: .main, item: "add_track"))
@@ -182,9 +201,9 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             return .init()
         }
         
-        let trackerData = dependencies.trackerStore.fetchedResultsControllerForTracker().object(at: indexPath)
+        let trackerData = stores.trackerStore.fetchedResultsControllerForTracker().object(at: indexPath)
         
-        if let tracker = dependencies.trackerStore.tracker(from: trackerData) {
+        if let tracker = stores.trackerStore.tracker(from: trackerData) {
             cell.backgroundShape.backgroundColor = tracker.color
             cell.doneButton.backgroundColor = tracker.color
             cell.titleLabel.text = tracker.title
@@ -193,8 +212,8 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
-            let recordID = dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
-            let recordsCount = dependencies.recordStore.fetchRecordsCount(forTrackerWithID: trackerID)
+            let recordID = stores.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
+            let recordsCount = stores.recordStore.fetchRecordsCount(forTrackerWithID: trackerID)
             
             cell.daysLabel.text = localization.pluralized(
                 "days", count: recordsCount)
@@ -253,7 +272,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             )
             let editAction = UIAction(title: localizedEditTitle) { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
-                let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerData.id!) // ID есть всегда
+                let trackerEditVC = EditTrackerVC(dependencies: self.stores, trackerID: trackerData.id!) // ID есть всегда
                 self.present(trackerEditVC, animated: true)
             }
             
@@ -280,7 +299,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             comment: "Delete confirmation"
         )
         let deleteAction = UIAlertAction(title: deleteTitle, style: .destructive) { _ in
-            self.dependencies.trackerStore.deleteTracker(by: trackerID)
+            self.stores.trackerStore.deleteTracker(by: trackerID)
             DispatchQueue.main.async {
                 self.collection.reloadData()
             }
@@ -344,12 +363,12 @@ extension TrackersVC: UISearchResultsUpdating {
     }
     
     private func filterResults(with date: Date) {
-        dependencies.trackerStore.updatePredicateForWeekDayFilter(date: date)
+        stores.trackerStore.updatePredicateForWeekDayFilter(date: date)
         reloadCollectionAfterFiltering(filterType: .date)
     }
     
     private func filterResults(with searchText: String) {
-        dependencies.trackerStore.updatePredicateForTextFilter(searchText: searchText)
+        stores.trackerStore.updatePredicateForTextFilter(searchText: searchText)
         reloadCollectionAfterFiltering(filterType: .search)
     }
     
@@ -378,7 +397,7 @@ extension TrackersVC: UISearchResultsUpdating {
 // Create tracker
 extension TrackersVC: CreateTrackerVCDelegate {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
-        dependencies.сategoryStore.add(tracker: newTracker,
+        stores.сategoryStore.add(tracker: newTracker,
                                        toCategoryWithId: categoryID)
         reloadCollectionAfterFiltering(filterType: .date)
     }
@@ -405,12 +424,12 @@ extension TrackersVC: TrackerCellDelegate {
             return
         }
         
-        let recordStore = dependencies.recordStore
+        let recordStore = stores.recordStore
         recordStore.toggleRecord(forTrackerWithID: trackerID, onDate: selectedDate)
     }
     
     func trackerIsDone(trackerID: UUID) -> Bool {
-        return dependencies.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate) != nil
+        return stores.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate) != nil
     }
 }
 
