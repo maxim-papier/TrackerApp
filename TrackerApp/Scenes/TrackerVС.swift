@@ -7,7 +7,7 @@ enum FilterType {
 
 final class TrackersVC: UIViewController {
     
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchText = ""
@@ -24,15 +24,17 @@ final class TrackersVC: UIViewController {
     
     private let analytic: YandexMetricaService
     private let localization = LocalizationService()
-    private let pinService = PinService()
+    private let pinService: PinService
     
     
     // MARK: - Init
     
     init(dependencies: DependencyContainer,
-         analytic: YandexMetricaService) {
+         analytic: YandexMetricaService,
+         pinSevice: PinService) {
         self.dependencies = dependencies
         self.analytic = analytic
+        self.pinService = pinSevice
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -68,17 +70,17 @@ final class TrackersVC: UIViewController {
     }
     
     private func setCollectionView() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
+        collection.dataSource = self
+        collection.delegate = self
         
-        collectionView.register(TrackerCell.self,forCellWithReuseIdentifier: TrackerCell.identifier)
-        collectionView.register(TrackerHeader.self,
+        collection.register(TrackerCell.self,forCellWithReuseIdentifier: TrackerCell.identifier)
+        collection.register(TrackerHeader.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: TrackerHeader.identifier)
         
-        collectionView.backgroundColor = .mainColorYP(.whiteYP)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.alwaysBounceVertical = true
+        collection.backgroundColor = .mainColorYP(.whiteYP)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.alwaysBounceVertical = true
     }
     
     private func setNavBarElements() {
@@ -143,16 +145,16 @@ final class TrackersVC: UIViewController {
     }
     
     private func setConstraints() {
-        view.addSubview(collectionView)
-        collectionView.addSubview(placeholder)
+        view.addSubview(collection)
+        collection.addSubview(placeholder)
         
         placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collection.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collection.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             
             placeholder.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             placeholder.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -238,7 +240,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             
             let togglePinAction = UIAction(title: togglePinActionTitle) { action in
                 if isPinned {
-                    self.pinService.unpinTracker()
+                    self.pinService.unpinTracker(withId: trackerID)
                 } else {
                     self.pinService.pinTracker(withId: trackerID)
                 }
@@ -280,7 +282,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let deleteAction = UIAlertAction(title: deleteTitle, style: .destructive) { _ in
             self.dependencies.trackerStore.deleteTracker(by: trackerID)
             DispatchQueue.main.async {
-                self.collectionView.reloadData()
+                self.collection.reloadData()
             }
         }
         alertController.addAction(deleteAction)
@@ -353,7 +355,7 @@ extension TrackersVC: UISearchResultsUpdating {
     
     private func reloadCollectionAfterFiltering(filterType: FilterType) {
         updatePlaceholder(for: filterType)
-        collectionView.reloadData()
+        collection.reloadData()
     }
     
     
@@ -395,7 +397,7 @@ extension TrackersVC: TrackerCellDelegate {
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
         analytic.log(event: .click(screen: .main, item: "track"))
         
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        guard let indexPath = collection.indexPath(for: cell) else { return }
         let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
         
         guard let trackerID = trackerData.id else {
@@ -415,7 +417,7 @@ extension TrackersVC: TrackerCellDelegate {
 // Tracker Store Delegate
 extension TrackersVC: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
-        collectionView.reloadData()
+        collection.reloadData()
     }
 }
 

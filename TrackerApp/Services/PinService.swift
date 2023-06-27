@@ -1,29 +1,34 @@
 import Foundation
 
 final class PinService {
-    private let defaults = UserDefaults.standard
-    private let pinnedTrackerKey = "PinnedTracker"
+    
+    private let stores: DependencyContainer
 
-    // Save the ID of the pinned tracker
+    init(stores: DependencyContainer) {
+        self.stores = stores
+    }
+
+    // Pin the tracker
     func pinTracker(withId id: UUID) {
-        defaults.set(id.uuidString, forKey: pinnedTrackerKey)
+        stores.trackerStore.pinTracker(by: id)
         LogService.shared.log("Pinned \(id) tracker", level: .info)
     }
 
-    // Unpin the currently pinned tracker
-    func unpinTracker() {
-        defaults.removeObject(forKey: pinnedTrackerKey)
-        LogService.shared.log("Unpinned tracker", level: .info)
-    }
-
-    // Get the ID of the currently pinned tracker
-    func getPinnedTrackerId() -> UUID? {
-        guard let idString = defaults.string(forKey: pinnedTrackerKey) else { return nil }
-        return UUID(uuidString: idString)
+    // Unpin the tracker
+    func unpinTracker(withId id: UUID) {
+        stores.trackerStore.unpinTracker(by: id)
+        LogService.shared.log("Unpinned \(id) tracker", level: .info)
     }
 
     // Check if a tracker is pinned
     func isTrackerPinned(withId id: UUID) -> Bool {
-        return getPinnedTrackerId() == id
+        // Fetch the tracker
+        do {
+            let tracker = try stores.trackerStore.readTracker(by: id)
+            return tracker.isPinned
+        } catch {
+            LogService.shared.log("Error reading tracker: \(error)", level: .error)
+            return false
+        }
     }
 }

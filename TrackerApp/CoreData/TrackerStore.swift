@@ -119,7 +119,7 @@ final class TrackerStore: NSObject {
             context.delete(coreDataTracker)
             try context.save()
         } catch {
-            assertionFailure("Error deleting tracker: \(error)")
+            LogService.shared.log("Error deleting tracker: \(error)", level: .error)
         }
     }
     
@@ -148,14 +148,56 @@ final class TrackerStore: NSObject {
         }
     }
     
+    func pinTracker(by id: UUID) {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            // Fetch the tracker
+            let coreDataTrackers = try context.fetch(request)
+            guard let coreDataTracker = coreDataTrackers.first else { return }
+
+            // Set isPinned to true
+            coreDataTracker.isPinned = true
+            
+            // Save the changes
+            try context.save()
+        } catch {
+            assertionFailure("Error pinning tracker: \(error)")
+        }
+    }
+
+    func unpinTracker(by id: UUID) {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            // Fetch the tracker
+            let coreDataTrackers = try context.fetch(request)
+            guard let coreDataTracker = coreDataTrackers.first else { return }
+
+            // Set isPinned to false
+            coreDataTracker.isPinned = false
+            
+            // Save the changes
+            try context.save()
+        } catch {
+            assertionFailure("Error unpinning tracker: \(error)")
+        }
+    }
+
+    
     // MARK: - Conversion methods
     
     private func coreDataTracker(from tracker: Tracker) -> TrackerData {
+        
         let coreDataTracker = TrackerData(context: context)
+        
         coreDataTracker.id = tracker.id
         coreDataTracker.title = tracker.title
         coreDataTracker.emoji = tracker.emoji
         coreDataTracker.colorHEX = tracker.color.toHexString()
+        coreDataTracker.isPinned = tracker.isPinned
         coreDataTracker.createdAt = tracker.createdAt
         
         if let weekDays = tracker.day, !weekDays.isEmpty {
@@ -180,6 +222,7 @@ final class TrackerStore: NSObject {
             return nil
         }
         
+        let isPinned = coreDataTracker.isPinned
         let color = UIColor(hexString: colorHex)
         
         var schedule = Set<WeekDay>()
@@ -189,9 +232,16 @@ final class TrackerStore: NSObject {
             }
         }
         
-        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
+        return Tracker(
+            id: id,
+            title: title,
+            emoji: emoji,
+            color: color,
+            day: schedule,
+            isPinned: isPinned,
+            createdAt: createdAt
+        )
     }
-    
     
     
     // MARK: - Filtering methods

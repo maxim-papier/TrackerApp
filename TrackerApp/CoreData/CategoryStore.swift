@@ -202,11 +202,14 @@ final class CategoryStore: NSObject {
     }
     
     private func coreDataTracker(from tracker: Tracker) -> TrackerData {
+        
         let coreDataTracker = TrackerData(context: context)
+        
         coreDataTracker.id = tracker.id
         coreDataTracker.title = tracker.title
         coreDataTracker.emoji = tracker.emoji
         coreDataTracker.colorHEX = tracker.color.toHexString()
+        coreDataTracker.isPinned = tracker.isPinned
         coreDataTracker.createdAt = tracker.createdAt
         
         if let weekDays = tracker.day, !weekDays.isEmpty {
@@ -216,10 +219,11 @@ final class CategoryStore: NSObject {
         } else {
             coreDataTracker.schedule = "no_schedule"
         }
+        
         return coreDataTracker
     }
-    
-    private func tracker(from coreDataTracker: TrackerData) -> Tracker? {
+
+    func tracker(from coreDataTracker: TrackerData) -> Tracker? {
         guard
             let id = coreDataTracker.id,
             let title = coreDataTracker.title,
@@ -230,6 +234,7 @@ final class CategoryStore: NSObject {
             return nil
         }
         
+        let isPinned = coreDataTracker.isPinned
         let color = UIColor(hexString: colorHex)
         
         var schedule = Set<WeekDay>()
@@ -238,7 +243,16 @@ final class CategoryStore: NSObject {
                 schedule = weekDaySet.weekDays
             }
         }
-        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
+        
+        return Tracker(
+            id: id,
+            title: title,
+            emoji: emoji,
+            color: color,
+            day: schedule,
+            isPinned: isPinned,
+            createdAt: createdAt
+        )
     }
 }
 
