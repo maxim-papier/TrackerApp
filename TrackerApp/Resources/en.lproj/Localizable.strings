@@ -8,3 +8,6 @@
 "menu.trackers.unpin" = "Unpin";
 "menu.trackers.edit" = "Edit";
 "menu.trackers.delete" = "Delete";
+
+"submenu.delete.confirm" = "Delete";
+"submenu.delete.cancel" = "Cancel";
