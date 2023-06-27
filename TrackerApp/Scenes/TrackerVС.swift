@@ -14,7 +14,9 @@ final class TrackersVC: UIViewController {
     private var selectedDate = Date()
     private lazy var placeholder = PlaceholderType.noSearchResults.placeholder
 
-    weak var delegate: TrackerStoreDelegate?
+    weak var trackerStoreDelegate: TrackerStoreDelegate?
+    weak var editTrackerDelegate: EditTrackerDelegate?
+    
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
@@ -22,6 +24,7 @@ final class TrackersVC: UIViewController {
     
     private let analytic: YandexMetricaService
     private let localization = LocalizationService()
+    private let pinService = PinService()
 
 
     // MARK: - Init
@@ -212,6 +215,55 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 
         return header
     }
+    
+    // MARK: - Contextual Menue
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+
+        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
+
+        guard let trackerID = trackerData.id else {
+            LogService.shared.log("Error: Tracker ID is nil", level: .error)
+            return nil
+        }
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
+            
+            // "Toggle pin" action
+            let isPinned = self.pinService.isTrackerPinned(withId: trackerID)
+            
+            let togglePinActionTitle = isPinned
+            ? self.localization.localized("menu.trackers.unpin", comment: "")
+            : self.localization.localized("menu.trackers.pin", comment: "")
+            
+            let togglePinAction = UIAction(title: togglePinActionTitle) { action in
+                if isPinned {
+                    self.pinService.unpinTracker()
+                } else {
+                    self.pinService.pinTracker(withId: trackerID)
+                }
+            }
+
+            // "Edit" action
+            let localizedEditTitle = self.localization.localized("menu.trackers.edit", comment: "")
+            let editAction = UIAction(title: localizedEditTitle) { action in
+                let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
+                let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerData.id!) // ID есть всегда
+                self.present(trackerEditVC, animated: true)
+            }
+
+            // "Delete" action
+            let localizedDeleteTitle = self.localization.localized("menu.trackers.delete", comment: "")
+            let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
+                self.dependencies.trackerStore.deleteTracker(by: trackerID)
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            }
+
+            return UIMenu(title: "", children: [togglePinAction, editAction, deleteAction])
+        }
+    }
 }
 
 
@@ -288,8 +340,9 @@ extension TrackersVC: UISearchResultsUpdating {
 }
 
 
-// MARK: - CreateTrackerVC delegate
+// MARK: - Delegates
 
+// Create tracker
 extension TrackersVC: CreateTrackerVCDelegate {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
         dependencies.сategoryStore.add(tracker: newTracker,
@@ -298,9 +351,14 @@ extension TrackersVC: CreateTrackerVCDelegate {
     }
 }
 
+// Edit tracker
+extension TrackersVC: EditTrackerDelegate {
+    func didUpdateTracker(tracker: Tracker) {
+        reloadCollectionAfterFiltering(filterType: .date)
+    }
+}
 
-// MARK: - TrackerCellDelegate (Record tracker)
-
+// TrackerCellDelegate (Record tracker)
 extension TrackersVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
@@ -323,18 +381,14 @@ extension TrackersVC: TrackerCellDelegate {
     }
 }
 
-
-// MARK: - Tracker Store Delegate
-
+// Tracker Store Delegate
 extension TrackersVC: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
         collectionView.reloadData()
     }
 }
 
-
-// MARK: - Searchbar Delegate
-
+// Searchbar Delegate
 extension TrackersVC: UISearchBarDelegate {
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {

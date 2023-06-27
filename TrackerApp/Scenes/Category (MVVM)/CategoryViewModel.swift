@@ -11,10 +11,14 @@ final class CategoryViewModel {
     @Observable private(set) var buttonState: CategoryViewModel.ButtonState = .add
     @Observable private(set) var selectedCategory: CategoryData?
     
+    let previousSelectedCategory: UUID
+    
     var numberOfCategories: Int { categories.count }
     
-    init(dependencies: DependencyContainer) {
+    init(dependencies: DependencyContainer, previousSelectedCategory: UUID) {
         self.dependencies = dependencies
+        self.previousSelectedCategory = previousSelectedCategory
+        selectCategory(withId: previousSelectedCategory)
     }
     
     func fetchCategories() {
@@ -43,7 +47,7 @@ final class CategoryViewModel {
         default: return .middle
         }
     }
-    
+        
     func selectCategory(at indexPath: IndexPath) {
         let category = categories[indexPath.row]
         

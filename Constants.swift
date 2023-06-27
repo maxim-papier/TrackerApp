@@ -8,4 +8,9 @@ struct K {
     static let entityCategoryData = "CategoryData"
     static let entityTrackerData = "TrackerData"
     static let entityTrackerRecordData = "TrackerRecordData"
+    
+    static let emojis: [String] = [
+        "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶",
+        "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
+    ]
 }
