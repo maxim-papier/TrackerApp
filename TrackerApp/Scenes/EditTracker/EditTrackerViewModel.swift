@@ -3,9 +3,13 @@ import Combine
 
 final class EditTrackerViewModel {
     
+    weak var delegate: EditTrackerDelegate?
+    
     private let trackerID: UUID
     private let dependency: DependencyContainer
     private var cancellables = Set<AnyCancellable>()
+    private var originalCategory: Category?
+
     
     @Published var trackerTitle: String = "" { didSet { checkValidity() } }
     @Published var trackerEmoji: String = "" { didSet { checkValidity() } }
@@ -31,7 +35,10 @@ final class EditTrackerViewModel {
             
             if let category = dependency.сategoryStore.getCategory(forTrackerId: tracker.id) {
                 trackerCategory = category
+                originalCategory = category
             }
+            
+            LogService.shared.log("Tracker's scheduler == \(trackerSchedule)", level: .info)
             
         } catch TrackerStore.TrackerStoreError.notFound {
             LogService.shared.log("Tracker with \(trackerID) not found", level: .error)
@@ -51,8 +58,9 @@ final class EditTrackerViewModel {
         trackerCategory != nil
         print("Is tracker ready: \(isTrackerReady)")
     }
-        
+    
     func saveTrackerData() {
+        
         let updatedTracker = Tracker(
             id: trackerID,
             title: trackerTitle,
@@ -61,10 +69,27 @@ final class EditTrackerViewModel {
             day: trackerSchedule
         )
         
-//        do {
-//            try dependency.сategoryStore.update(tracker: updatedTracker)
-//        } catch {
-//            LogService.shared.log("Error updating tracker: \(error)", level: .error)
-//        }
+        // Update the tracker
+        dependency.trackerStore.updateTracker(updatedTracker)
+        
+        // Update the category of the tracker if it has been changed
+        if
+            let updatedCategoryId = trackerCategory?.id,
+            let originalCategoryId = originalCategory?.id,
+            updatedCategoryId != originalCategoryId {
+            dependency.сategoryStore.updateCategoryForTracker(
+                with: trackerID,
+                to: updatedCategoryId
+            )
+        }
+        
+        delegate?.didUpdateTracker(tracker: updatedTracker)
     }
+}
+
+
+// MARK: - The UpdateTracker Delegate
+
+protocol EditTrackerDelegate: AnyObject {
+    func didUpdateTracker(tracker: Tracker)
 }

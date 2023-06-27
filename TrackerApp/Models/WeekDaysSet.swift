@@ -18,14 +18,14 @@ extension WeekDaySet {
             let encodedData = try? encoder.encode(self),
             let jsonString = String(data: encodedData, encoding: .utf8)
         else {
-            fatalError("Error encoding WeekDaySet")
+            LogService.shared.log("Error encoding WeekDaySet", level: .error)
+            return .init()
         }
         LogService.shared.log("Encoded WeekDaySet: \(jsonString)", level: .info)
         return jsonString
     }
 
     static func fromString(_ string: String) -> WeekDaySet? {
-
         if string == "no_schedule" {
             return WeekDaySet(weekDays: Set())
         }

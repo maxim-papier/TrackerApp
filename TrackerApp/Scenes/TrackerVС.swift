@@ -14,7 +14,9 @@ final class TrackersVC: UIViewController {
     private var selectedDate = Date()
     private lazy var placeholder = PlaceholderType.noSearchResults.placeholder
 
-    weak var delegate: TrackerStoreDelegate?
+    weak var trackerStoreDelegate: TrackerStoreDelegate?
+    weak var editTrackerDelegate: EditTrackerDelegate?
+    
     private var dependencies: DependencyContainer
     private lazy var fetchedResultsController = {
         dependencies.fetchedResultsControllerForTrackers
@@ -340,8 +342,9 @@ extension TrackersVC: UISearchResultsUpdating {
 }
 
 
-// MARK: - CreateTrackerVC delegate
+// MARK: - Delegates
 
+// Create tracker
 extension TrackersVC: CreateTrackerVCDelegate {
     func didCreateNewTracker(newTracker: Tracker, categoryID: UUID) {
         dependencies.сategoryStore.add(tracker: newTracker,
@@ -350,15 +353,14 @@ extension TrackersVC: CreateTrackerVCDelegate {
     }
 }
 
-extension TrackersVC: EditTrackerVCDelegate {
-    func didEditTracker() {
+// Edit tracker
+extension TrackersVC: EditTrackerDelegate {
+    func didUpdateTracker(tracker: Tracker) {
         reloadCollectionAfterFiltering(filterType: .date)
     }
 }
 
-
-// MARK: - TrackerCellDelegate (Record tracker)
-
+// TrackerCellDelegate (Record tracker)
 extension TrackersVC: TrackerCellDelegate {
 
     func didCompleteTracker(_ isDone: Bool, in cell: TrackerCell) {
@@ -381,18 +383,14 @@ extension TrackersVC: TrackerCellDelegate {
     }
 }
 
-
-// MARK: - Tracker Store Delegate
-
+// Tracker Store Delegate
 extension TrackersVC: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
         collectionView.reloadData()
     }
 }
 
-
-// MARK: - Searchbar Delegate
-
+// Searchbar Delegate
 extension TrackersVC: UISearchBarDelegate {
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {

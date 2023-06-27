@@ -2,14 +2,14 @@ import UIKit
 import Combine
 
 final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout {
-
+    
     enum Section: Int, CaseIterable {
         case input = 0
         case list
         case emoji
         case color
     }
-
+    
     private var isCreatingEvent: Bool = false
     private var viewModel: EditTrackerViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -24,11 +24,11 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
     private var selectedColorIndexPath: IndexPath?
     
     weak var delegate: CreateTrackerVCDelegate?
-        
+    
     private var collection: UICollectionView! = nil
     private let listCellItemName: [String] = ["Категория", "Расписание"]
     private var readyButton: Button?
-
+    
     private var dependencies: DependencyContainer
     
     // MARK: - UI Properties
@@ -45,7 +45,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
     lazy var cancelButton = Button(type: .cancel, title: "Отменить") {
         self.dismiss(animated: true)
     }
-        
+    
     lazy var hStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, readyButton!])
         stack.backgroundColor = .mainColorYP(.whiteYP)
@@ -57,7 +57,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
+    
     
     // MARK: - Initilizers
     
@@ -126,7 +126,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
                 }
             }
             .store(in: &cancellables)
-
+        
         // Color
         viewModel.$trackerColor
             .sink { [weak self] newColor in
@@ -142,7 +142,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
                 }
             }
             .store(in: &cancellables)
-
+        
         // Ready button state
         viewModel.$isTrackerReady
             .receive(on: DispatchQueue.main)
@@ -167,7 +167,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
         collection.register(Header.self,
                             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                             withReuseIdentifier: Header.identifier)
-
+        
         let cellTypes: [UICollectionViewCell.Type] = [EmojiCell.self, ListCell.self, InputCell.self, ColorCell.self]
         cellTypes.forEach { cellType in
             collection.register(cellType, forCellWithReuseIdentifier: String(describing: cellType))
@@ -176,16 +176,14 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
     
     private func setupButtons() {
         readyButton = Button(type: .primary(isActive: false), title: "Готово", tapHandler: {
-// Todo!
-            //            let newTracker = self.createNewTracker()
-            guard let selectedCategoryID = self.selectedCategory?.id else { return }
-            //self.delegate?.didCreateNewTracker(newTracker: newTracker, categoryID: selectedCategoryID)
+            self.viewModel.saveTrackerData()
+            
             if let rootVC = UIApplication.shared.windows.first?.rootViewController {
                 rootVC.dismiss(animated: true, completion: nil)
             }
         })
     }
-    
+
     private func setupPageLayout() {
         view.addSubview(collection)
         view.addSubview(pageTitle)
@@ -280,7 +278,7 @@ extension EditTrackerVC: UICollectionViewDataSource {
             self.selectedTitle = inputText
             self.viewModel.trackerTitle = inputText
         }
-
+        
         
         return inputCell
     }
@@ -304,7 +302,7 @@ extension EditTrackerVC: UICollectionViewDataSource {
                 listCell.subtitleLabel.text = daysString
             }
         }
-
+        
         
         listCell.titleLabel.text = listCellItemName[indexPath.item]
         
@@ -315,35 +313,35 @@ extension EditTrackerVC: UICollectionViewDataSource {
         let emojiCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: EmojiCell.identifier,
             for: indexPath) as! EmojiCell
-
+        
         emojiCell.emojiLabel.text = K.emojis[indexPath.row]
-
+        
         if indexPath == selectedEmojiIndexPath {
             emojiCell.setSelected(true)
         } else {
             emojiCell.setSelected(false)
         }
-
+        
         return emojiCell
     }
-
+    
     func colorCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         let colorCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ColorCell.identifier,
             for: indexPath) as! ColorCell
-
+        
         let colorIndex = indexPath.row % SelectionColorStyle.allCases.count
         let color = UIColor.selectionColorYP(SelectionColorStyle.allCases[colorIndex])
         colorCell.cellColor = color
-
+        
         colorCell.setSelected(indexPath == selectedColorIndexPath)
-
+        
         return colorCell
     }
-
+    
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-       
+        
         let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: Header.identifier,
@@ -412,26 +410,26 @@ extension EditTrackerVC: UICollectionViewDelegate {
            let previousSelectedCell = collection.cellForItem(at: selectedIndexPath) as? EmojiCell {
             previousSelectedCell.setSelected(false)
         }
-
+        
         guard let cell = collection.cellForItem(at: indexPath) as? EmojiCell else { return }
         cell.setSelected(true)
-
+        
         selectedEmojiIndexPath = indexPath
         selectedEmoji = K.emojis[indexPath.row]
-
+        
         viewModel.trackerEmoji = selectedEmoji ?? "🤢"
     }
-
+    
     private func handleColorSelection(at indexPath: IndexPath) {
-
+        
         if let selectedIndexPath = selectedColorIndexPath,
            let previousSelectedCell = collection.cellForItem(at: selectedIndexPath) as? ColorCell {
             previousSelectedCell.setSelected(false)
         }
-
+        
         guard let cell = collection.cellForItem(at: indexPath) as? ColorCell else { return }
         cell.setSelected(true)
-
+        
         selectedColorIndexPath = indexPath
         selectedColor = SelectionColorStyle.allCases[indexPath.row % SelectionColorStyle.allCases.count]
     }
@@ -458,8 +456,4 @@ extension EditTrackerVC: AddSchedulerDelegate {
     }
 }
 
-// MARK: - DidEdit
 
-protocol EditTrackerVCDelegate: AnyObject {
-    func didEditTracker()
-}
