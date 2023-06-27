@@ -9,7 +9,7 @@ final class EditTrackerViewModel {
     private let dependency: DependencyContainer
     private var cancellables = Set<AnyCancellable>()
     private var originalCategory: Category?
-
+    
     
     @Published var trackerTitle: String = "" { didSet { checkValidity() } }
     @Published var trackerEmoji: String = "" { didSet { checkValidity() } }
@@ -61,11 +61,19 @@ final class EditTrackerViewModel {
     
     func saveTrackerData() {
         
+        var newColor: UIColor = .magenta
+        
+        if let trackerColor = trackerColor {
+            newColor = UIColor.selectionColorYP(trackerColor) ?? .cyan
+        }
+        
+        LogService.shared.log("Color \(newColor) is ready to save", level: .info)
+        
         let updatedTracker = Tracker(
             id: trackerID,
             title: trackerTitle,
             emoji: trackerEmoji,
-            color: UIColor.selectionColorYP(trackerColor ?? .selection01) ?? .black,
+            color: newColor,
             day: trackerSchedule
         )
         
@@ -86,7 +94,6 @@ final class EditTrackerViewModel {
         delegate?.didUpdateTracker(tracker: updatedTracker)
     }
 }
-
 
 // MARK: - The UpdateTracker Delegate
 
