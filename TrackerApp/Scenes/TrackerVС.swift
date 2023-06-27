@@ -248,12 +248,10 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let localizedEditTitle = self.localization.localized("menu.trackers.edit", comment: "")
             let editAction = UIAction(title: localizedEditTitle) { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
-                if let tracker = self.dependencies.trackerStore.tracker(from: trackerData) {
-                    let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerID)
-                    self.present(trackerEditVC, animated: true)
-                }
+                let trackerEditVC = EditTrackerVC(dependencies: self.dependencies, trackerID: trackerData.id!) // ID есть всегда
+                self.present(trackerEditVC, animated: true)
             }
-            
+
             // "Delete" action
             let localizedDeleteTitle = self.localization.localized("menu.trackers.delete", comment: "")
             let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
