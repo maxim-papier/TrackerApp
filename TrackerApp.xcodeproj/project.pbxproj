@@ -22,6 +22,9 @@
 		8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C09299C8AE100213C8D /* Header.swift */; };
 		8D2A1C0C299CB29A00213C8D /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0B299CB29A00213C8D /* ListCell.swift */; };
 		8D2A1C10299D0BE700213C8D /* SchedulerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */; };
+		8D4781642A4BD4C1005C40AB /* StatisticCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781632A4BD4C1005C40AB /* StatisticCell.swift */; };
+		8D4781682A4BD977005C40AB /* StatisticCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781672A4BD977005C40AB /* StatisticCellViewModel.swift */; };
+		8D47816A2A4BDC38005C40AB /* Statisctic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781692A4BDC38005C40AB /* Statisctic.swift */; };
 		8D6949F42A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */; };
 		8D6949F62A49296300DAD4DA /* EditTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */; };
 		8D6A94012A3E9E6F00DCED90 /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */; };
@@ -102,6 +105,9 @@
 		8D2A1C09299C8AE100213C8D /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		8D2A1C0B299CB29A00213C8D /* ListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
 		8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerVC.swift; sourceTree = "<group>"; };
+		8D4781632A4BD4C1005C40AB /* StatisticCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticCell.swift; sourceTree = "<group>"; };
+		8D4781672A4BD977005C40AB /* StatisticCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticCellViewModel.swift; sourceTree = "<group>"; };
+		8D4781692A4BDC38005C40AB /* Statisctic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statisctic.swift; sourceTree = "<group>"; };
 		8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerCollectionLayoutFactory.swift; sourceTree = "<group>"; };
 		8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTrackerViewModel.swift; sourceTree = "<group>"; };
 		8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
@@ -225,6 +231,24 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		8D4781652A4BD93A005C40AB /* Statastic  */ = {
+			isa = PBXGroup;
+			children = (
+				8D4781662A4BD959005C40AB /* Cell */,
+				8DF313AF299774C600B7D148 /* StatisticVC.swift */,
+			);
+			path = "Statastic ";
+			sourceTree = "<group>";
+		};
+		8D4781662A4BD959005C40AB /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				8D4781632A4BD4C1005C40AB /* StatisticCell.swift */,
+				8D4781672A4BD977005C40AB /* StatisticCellViewModel.swift */,
+			);
+			name = Cell;
+			sourceTree = "<group>";
+		};
 		8D6949F22A48A92100DAD4DA /* CreateTracker */ = {
 			isa = PBXGroup;
 			children = (
@@ -299,6 +323,7 @@
 				8DAE17BA29E63BAD00DFBC9A /* WeekDaysSet.swift */,
 				8DEE447E2A3C9F5C00780EC6 /* OnboardingPage.swift */,
 				8D00A4662A4828EE003E4FA3 /* Analytic.swift */,
+				8D4781692A4BDC38005C40AB /* Statisctic.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -369,7 +394,7 @@
 				8DC07966299F639F00AC6C10 /* Cells */,
 				8DF313AD29976BD100B7D148 /* HomeVC.swift */,
 				8DBA052F2993873E00E3604E /* TrackerVС.swift */,
-				8DF313AF299774C600B7D148 /* StatisticVC.swift */,
+				8D4781652A4BD93A005C40AB /* Statastic  */,
 				8DA0CB5D299B4C70004BFE73 /* TrackerOrEventVC.swift */,
 				8D6949F22A48A92100DAD4DA /* CreateTracker */,
 				8D2A1C0F299D0BE700213C8D /* SchedulerVC.swift */,
@@ -625,6 +650,7 @@
 				8D11528729C1B5BC00687C5C /* TrackerStore.swift in Sources */,
 				8DA0CB61299B9C67004BFE73 /* CreateTrackerVC.swift in Sources */,
 				8D00A4702A48593C003E4FA3 /* EditTrackerCollectionLayoutFactory.swift in Sources */,
+				8D4781682A4BD977005C40AB /* StatisticCellViewModel.swift in Sources */,
 				8DEE44862A3D45E200780EC6 /* LogService.swift in Sources */,
 				8D00A46D2A485648003E4FA3 /* EditTrackerVC.swift in Sources */,
 				8D6A94012A3E9E6F00DCED90 /* CategoryViewModel.swift in Sources */,
@@ -635,9 +661,11 @@
 				8D6949F62A49296300DAD4DA /* EditTrackerViewModel.swift in Sources */,
 				8DD4C84329F3BD9000DD67F3 /* ErrorPresenter.swift in Sources */,
 				8DDE29C22993DF2E00D4A4DD /* TrackerCell.swift in Sources */,
+				8D47816A2A4BDC38005C40AB /* Statisctic.swift in Sources */,
 				8DEE44832A3CB16B00780EC6 /* OnboardingView.swift in Sources */,
 				8DE875EF2A43DE8300D2017E /* LocalizationService.swift in Sources */,
 				8DA0CB5E299B4C70004BFE73 /* TrackerOrEventVC.swift in Sources */,
+				8D4781642A4BD4C1005C40AB /* StatisticCell.swift in Sources */,
 				8DAE17BB29E63BAD00DFBC9A /* WeekDaysSet.swift in Sources */,
 				8D2A1C0A299C8AE100213C8D /* Header.swift in Sources */,
 				8DB392B229952B340031D2E1 /* WeekDay.swift in Sources */,
