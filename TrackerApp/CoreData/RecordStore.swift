@@ -26,6 +26,7 @@ final class RecordStore: NSObject {
     // MARK: - CRUD methods
     
     private func addRecord(forTrackerWithID trackerID: UUID, onDate date: Date) {
+        
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
         

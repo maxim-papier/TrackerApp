@@ -13,7 +13,7 @@ class OnboardingPageView: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .mainColorYP(.blackYP)
+        label.textColor = .black
         label.font = FontYP.bold32
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -23,7 +23,7 @@ class OnboardingPageView: UIViewController {
     
     private lazy var button: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .mainColorYP(.blackYP)
+        button.backgroundColor = .black
         button.titleLabel?.font = FontYP.medium16
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true
@@ -87,6 +87,6 @@ class OnboardingPageView: UIViewController {
         backgroundImageView.image = UIImage(named: pageData.backgroundImageName)
         titleLabel.text = pageData.title
         button.setTitle(pageData.buttonLabel, for: .normal)
-        button.setTitleColor(.mainColorYP(.whiteYP), for: .normal)
+        button.setTitleColor(.white, for: .normal)
     }
 }

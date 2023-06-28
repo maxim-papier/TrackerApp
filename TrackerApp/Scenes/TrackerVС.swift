@@ -14,6 +14,7 @@ final class TrackersVC: UIViewController {
     private var searchText = ""
     private var selectedDate = Date()
     private lazy var placeholder = PlaceholderType.noSearchResults.placeholder
+    private lazy var filtersButton = UIButton(type: .system)
     
     weak var trackerStoreDelegate: TrackerStoreDelegate?
     weak var editTrackerDelegate: EditTrackerDelegate?
@@ -26,7 +27,7 @@ final class TrackersVC: UIViewController {
     private lazy var pinnedFetchedResultsController = {
         stores.fetchedResultControllerForPinnedTrackers
     }()
-    
+        
     private let analytic: YandexMetricaService
     private let localization = LocalizationService()
     private let pinService: PinService
@@ -57,6 +58,7 @@ final class TrackersVC: UIViewController {
         filterResults(with: Date())
         setup()
         analytic.log(event: .open(screen: .main))
+        collection.reloadData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -118,10 +120,17 @@ final class TrackersVC: UIViewController {
             return dateFormatter
         }()
         
-        title = localization.localized(
-            "trackersvc.title",
-            comment: "Page title"
-        )
+        filtersButton.backgroundColor = UIColor.mainColorYP(.blueYP)
+        filtersButton.setTitle(localization.localized("filters.button", comment: ""), for: .normal)
+        filtersButton.setTitleColor(UIColor.white, for: .normal)
+        filtersButton.titleLabel?.font = FontYP.regular17
+        filtersButton.layer.cornerRadius = 16
+        filtersButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
+        filtersButton.translatesAutoresizingMaskIntoConstraints = false
+        filtersButton.addTarget(self, action: #selector(openFilters), for: .touchUpInside)
+                
+        title = localization.localized("trackersvc.title", comment: "Page title")
+        
         navigationItem.leftBarButtonItem = addNewTrackerButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -149,14 +158,23 @@ final class TrackersVC: UIViewController {
         filterResults(with: selectedDate)
     }
     
+    @objc private func openFilters() {
+//        let vc = FiltersViewController()
+//        present(vc, animated: true)
+        analytic.log(event: .click(screen: .main, item: "filter"))
+    }
+    
     private func setConstraints() {
         view.addSubview(collection)
+        view.addSubview(filtersButton)
         collection.addSubview(placeholder)
         
         placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            //datePicker.widthAnchor.constraint(lessThanOrEqualToConstant: 100),
+            filtersButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filtersButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            
             collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collection.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -174,10 +192,13 @@ final class TrackersVC: UIViewController {
 extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
     private var hasPinned: Bool { pinnedFetchedResultsController.fetchedObjects?.isEmpty == false }
+    
     private func fixedSection(_ section: Int) -> Int { hasPinned ? section - 1 : section }
+    
     private func fixedPath(_ indexPath: IndexPath) -> IndexPath {
         .init(row: indexPath.row, section: fixedSection(indexPath.section))
     }
+    
     private func trackerData(_ indexPath: IndexPath) -> TrackerData {
         if hasPinned, indexPath.section == 0  {
             return pinnedFetchedResultsController.object(at: indexPath)
@@ -214,7 +235,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.titleLabel.text = tracker.title
             cell.emojiLabel.text = tracker.emoji
             cell.delegate = self
-            
+                        
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
             let recordID = stores.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
@@ -223,11 +244,15 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.daysLabel.text = localization.pluralized(
                 "days", count: recordsCount)
             cell.setInitialDoneButtonState(isDone: recordID != nil)
+            
+            // Update pin state
+            let isPinned = pinService.isTrackerPinned(withId: trackerID)
+            cell.pinStateChange = isPinned
         }
         
         return cell
     }
-    
+
     
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -238,7 +263,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath) as? TrackerHeader else { return .init() }
 
         if hasPinned, indexPath.section == 0 {
-            header.categoryLabel.text = "Закрепы"
+            header.categoryLabel.text = "Закреплённые"
         } else {
             header.categoryLabel.text = fetchedResultsController.sections?[fixedSection(indexPath.section)].name
         }
@@ -272,6 +297,8 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 } else {
                     self.pinService.pinTracker(withId: trackerID)
                 }
+                let cell = collectionView.cellForItem(at: indexPath) as? TrackerCell
+                cell?.pinStateChange = !isPinned
             }
             
             // "Edit" action
@@ -279,9 +306,11 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 "menu.trackers.edit",
                 comment: "Edit tracker option in the context menu"
             )
+            
             let editAction = UIAction(title: localizedEditTitle) { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
                 let trackerEditVC = EditTrackerVC(dependencies: self.stores, trackerID: trackerData.id!) // ID есть всегда
+                self.analytic.log(event: .click(screen: .main, item: "edit"))
                 self.present(trackerEditVC, animated: true)
             }
             
@@ -293,7 +322,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
                 self.confirmDeletion(ofTracker: trackerID)
             }
-            
+        
             return UIMenu(title: "", children: [togglePinAction, editAction, deleteAction])
         }
     }
@@ -312,19 +341,18 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             DispatchQueue.main.async {
                 self.collection.reloadData()
             }
+            self.analytic.log(event: .click(screen: .main, item: "delete"))
         }
         alertController.addAction(deleteAction)
         
         let cancelTitle = self.localization.localized(
             "submenu.delete.cancel",
-            comment: "Cancel deletion process   ")
+            comment: "Cancel deletion process")
         let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true)
     }
-    
-    
 }
 
 
