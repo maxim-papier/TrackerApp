@@ -1,13 +1,6 @@
 import UIKit
 import CoreData
 
-enum TrackerStoreChangeType {
-    case insert
-    case delete
-    case update
-    case move
-}
-
 // MARK: - TrackerStoreDelegate
 
 protocol TrackerStoreDelegate: AnyObject {
@@ -47,20 +40,61 @@ final class TrackerStore: NSObject {
             return fetchedResultsController
         }
     }
-    
-    private func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
+
+    lazy var fetchedResultsControllerForPinnedTracker: NSFetchedResultsController<TrackerData> = {
         let sortDescriptor = "createdAt"
         let categorySortDescriptor = "category.name"
         let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+
         request.sortDescriptors = [
             NSSortDescriptor(key: categorySortDescriptor, ascending: true),
             NSSortDescriptor(key: sortDescriptor, ascending: false)
         ]
-        
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: "category.name", cacheName: nil)
+
+        request.predicate = NSPredicate(format: "isPinned == YES")
+
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+
+        fetchedResultsController.delegate = self
+
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            assertionFailure("Error performing fetch from pinned tracker result controller: \(error)")
+        }
+
+        return fetchedResultsController
+    }()
+    
+    func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
+        let sortDescriptor = "createdAt"
+        let categorySortDescriptor = "category.name"
+        let pinnedSortDescriptor = "isPinned"
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+
+        request.sortDescriptors = [
+            NSSortDescriptor(key: pinnedSortDescriptor, ascending: false),
+            NSSortDescriptor(key: categorySortDescriptor, ascending: true),
+            NSSortDescriptor(key: sortDescriptor, ascending: false)
+        ]
+
+        request.predicate = NSPredicate(format: "isPinned == NO")
+
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: "category.name",
+            cacheName: nil
+        )
+
         return fetchedResultsController
     }
-    
+
     func setupFetchedResultsController() {
         fetchedResultsController = createFetchedResultsController()
         fetchedResultsController?.delegate = self
@@ -72,7 +106,16 @@ final class TrackerStore: NSObject {
         }
     }
     
-    
+    func updateFetchedResultsController() {
+        NSFetchedResultsController<TrackerData>.deleteCache(withName: nil)
+        fetchedResultsController = createFetchedResultsController()
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch let error {
+            LogService.shared.log("Unable to perform fetch: \(error)", level: .error)
+        }
+    }
+
     // MARK: - CRUD methods for Tracker
     
     func createTracker(tracker: Tracker) {
@@ -119,7 +162,7 @@ final class TrackerStore: NSObject {
             context.delete(coreDataTracker)
             try context.save()
         } catch {
-            assertionFailure("Error deleting tracker: \(error)")
+            LogService.shared.log("Error deleting tracker: \(error)", level: .error)
         }
     }
     
@@ -148,14 +191,72 @@ final class TrackerStore: NSObject {
         }
     }
     
+    func pinTracker(by id: UUID) {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            // Fetch the tracker
+            let coreDataTrackers = try context.fetch(request)
+            guard let coreDataTracker = coreDataTrackers.first else { return }
+
+            // Set isPinned to true
+            coreDataTracker.isPinned = true
+            
+            // Save the changes
+            try context.save()
+        } catch {
+            assertionFailure("Error pinning tracker: \(error)")
+        }
+    }
+
+    func unpinTracker(by id: UUID) {
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            // Fetch the tracker
+            let coreDataTrackers = try context.fetch(request)
+            guard let coreDataTracker = coreDataTrackers.first else { return }
+
+            // Set isPinned to false
+            coreDataTracker.isPinned = false
+            
+            // Save the changes
+            try context.save()
+        } catch {
+            assertionFailure("Error unpinning tracker: \(error)")
+        }
+    }
+    
+    func getPinnedTrackersExist() -> Bool {
+        let pinnedRequest: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        pinnedRequest.predicate = NSPredicate(format: "isPinned == true")
+        pinnedRequest.fetchLimit = 1
+
+        var hasPinnedTrackers = false
+        do {
+            let count = try context.count(for: pinnedRequest)
+            hasPinnedTrackers = (count > 0)
+        } catch {
+            print("Failed to fetch pinned trackers: \(error)")
+        }
+        
+        return hasPinnedTrackers
+    }
+
+    
     // MARK: - Conversion methods
     
     private func coreDataTracker(from tracker: Tracker) -> TrackerData {
+        
         let coreDataTracker = TrackerData(context: context)
+        
         coreDataTracker.id = tracker.id
         coreDataTracker.title = tracker.title
         coreDataTracker.emoji = tracker.emoji
         coreDataTracker.colorHEX = tracker.color.toHexString()
+        coreDataTracker.isPinned = tracker.isPinned
         coreDataTracker.createdAt = tracker.createdAt
         
         if let weekDays = tracker.day, !weekDays.isEmpty {
@@ -180,6 +281,7 @@ final class TrackerStore: NSObject {
             return nil
         }
         
+        let isPinned = coreDataTracker.isPinned
         let color = UIColor(hexString: colorHex)
         
         var schedule = Set<WeekDay>()
@@ -189,9 +291,16 @@ final class TrackerStore: NSObject {
             }
         }
         
-        return Tracker(id: id, title: title, emoji: emoji, color: color, day: schedule, createdAt: createdAt)
+        return Tracker(
+            id: id,
+            title: title,
+            emoji: emoji,
+            color: color,
+            day: schedule,
+            isPinned: isPinned,
+            createdAt: createdAt
+        )
     }
-    
     
     
     // MARK: - Filtering methods
@@ -209,10 +318,43 @@ final class TrackerStore: NSObject {
     }
     
     // Filter by day of the week
-    
-    func updatePredicateForWeekDayFilter(date: Date) {
+
+    enum FilterSetting {
+        case all, day, dayDone, dayNotDone
+    }
+
+    func updatePredicateForWeekDayFilter(date: Date, filterSetting: FilterSetting = .day) {
         let weekDayPredicate = createWeekDayPredicate(for: date)
-        fetchedResultsController!.fetchRequest.predicate = weekDayPredicate
+        let undonePredicate = NSPredicate(format: "NOT records.value == %@", date as CVarArg)  // TODO: define
+        let donePredicate = NSPredicate(format: "ANY records.value == %@", date as CVarArg)  // TODO: define
+        let noPinnedPredicate = NSPredicate(format: "isPinned == NO")
+        let pinnedPredicate = NSPredicate(format: "isPinned == YES")
+
+        let filterPredicate: NSPredicate
+
+        switch filterSetting {
+        case .all:
+            filterPredicate = .init()
+        case .day:
+            filterPredicate = weekDayPredicate
+        case .dayDone:
+            filterPredicate = NSCompoundPredicate(
+                andPredicateWithSubpredicates: [weekDayPredicate, donePredicate]
+            )
+        case .dayNotDone:
+            filterPredicate = NSCompoundPredicate(
+                andPredicateWithSubpredicates: [weekDayPredicate, undonePredicate]
+            )
+        }
+
+        fetchedResultsControllerForPinnedTracker.fetchRequest.predicate = NSCompoundPredicate(
+            andPredicateWithSubpredicates: [filterPredicate, pinnedPredicate]
+        )
+
+        fetchedResultsController!.fetchRequest.predicate = NSCompoundPredicate(
+            andPredicateWithSubpredicates: [filterPredicate, noPinnedPredicate]
+        )
+
         performFetch()
     }
     
@@ -228,7 +370,7 @@ final class TrackerStore: NSObject {
         let containsSelectedWeekDay = NSPredicate(format: "schedule CONTAINS %@ AND schedule CONTAINS[cd] %@", searchString, String(selectedWeekDayValue))
         
         let noSchedulePredicate = NSPredicate(format: "schedule == %@", "no_schedule")
-        
+
         return NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
     }
     
@@ -238,6 +380,7 @@ final class TrackerStore: NSObject {
     private func performFetch() {
         do {
             try fetchedResultsController?.performFetch()
+            try fetchedResultsControllerForPinnedTracker.performFetch()
         } catch {
             assertionFailure("Error performing fetch after updating predicate: \(error)")
         }

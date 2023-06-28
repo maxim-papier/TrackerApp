@@ -119,6 +119,7 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
             .sink { [weak self] newEmoji in
                 guard let self = self else { return }
                 self.selectedEmoji = newEmoji
+                
                 if let emojiIndex = K.emojis.firstIndex(of: newEmoji) {
                     let indexPath = IndexPath(item: emojiIndex, section: Section.emoji.rawValue)
                     self.selectedEmojiIndexPath = indexPath
@@ -134,11 +135,9 @@ final class EditTrackerVC: UIViewController, UICollectionViewDelegateFlowLayout 
                 self.selectedColor = newColor
                 
                 if let colorIndex = SelectionColorStyle.allCases.firstIndex(of: self.selectedColor ?? .selection01) {
-                    
-                    let newIndexPath = IndexPath(item: colorIndex, section: Section.color.rawValue)
-                    self.selectedColorIndexPath = newIndexPath
-                    
-                    self.handleColorSelection(at: newIndexPath)
+                    let indexPath = IndexPath(item: colorIndex, section: Section.color.rawValue)
+                    self.selectedColorIndexPath = indexPath
+                    self.collection.reloadItems(at: [indexPath])
                 }
             }
             .store(in: &cancellables)
@@ -391,7 +390,6 @@ extension EditTrackerVC: UICollectionViewDelegate {
     
     private func handleListSelection(at indexPath: IndexPath) {
         
-        
         let viewModel = CategoryViewModel(dependencies: dependencies, previousSelectedCategory: selectedCategory?.id ?? .init())
         
         if indexPath.row == 0 {
@@ -421,7 +419,6 @@ extension EditTrackerVC: UICollectionViewDelegate {
     }
     
     private func handleColorSelection(at indexPath: IndexPath) {
-        
         if let selectedIndexPath = selectedColorIndexPath,
            let previousSelectedCell = collection.cellForItem(at: selectedIndexPath) as? ColorCell {
             previousSelectedCell.setSelected(false)
@@ -432,6 +429,8 @@ extension EditTrackerVC: UICollectionViewDelegate {
         
         selectedColorIndexPath = indexPath
         selectedColor = SelectionColorStyle.allCases[indexPath.row % SelectionColorStyle.allCases.count]
+        
+        viewModel.trackerColor = selectedColor
     }
 }
 

@@ -1,9 +1,5 @@
 Pods/
-TrackerApp.xcodeproj/xcuserdata/maximbrykov.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+*.xcbkptlist
+*.xcuserstate
 TrackerAppScreenshotTest/__Snapshots__/TrackerAppScreenshotTest/testTrackersViewControllerLight.1.png
 TrackerAppScreenshotTest/__Snapshots__/TrackerAppScreenshotTest/testTrackersViewControllerDark.1.png
-TrackerApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-TrackerApp.xcodeproj/project.xcworkspace/xcuserdata/maximbrykov.xcuserdatad/UserInterfaceState.xcuserstate
-TrackerApp.xcworkspace/xcuserdata/maximbrykov.xcuserdatad/UserInterfaceState.xcuserstate
-TrackerApp.xcworkspace/xcuserdata/maximbrykov.xcuserdatad/UserInterfaceState.xcuserstate
-TrackerApp.xcworkspace/xcuserdata/maximbrykov.xcuserdatad/UserInterfaceState.xcuserstate

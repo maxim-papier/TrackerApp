@@ -44,7 +44,7 @@ final class HomeVC: UITabBarController {
         tabBar.backgroundColor = UIColor.mainColorYP(.whiteYP)
 
         // Setup Tabs
-        let firstVC = UINavigationController(rootViewController: TrackersVC(dependencies: dependencies, analytic: YandexMetricaService()))
+        let firstVC = UINavigationController(rootViewController: TrackersVC(dependencies: dependencies, analytic: YandexMetricaService(), pinSevice: PinService(stores: dependencies)))
         let secondVC = UINavigationController(rootViewController: StatisticVC())
         let controllers = [firstVC, secondVC]
         viewControllers = controllers
