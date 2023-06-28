@@ -159,6 +159,8 @@ final class TrackersVC: UIViewController {
     }
     
     @objc private func openFilters() {
+        let vc = FiltersViewController()
+        present(vc, animated: true)
         analytic.log(event: .click(screen: .main, item: "filter"))
     }
     
