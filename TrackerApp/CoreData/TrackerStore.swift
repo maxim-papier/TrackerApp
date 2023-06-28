@@ -317,18 +317,19 @@ final class TrackerStore: NSObject {
         performFetch()
     }
     
-    // Filter by day of the week
+    // Filter by day of the week and all the rest
 
     enum FilterSetting {
         case all, day, dayDone, dayNotDone
     }
 
     func updatePredicateForWeekDayFilter(date: Date, filterSetting: FilterSetting = .day) {
+        
         let weekDayPredicate = createWeekDayPredicate(for: date)
-        let undonePredicate = NSPredicate(format: "NOT records.value == %@", date as CVarArg)  // TODO: define
-        let donePredicate = NSPredicate(format: "ANY records.value == %@", date as CVarArg)  // TODO: define
-        let noPinnedPredicate = NSPredicate(format: "isPinned == NO")
-        let pinnedPredicate = NSPredicate(format: "isPinned == YES")
+        let donePredicate = NSPredicate(format: "ANY records.value == %@", date as NSDate)  // TODO: define
+        let undonePredicate = NSPredicate(format: "NOT records.value == %@", date as NSDate)  // TODO: define
+        let noPinnedPredicate = NSPredicate(format: "isPinned == NO") // TODO: define
+        let pinnedPredicate = NSPredicate(format: "isPinned == YES") // TODO: define
 
         let filterPredicate: NSPredicate
 
@@ -359,7 +360,9 @@ final class TrackerStore: NSObject {
     }
     
     private func createWeekDayPredicate(for date: Date) -> NSPredicate {
+        
         let selectedWeekDay = Calendar.current.component(.weekday, from: date)
+        
         guard let selectedWeekDayEnum = WeekDay(rawValue: selectedWeekDay) else {
             return NSPredicate(value: false)
         }
@@ -373,6 +376,22 @@ final class TrackerStore: NSObject {
 
         return NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
     }
+    
+    func getNumberOfTrackersForDay(date: Date) -> Int {
+
+        let weekDayPredicate = createWeekDayPredicate(for: date)
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        request.predicate = weekDayPredicate
+        
+        do {
+            let numberOfTrackers = try context.count(for: request)
+            return numberOfTrackers
+        } catch {
+            assertionFailure("Error fetching trackers count: \(error)")
+            return 0
+        }
+    }
+
     
     
     // MARK: - Fetching methods
