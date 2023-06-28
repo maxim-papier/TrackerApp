@@ -18,7 +18,6 @@ final class TrackerCell: UICollectionViewCell {
     var pinStateChange: Bool = false {
         didSet {
             pinImageView.isHidden = !pinStateChange
-            LogService.shared.log("Pin is in \(pinStateChange)", level: .info)
         }
     }
     

@@ -325,11 +325,11 @@ final class TrackerStore: NSObject {
 
     func updatePredicateForWeekDayFilter(date: Date, filterSetting: FilterSetting = .day) {
         
-        let weekDayPredicate = createWeekDayPredicate(for: date)
-        let donePredicate = NSPredicate(format: "ANY records.value == %@", date as NSDate)  // TODO: define
-        let undonePredicate = NSPredicate(format: "NOT records.value == %@", date as NSDate)  // TODO: define
-        let noPinnedPredicate = NSPredicate(format: "isPinned == NO") // TODO: define
-        let pinnedPredicate = NSPredicate(format: "isPinned == YES") // TODO: define
+        let weekDayPredicate = createWeekDayPredicate(for: date) // .day
+        let donePredicate = NSPredicate(format: "SUBQUERY(records, $x, $x.doneDate == %@).@count > 0", date as NSDate)  // .dayDone
+        let undonePredicate = NSPredicate(format: "SUBQUERY(records, $x, $x.doneDate == %@).@count == 0", date as NSDate)  // .dayNotDone
+        let noPinnedPredicate = NSPredicate(format: "isPinned == NO")
+        let pinnedPredicate = NSPredicate(format: "isPinned == YES")
 
         let filterPredicate: NSPredicate
 

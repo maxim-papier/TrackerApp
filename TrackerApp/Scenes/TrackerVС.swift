@@ -14,6 +14,7 @@ final class TrackersVC: UIViewController {
     private var searchText = ""
     private var selectedDate = Date()
     private lazy var placeholder = PlaceholderType.noSearchResults.placeholder
+    private lazy var filtersButton = UIButton(type: .system)
     
     weak var trackerStoreDelegate: TrackerStoreDelegate?
     weak var editTrackerDelegate: EditTrackerDelegate?
@@ -26,7 +27,7 @@ final class TrackersVC: UIViewController {
     private lazy var pinnedFetchedResultsController = {
         stores.fetchedResultControllerForPinnedTrackers
     }()
-    
+        
     private let analytic: YandexMetricaService
     private let localization = LocalizationService()
     private let pinService: PinService
@@ -119,10 +120,17 @@ final class TrackersVC: UIViewController {
             return dateFormatter
         }()
         
-        title = localization.localized(
-            "trackersvc.title",
-            comment: "Page title"
-        )
+        filtersButton.backgroundColor = UIColor.mainColorYP(.blueYP)
+        filtersButton.setTitle(localization.localized("filters.button", comment: ""), for: .normal)
+        filtersButton.setTitleColor(UIColor.mainColorYP(.whiteYP), for: .normal)
+        filtersButton.titleLabel?.font = FontYP.regular17
+        filtersButton.layer.cornerRadius = 16
+        filtersButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
+        filtersButton.translatesAutoresizingMaskIntoConstraints = false
+        filtersButton.addTarget(self, action: #selector(openFilters), for: .touchUpInside)
+                
+        title = localization.localized("trackersvc.title", comment: "Page title")
+        
         navigationItem.leftBarButtonItem = addNewTrackerButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -150,14 +158,21 @@ final class TrackersVC: UIViewController {
         filterResults(with: selectedDate)
     }
     
+    @objc private func openFilters() {
+        analytic.log(event: .click(screen: .main, item: "filter"))
+    }
+    
     private func setConstraints() {
         view.addSubview(collection)
+        view.addSubview(filtersButton)
         collection.addSubview(placeholder)
         
         placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            //datePicker.widthAnchor.constraint(lessThanOrEqualToConstant: 100),
+            filtersButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filtersButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            
             collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collection.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -287,9 +302,11 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 "menu.trackers.edit",
                 comment: "Edit tracker option in the context menu"
             )
+            
             let editAction = UIAction(title: localizedEditTitle) { action in
                 let trackerData: TrackerData = self.fetchedResultsController.object(at: indexPath)
                 let trackerEditVC = EditTrackerVC(dependencies: self.stores, trackerID: trackerData.id!) // ID есть всегда
+                self.analytic.log(event: .click(screen: .main, item: "edit"))
                 self.present(trackerEditVC, animated: true)
             }
             
@@ -301,6 +318,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
                 self.confirmDeletion(ofTracker: trackerID)
             }
+            
             
             return UIMenu(title: "", children: [togglePinAction, editAction, deleteAction])
         }
@@ -320,12 +338,13 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             DispatchQueue.main.async {
                 self.collection.reloadData()
             }
+            self.analytic.log(event: .click(screen: .main, item: "delete"))
         }
         alertController.addAction(deleteAction)
         
         let cancelTitle = self.localization.localized(
             "submenu.delete.cancel",
-            comment: "Cancel deletion process   ")
+            comment: "Cancel deletion process")
         let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         

@@ -11,3 +11,5 @@
 
 "submenu.delete.confirm" = "Delete";
 "submenu.delete.cancel" = "Cancel";
+
+"filters.button" = "Filters";
