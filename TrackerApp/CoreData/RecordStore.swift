@@ -68,7 +68,8 @@ final class RecordStore: NSObject {
         
         do {
             let coreDataRecords = try context.fetch(request)
-            return coreDataRecords.compactMap { self.trackerRecord(from: $0) }
+            let output = coreDataRecords.compactMap { self.trackerRecord(from: $0) }
+            return output
         } catch {
             assertionFailure("Error fetching all tracker records: \(error)")
             return []
@@ -109,7 +110,69 @@ final class RecordStore: NSObject {
         }
     }
     
+    // MARK: - Statistic methods
     
+
+    func calculateBestStreak() -> Int {
+
+        let allRecords = fetchAllRecords().sorted(by: { $0.date < $1.date })
+        var bestStreak = 0
+        var currentStreak = 0
+        var currentDate = allRecords.first?.date
+        
+        for record in allRecords {
+            if Calendar.current.isDate(record.date, inSameDayAs: currentDate!) {
+                continue
+            }
+            else if Calendar.current.isDate(record.date, inSameDayAs: Calendar.current.date(byAdding: .day, value: 1, to: currentDate!)!) {
+                currentStreak += 1
+            }
+
+            else {
+                currentStreak = 0
+            }
+            
+            currentDate = record.date
+            
+            if currentStreak > bestStreak {
+                bestStreak = currentStreak
+            }
+        }
+        
+        return bestStreak
+    }
+
+    func calculatePerfectDays() -> Int {
+        let fetchRequest: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+        
+        do {
+            let allTrackers = try context.fetch(fetchRequest)
+            let allRecords = fetchAllRecords()
+            
+            let groupedRecords = Dictionary(grouping: allRecords, by: { Calendar.current.startOfDay(for: $0.date) })
+            let perfectDays = groupedRecords.filter { (_, records) in
+                records.count >= allTrackers.count
+            }
+            
+            return perfectDays.count
+        } catch {
+            assertionFailure("Failed to fetch all tracker data: \(error)")
+            return 0
+        }
+    }
+
+    func calculateCompletedTrackers() -> Int {
+        let fetchRequest: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
+        
+        do {
+            let allCompletedTrackers = try context.fetch(fetchRequest)
+            return allCompletedTrackers.count
+        } catch {
+            assertionFailure("Failed to fetch all completed trackers data: \(error)")
+            return 0
+        }
+    }
+
     // MARK: - Conversion method
     
     private func trackerRecord(from coreDataRecord: TrackerRecordData) -> Record? {

@@ -45,7 +45,7 @@ final class HomeVC: UITabBarController {
 
         // Setup Tabs
         let firstVC = UINavigationController(rootViewController: TrackersVC(dependencies: dependencies, analytic: YandexMetricaService(), pinSevice: PinService(stores: dependencies)))
-        let secondVC = UINavigationController(rootViewController: StatisticVC())
+        let secondVC = UINavigationController(rootViewController: StatisticVC(stores: dependencies))
         let controllers = [firstVC, secondVC]
         viewControllers = controllers
 

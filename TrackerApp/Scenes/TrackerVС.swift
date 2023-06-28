@@ -118,8 +118,6 @@ final class TrackersVC: UIViewController {
             return dateFormatter
         }()
         
-
-        
         title = localization.localized(
             "trackersvc.title",
             comment: "Page title"
