@@ -122,7 +122,7 @@ final class TrackersVC: UIViewController {
         
         filtersButton.backgroundColor = UIColor.mainColorYP(.blueYP)
         filtersButton.setTitle(localization.localized("filters.button", comment: ""), for: .normal)
-        filtersButton.setTitleColor(UIColor.mainColorYP(.whiteYP), for: .normal)
+        filtersButton.setTitleColor(UIColor.white, for: .normal)
         filtersButton.titleLabel?.font = FontYP.regular17
         filtersButton.layer.cornerRadius = 16
         filtersButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
@@ -159,8 +159,8 @@ final class TrackersVC: UIViewController {
     }
     
     @objc private func openFilters() {
-        let vc = FiltersViewController()
-        present(vc, animated: true)
+//        let vc = FiltersViewController()
+//        present(vc, animated: true)
         analytic.log(event: .click(screen: .main, item: "filter"))
     }
     
@@ -192,10 +192,13 @@ final class TrackersVC: UIViewController {
 extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
     private var hasPinned: Bool { pinnedFetchedResultsController.fetchedObjects?.isEmpty == false }
+    
     private func fixedSection(_ section: Int) -> Int { hasPinned ? section - 1 : section }
+    
     private func fixedPath(_ indexPath: IndexPath) -> IndexPath {
         .init(row: indexPath.row, section: fixedSection(indexPath.section))
     }
+    
     private func trackerData(_ indexPath: IndexPath) -> TrackerData {
         if hasPinned, indexPath.section == 0  {
             return pinnedFetchedResultsController.object(at: indexPath)
@@ -296,7 +299,6 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 }
                 let cell = collectionView.cellForItem(at: indexPath) as? TrackerCell
                 cell?.pinStateChange = !isPinned
-
             }
             
             // "Edit" action
@@ -320,8 +322,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             let deleteAction = UIAction(title: localizedDeleteTitle, attributes: .destructive) { action in
                 self.confirmDeletion(ofTracker: trackerID)
             }
-            
-            
+        
             return UIMenu(title: "", children: [togglePinAction, editAction, deleteAction])
         }
     }
@@ -352,8 +353,6 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         self.present(alertController, animated: true)
     }
-    
-    
 }
 
 

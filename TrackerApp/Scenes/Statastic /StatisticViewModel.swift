@@ -44,18 +44,26 @@ final class StatisticsViewModel {
     
     func calculateLongestPerfectDayStreak() -> Int {
         let allDays = allDaysWithRecords().sorted()
+        
+        let calendar = Calendar.current
+        var allCalendarDays: [Date] = []
+        if let startDate = allDays.first,
+           let endDate = allDays.last {
+            for i in 0...calendar.dateComponents([.day], from: startDate, to: endDate).day! {
+                if let date = calendar.date(byAdding: .day, value: i, to: startDate) {
+                    allCalendarDays.append(date)
+                }
+            }
+        }
+
         var bestStreak = 0
         var currentStreak = 0
 
-        for (index, day) in allDays.enumerated() {
-            if index > 0, Calendar.current.isDate(day, equalTo: allDays[index - 1], toGranularity: .day) {
-                continue
-            }
-            
+        for day in allCalendarDays {
             let recordCount = recordsCount(for: day)
             let trackersForDay = stores.trackerStore.getNumberOfTrackersForDay(date: day)
-            
-            if recordCount == trackersForDay {
+
+            if recordCount == trackersForDay, trackersForDay > 0 {
                 currentStreak += 1
                 if currentStreak > bestStreak {
                     bestStreak = currentStreak
