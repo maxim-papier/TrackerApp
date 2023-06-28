@@ -38,11 +38,8 @@ final class StatisticCell: UITableViewCell {
     
     private lazy var gradientView: UIView = {
         let view = UIView()
-        
-        view.backgroundColor = .black
         view.layer.cornerRadius = 16
         view.clipsToBounds = true
-        
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
 
@@ -61,11 +58,14 @@ final class StatisticCell: UITableViewCell {
     
     private func setupSubviews() {
         
-        let gradient = CAGradientLayer()
-        gradient.frame = contentView.bounds
-        gradient.colors = [UIColor.red.cgColor, UIColor.blue.cgColor]
+//        let gradient = CAGradientLayer()
+//        gradient.frame = contentView.bounds
+//        gradient.colors = [UIColor.red.cgColor, UIColor.blue.cgColor]
+//
+//        contentView.layer.addSublayer(gradient)
         
-        contentView.layer.addSublayer(gradient)
+        gradientView.setGradientBorder(width: 3, colors: [.red, .yellow])
+        
         contentView.addSubview(gradientView)
         gradientView.addSubview(vStack)
         

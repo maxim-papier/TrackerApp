@@ -25,6 +25,7 @@
 		8D4781642A4BD4C1005C40AB /* StatisticCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781632A4BD4C1005C40AB /* StatisticCell.swift */; };
 		8D4781682A4BD977005C40AB /* StatisticCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781672A4BD977005C40AB /* StatisticCellViewModel.swift */; };
 		8D47816A2A4BDC38005C40AB /* Statisctic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781692A4BDC38005C40AB /* Statisctic.swift */; };
+		8D4781712A4C10DF005C40AB /* UIView+GradientBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4781702A4C10DF005C40AB /* UIView+GradientBorder.swift */; };
 		8D6949F42A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */; };
 		8D6949F62A49296300DAD4DA /* EditTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */; };
 		8D6A94012A3E9E6F00DCED90 /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */; };
@@ -108,6 +109,7 @@
 		8D4781632A4BD4C1005C40AB /* StatisticCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticCell.swift; sourceTree = "<group>"; };
 		8D4781672A4BD977005C40AB /* StatisticCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticCellViewModel.swift; sourceTree = "<group>"; };
 		8D4781692A4BDC38005C40AB /* Statisctic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statisctic.swift; sourceTree = "<group>"; };
+		8D4781702A4C10DF005C40AB /* UIView+GradientBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+GradientBorder.swift"; sourceTree = "<group>"; };
 		8D6949F32A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerCollectionLayoutFactory.swift; sourceTree = "<group>"; };
 		8D6949F52A49296300DAD4DA /* EditTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTrackerViewModel.swift; sourceTree = "<group>"; };
 		8D6A94002A3E9E6F00DCED90 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 			children = (
 				8DB392AF2994D5230031D2E1 /* ShowPreviewUI.swift */,
 				8DD4C84229F3BD9000DD67F3 /* ErrorPresenter.swift */,
+				8D4781702A4C10DF005C40AB /* UIView+GradientBorder.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -676,6 +679,7 @@
 				8D11528B29C1B5DE00687C5C /* RecordStore.swift in Sources */,
 				8D6949F42A48A95500DAD4DA /* CreateTrackerCollectionLayoutFactory.swift in Sources */,
 				8DDE29C02993C1AC00D4A4DD /* FontsYP.swift in Sources */,
+				8D4781712A4C10DF005C40AB /* UIView+GradientBorder.swift in Sources */,
 				8DBA052E2993873E00E3604E /* SceneDelegate.swift in Sources */,
 				8DADE0B3299D5530005942E2 /* ColorCell.swift in Sources */,
 				8DF313AA2997507900B7D148 /* Category.swift in Sources */,
