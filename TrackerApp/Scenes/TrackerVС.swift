@@ -57,6 +57,7 @@ final class TrackersVC: UIViewController {
         filterResults(with: Date())
         setup()
         analytic.log(event: .open(screen: .main))
+        collection.reloadData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -214,7 +215,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.titleLabel.text = tracker.title
             cell.emojiLabel.text = tracker.emoji
             cell.delegate = self
-            
+                        
             // Check if a record exists for the tracker and set the initial done button state accordingly
             let trackerID = tracker.id
             let recordID = stores.recordStore.getRecordIDForToday(forTrackerWithID: trackerID, onDate: selectedDate)
@@ -223,11 +224,15 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.daysLabel.text = localization.pluralized(
                 "days", count: recordsCount)
             cell.setInitialDoneButtonState(isDone: recordID != nil)
+            
+            // Update pin state
+            let isPinned = pinService.isTrackerPinned(withId: trackerID)
+            cell.pinStateChange = isPinned
         }
         
         return cell
     }
-    
+
     
     // Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -238,7 +243,7 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             for: indexPath) as? TrackerHeader else { return .init() }
 
         if hasPinned, indexPath.section == 0 {
-            header.categoryLabel.text = "Закрепы"
+            header.categoryLabel.text = "Закреплённые"
         } else {
             header.categoryLabel.text = fetchedResultsController.sections?[fixedSection(indexPath.section)].name
         }
@@ -272,6 +277,9 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
                 } else {
                     self.pinService.pinTracker(withId: trackerID)
                 }
+                let cell = collectionView.cellForItem(at: indexPath) as? TrackerCell
+                cell?.pinStateChange = !isPinned
+
             }
             
             // "Edit" action
