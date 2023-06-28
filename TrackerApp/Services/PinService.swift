@@ -4,7 +4,6 @@ import Combine
 final class PinService {
     
     private let stores: DependencyContainer
-    let isPinnedChanged = PassthroughSubject<Void, Never>()
     
     init(stores: DependencyContainer) {
         self.stores = stores
@@ -14,14 +13,12 @@ final class PinService {
     func pinTracker(withId id: UUID) {
         stores.trackerStore.pinTracker(by: id)
         LogService.shared.log("Pinned \(id) tracker", level: .info)
-        isPinnedChanged.send(())
     }
 
     // Unpin the tracker
     func unpinTracker(withId id: UUID) {
         stores.trackerStore.unpinTracker(by: id)
         LogService.shared.log("Unpinned \(id) tracker", level: .info)
-        isPinnedChanged.send(())
     }
 
     // Check if a tracker is pinned

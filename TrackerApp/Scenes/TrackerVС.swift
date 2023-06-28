@@ -17,11 +17,14 @@ final class TrackersVC: UIViewController {
     
     weak var trackerStoreDelegate: TrackerStoreDelegate?
     weak var editTrackerDelegate: EditTrackerDelegate?
-    private var cancellables = Set<AnyCancellable>()
     
     private var stores: DependencyContainer
     private lazy var fetchedResultsController = {
         stores.fetchedResultsControllerForTrackers
+    }()
+
+    private lazy var pinnedFetchedResultsController = {
+        stores.fetchedResultControllerForPinnedTrackers
     }()
     
     private let analytic: YandexMetricaService
@@ -53,29 +56,12 @@ final class TrackersVC: UIViewController {
         stores.trackerStore.delegate = self
         filterResults(with: Date())
         setup()
-        bindPinningEvent()
         analytic.log(event: .open(screen: .main))
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         analytic.log(event: .close(screen: .main))
-    }
-    
-    
-    // MARK: - Bindings
-    
-    private func bindPinningEvent() {
-        pinService.isPinnedChanged
-            .sink { [weak self] _ in
-                self?.reloadFetchedResultsController()
-            }
-            .store(in: &cancellables)
-    }
-
-    private func reloadFetchedResultsController() {
-        stores.trackerStore.updateFetchedResultsController()
-        collection.reloadData()
     }
     
     
@@ -114,6 +100,16 @@ final class TrackersVC: UIViewController {
             return barButton
         }()
         
+        lazy var datePicker: UIDatePicker = {
+            let datePicker = UIDatePicker()
+            datePicker.datePickerMode = .date
+            datePicker.preferredDatePickerStyle = .compact
+            datePicker.maximumDate = Date()
+            datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
+            datePicker.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
+            return datePicker
+        }()
+        
         lazy var dateFormatter: DateFormatter = {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "dd.MM.yyyy"
@@ -122,15 +118,7 @@ final class TrackersVC: UIViewController {
             return dateFormatter
         }()
         
-        lazy var datePicker: UIDatePicker = {
-            let datePicker = UIDatePicker()
-            datePicker.locale = dateFormatter.locale
-            datePicker.datePickerMode = .date
-            datePicker.preferredDatePickerStyle = .compact
-            datePicker.maximumDate = Date()
-            datePicker.addTarget(self, action: #selector(didTapDatePickerButton), for: .valueChanged)
-            return datePicker
-        }()
+
         
         title = localization.localized(
             "trackersvc.title",
@@ -170,6 +158,7 @@ final class TrackersVC: UIViewController {
         placeholder.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            //datePicker.widthAnchor.constraint(lessThanOrEqualToConstant: 100),
             collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collection.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -185,13 +174,31 @@ final class TrackersVC: UIViewController {
 // MARK: - DataSource
 
 extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
-    
+
+    private var hasPinned: Bool { pinnedFetchedResultsController.fetchedObjects?.isEmpty == false }
+    private func fixedSection(_ section: Int) -> Int { hasPinned ? section - 1 : section }
+    private func fixedPath(_ indexPath: IndexPath) -> IndexPath {
+        .init(row: indexPath.row, section: fixedSection(indexPath.section))
+    }
+    private func trackerData(_ indexPath: IndexPath) -> TrackerData {
+        if hasPinned, indexPath.section == 0  {
+            return pinnedFetchedResultsController.object(at: indexPath)
+        } else {
+            return fetchedResultsController.object(at: fixedPath(indexPath))
+        }
+    }
+
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return fetchedResultsController.sections?.count ?? 0
+        let categoriesCount = fetchedResultsController.sections?.count ?? 0
+        return hasPinned ? categoriesCount + 1 : categoriesCount
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        if hasPinned, section == 0 {
+            return pinnedFetchedResultsController.fetchedObjects?.count ?? 0
+        } else {
+            return fetchedResultsController.sections?[fixedSection(section)].numberOfObjects ?? 0
+        }
     }
     
     // Cell
@@ -200,9 +207,9 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             LogService.shared.log("Could not dequeue cell as TrackerCell", level: .error)
             return .init()
         }
-        
-        let trackerData = stores.trackerStore.fetchedResultsControllerForTracker().object(at: indexPath)
-        
+
+        let trackerData = trackerData(indexPath)
+
         if let tracker = stores.trackerStore.tracker(from: trackerData) {
             cell.backgroundShape.backgroundColor = tracker.color
             cell.doneButton.backgroundColor = tracker.color
@@ -231,18 +238,22 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
             ofKind: kind,
             withReuseIdentifier: TrackerHeader.identifier,
             for: indexPath) as? TrackerHeader else { return .init() }
-        
-        header.categoryLabel.text = fetchedResultsController.sections?[indexPath.section].name
-        
+
+        if hasPinned, indexPath.section == 0 {
+            header.categoryLabel.text = "Закрепы"
+        } else {
+            header.categoryLabel.text = fetchedResultsController.sections?[fixedSection(indexPath.section)].name
+        }
+
         return header
     }
     
     // MARK: - Contextual Menue
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
-        
+
+        let trackerData = trackerData(indexPath)
+
         guard let trackerID = trackerData.id else {
             LogService.shared.log("Error: Tracker ID is nil", level: .error)
             return nil
@@ -324,21 +335,29 @@ extension TrackersVC: UICollectionViewDelegate, UICollectionViewDataSource {
 extension TrackersVC: UICollectionViewDelegateFlowLayout {
     
     // Section
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         return .init(top: 12, left: 16, bottom: 16, right: 16)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return .init(9)
     }
     
     // Cell
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .init(width: (collectionView.frame.width - (16 * 2) - 9) / 2, height: 148)
     }
     
     // Header
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
         return .init(width: collectionView.frame.width, height: 18 + 12)
     }
 }
@@ -417,8 +436,9 @@ extension TrackersVC: TrackerCellDelegate {
         analytic.log(event: .click(screen: .main, item: "track"))
         
         guard let indexPath = collection.indexPath(for: cell) else { return }
-        let trackerData: TrackerData = fetchedResultsController.object(at: indexPath)
-        
+
+        let trackerData = trackerData(indexPath)
+
         guard let trackerID = trackerData.id else {
             LogService.shared.log("Error: Tracker ID is nil", level: .error)
             return

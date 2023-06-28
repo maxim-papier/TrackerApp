@@ -20,4 +20,8 @@ final class DependencyContainer {
     var fetchedResultsControllerForTrackers: NSFetchedResultsController<TrackerData> {
         return trackerStore.fetchedResultsControllerForTracker()
     }
+
+    var fetchedResultControllerForPinnedTrackers: NSFetchedResultsController<TrackerData> {
+        return trackerStore.fetchedResultsControllerForPinnedTracker
+    }
 }

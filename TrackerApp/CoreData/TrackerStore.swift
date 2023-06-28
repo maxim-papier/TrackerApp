@@ -1,13 +1,6 @@
 import UIKit
 import CoreData
 
-enum TrackerStoreChangeType {
-    case insert
-    case delete
-    case update
-    case move
-}
-
 // MARK: - TrackerStoreDelegate
 
 protocol TrackerStoreDelegate: AnyObject {
@@ -47,6 +40,36 @@ final class TrackerStore: NSObject {
             return fetchedResultsController
         }
     }
+
+    lazy var fetchedResultsControllerForPinnedTracker: NSFetchedResultsController<TrackerData> = {
+        let sortDescriptor = "createdAt"
+        let categorySortDescriptor = "category.name"
+        let request: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
+
+        request.sortDescriptors = [
+            NSSortDescriptor(key: categorySortDescriptor, ascending: true),
+            NSSortDescriptor(key: sortDescriptor, ascending: false)
+        ]
+
+        request.predicate = NSPredicate(format: "isPinned == YES")
+
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+
+        fetchedResultsController.delegate = self
+
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            assertionFailure("Error performing fetch from pinned tracker result controller: \(error)")
+        }
+
+        return fetchedResultsController
+    }()
     
     func createFetchedResultsController() -> NSFetchedResultsController<TrackerData> {
         let sortDescriptor = "createdAt"
@@ -60,15 +83,15 @@ final class TrackerStore: NSObject {
             NSSortDescriptor(key: sortDescriptor, ascending: false)
         ]
 
-        let sectionNameKeyPath = getPinnedTrackersExist() ? "isPinned" : "category.name"
+        request.predicate = NSPredicate(format: "isPinned == NO")
 
         let fetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: context,
-            sectionNameKeyPath: sectionNameKeyPath,
+            sectionNameKeyPath: "category.name",
             cacheName: nil
         )
-        
+
         return fetchedResultsController
     }
 
@@ -295,10 +318,43 @@ final class TrackerStore: NSObject {
     }
     
     // Filter by day of the week
-    
-    func updatePredicateForWeekDayFilter(date: Date) {
+
+    enum FilterSetting {
+        case all, day, dayDone, dayNotDone
+    }
+
+    func updatePredicateForWeekDayFilter(date: Date, filterSetting: FilterSetting = .day) {
         let weekDayPredicate = createWeekDayPredicate(for: date)
-        fetchedResultsController!.fetchRequest.predicate = weekDayPredicate
+        let undonePredicate = NSPredicate(format: "NOT records.value == %@", date as CVarArg)  // TODO: define
+        let donePredicate = NSPredicate(format: "ANY records.value == %@", date as CVarArg)  // TODO: define
+        let noPinnedPredicate = NSPredicate(format: "isPinned == NO")
+        let pinnedPredicate = NSPredicate(format: "isPinned == YES")
+
+        let filterPredicate: NSPredicate
+
+        switch filterSetting {
+        case .all:
+            filterPredicate = .init()
+        case .day:
+            filterPredicate = weekDayPredicate
+        case .dayDone:
+            filterPredicate = NSCompoundPredicate(
+                andPredicateWithSubpredicates: [weekDayPredicate, donePredicate]
+            )
+        case .dayNotDone:
+            filterPredicate = NSCompoundPredicate(
+                andPredicateWithSubpredicates: [weekDayPredicate, undonePredicate]
+            )
+        }
+
+        fetchedResultsControllerForPinnedTracker.fetchRequest.predicate = NSCompoundPredicate(
+            andPredicateWithSubpredicates: [filterPredicate, pinnedPredicate]
+        )
+
+        fetchedResultsController!.fetchRequest.predicate = NSCompoundPredicate(
+            andPredicateWithSubpredicates: [filterPredicate, noPinnedPredicate]
+        )
+
         performFetch()
     }
     
@@ -314,7 +370,7 @@ final class TrackerStore: NSObject {
         let containsSelectedWeekDay = NSPredicate(format: "schedule CONTAINS %@ AND schedule CONTAINS[cd] %@", searchString, String(selectedWeekDayValue))
         
         let noSchedulePredicate = NSPredicate(format: "schedule == %@", "no_schedule")
-        
+
         return NSCompoundPredicate(orPredicateWithSubpredicates: [containsSelectedWeekDay, noSchedulePredicate])
     }
     
@@ -324,6 +380,7 @@ final class TrackerStore: NSObject {
     private func performFetch() {
         do {
             try fetchedResultsController?.performFetch()
+            try fetchedResultsControllerForPinnedTracker.performFetch()
         } catch {
             assertionFailure("Error performing fetch after updating predicate: \(error)")
         }
