@@ -113,23 +113,23 @@ final class RecordStore: NSObject {
     
     // MARK: - Statistic methods
     
-
     func calculateBestStreak() -> Int {
-
-        let allRecords = fetchAllRecords().sorted(by: { $0.date < $1.date })
+        var allRecords = fetchAllRecords().sorted(by: { $0.date < $1.date })
+        
+        guard !allRecords.isEmpty else { return 0 }
+        
+        var currentDate = allRecords.removeFirst().date
+        
         var bestStreak = 0
         var currentStreak = 0
-        var currentDate = allRecords.first?.date
         
         for record in allRecords {
-            if Calendar.current.isDate(record.date, inSameDayAs: currentDate!) {
+            if Calendar.current.isDate(record.date, inSameDayAs: currentDate) {
                 continue
-            }
-            else if Calendar.current.isDate(record.date, inSameDayAs: Calendar.current.date(byAdding: .day, value: 1, to: currentDate!)!) {
+            } else if let nextDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate),
+                      Calendar.current.isDate(record.date, inSameDayAs: nextDate) {
                 currentStreak += 1
-            }
-
-            else {
+            } else {
                 currentStreak = 0
             }
             
@@ -142,7 +142,7 @@ final class RecordStore: NSObject {
         
         return bestStreak
     }
-
+    
     func calculatePerfectDays() -> Int {
         let fetchRequest: NSFetchRequest<TrackerData> = TrackerData.fetchRequest()
         
@@ -161,7 +161,7 @@ final class RecordStore: NSObject {
             return 0
         }
     }
-
+    
     func calculateCompletedTrackers() -> Int {
         let fetchRequest: NSFetchRequest<TrackerRecordData> = TrackerRecordData.fetchRequest()
         
@@ -173,7 +173,7 @@ final class RecordStore: NSObject {
             return 0
         }
     }
-
+    
     // MARK: - Conversion method
     
     private func trackerRecord(from coreDataRecord: TrackerRecordData) -> Record? {

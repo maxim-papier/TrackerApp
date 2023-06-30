@@ -239,7 +239,7 @@ final class TrackerStore: NSObject {
             let count = try context.count(for: pinnedRequest)
             hasPinnedTrackers = (count > 0)
         } catch {
-            print("Failed to fetch pinned trackers: \(error)")
+            LogService.shared.log("Failed to fetch pinned trackers: \(error)", level: .error)
         }
         
         return hasPinnedTrackers
@@ -392,7 +392,6 @@ final class TrackerStore: NSObject {
         }
     }
 
-    
     
     // MARK: - Fetching methods
     

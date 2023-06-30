@@ -50,13 +50,11 @@ final class EditTrackerViewModel {
     }
     
     private func checkValidity() {
-        print("Checking validity")
         isTrackerReady = trackerTitle != "" &&
         trackerEmoji != "" &&
         trackerColor != nil &&
         !trackerSchedule.isEmpty &&
         trackerCategory != nil
-        print("Is tracker ready: \(isTrackerReady)")
     }
     
     func saveTrackerData() {

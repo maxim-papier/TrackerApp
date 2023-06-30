@@ -39,11 +39,6 @@ final class CategoryStore: NSObject {
     
     // MARK: - CRUD methods
     
-    //    func getCategory(at indexPath: IndexPath) -> Category? {
-    //        let categoryData = fetchedResultsController.object(at: indexPath)
-    //        return trackerCategory(from: categoryData)
-    //    }
-    
     // Create a new TrackerCategory in the store
     func create(category: Category) -> Bool {
         let request: NSFetchRequest<CategoryData> = CategoryData.fetchRequest()
@@ -79,14 +74,7 @@ final class CategoryStore: NSObject {
     
     func getCategory(forTrackerId id: UUID) -> Category? {
         let categories = retrieveAllCategories()
-        for category in categories {
-            for tracker in category.trackers {
-                if tracker.id == id {
-                    return category
-                }
-            }
-        }
-        return nil
+        return categories.first(where: { $0.id == id })
     }
     
     // MARK: - Adding new tracker into category
