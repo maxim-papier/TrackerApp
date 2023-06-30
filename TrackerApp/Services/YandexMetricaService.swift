@@ -1,8 +1,7 @@
 import Foundation
 import YandexMobileMetrica
 
-
-final class YandexMetricaService {
+struct YandexMetricaService {
     func log(event: Event) {
         YMMYandexMetrica.reportEvent("EVENT", parameters: paramsFor(event), onFailure: { error in
             LogService.shared.log(
@@ -11,9 +10,7 @@ final class YandexMetricaService {
             )
         })
     }
-}
 
-private extension YandexMetricaService {
     private func paramsFor(_ event: Event) -> [String: String] {
         switch event {
         case let .open(scene), let .close(scene):
