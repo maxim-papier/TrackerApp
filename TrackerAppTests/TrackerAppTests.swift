@@ -10,10 +10,11 @@ final class TrackerTests: XCTestCase {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.getContext()
-        let dependencyContainer = DependencyContainer(context: context)
+        let stores = DependencyContainer(context: context)
+        let pinService = PinService(stores: stores)
         
         let vc = UINavigationController(
-            rootViewController: TrackersVC(dependencies: dependencyContainer, analytic: YandexMetricaService())
+            rootViewController: TrackersVC(dependencies: stores, analytic: YandexMetricaService(), pinSevice: pinService)
         )
 
         assertSnapshots(matching: vc, as: [.image(traits: .init(userInterfaceStyle: .light))])
@@ -25,10 +26,11 @@ final class TrackerTests: XCTestCase {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.getContext()
-        let dependencyContainer = DependencyContainer(context: context)
+        let stores = DependencyContainer(context: context)
+        let pinService = PinService(stores: stores)
 
         let vc = UINavigationController(
-            rootViewController: TrackersVC(dependencies: dependencyContainer, analytic: YandexMetricaService())
+            rootViewController: TrackersVC(dependencies: stores, analytic: YandexMetricaService(), pinSevice: pinService)
         )
 
         assertSnapshots(matching: vc, as: [.image(traits: .init(userInterfaceStyle: .dark))])
