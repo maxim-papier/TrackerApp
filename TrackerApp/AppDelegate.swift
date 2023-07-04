@@ -1,11 +1,24 @@
 import UIKit
 import CoreData
+import YandexMobileMetrica
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool { return true }
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        return confugurateYM
+    }
+    
+    // MARK: - Configurate Yandex Metrica
+    lazy var confugurateYM: Bool = {
+        guard let configurationYM = YMMYandexMetricaConfiguration(
+            apiKey: "b6170188-4108-4308-a812-5d01c450da3b") else {
+            return true
+        }
+        YMMYandexMetrica.activate(with: configurationYM)
+        return true
+    }()
 
     // MARK: UISceneSession Lifecycle
 

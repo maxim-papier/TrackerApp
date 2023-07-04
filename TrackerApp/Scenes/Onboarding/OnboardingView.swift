@@ -10,6 +10,7 @@ class OnboardingView: UIPageViewController {
         control.currentPageIndicatorTintColor = .mainColorYP(.blackYP)
         control.pageIndicatorTintColor = .mainColorYP(.grayYP)
         control.translatesAutoresizingMaskIntoConstraints = false
+        control.isUserInteractionEnabled = false
         return control
     }()
     

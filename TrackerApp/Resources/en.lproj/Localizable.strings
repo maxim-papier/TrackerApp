@@ -1,0 +1,15 @@
+"trackersvc.title" = "Trackers";
+"trackersvc.search_placeholder.title" = "Search";
+
+"tabbar.trackers.title" = "Trackers";
+"tabbar.statistic.title" = "Statistic";
+
+"menu.trackers.pin" = "Pin";
+"menu.trackers.unpin" = "Unpin";
+"menu.trackers.edit" = "Edit";
+"menu.trackers.delete" = "Delete";
+
+"submenu.delete.confirm" = "Delete";
+"submenu.delete.cancel" = "Cancel";
+
+"filters.button" = "Filters";

@@ -1,0 +1,15 @@
+"trackersvc.title" = "Трекеры";
+"trackersvc.search_placeholder.title" = "Поиск";
+
+"tabbar.trackers.title" = "Трекеры";
+"tabbar.statistic.title" = "Статистика";
+
+"menu.trackers.pin" = "Закрепить";
+"menu.trackers.unpin" = "Открепить";
+"menu.trackers.edit" = "Редактировать";
+"menu.trackers.delete" = "Удалить";
+
+"submenu.delete.confirm" = "Удалить";
+"submenu.delete.cancel" = "Отменить";
+
+"filters.button" = "Фильтры";

@@ -1,0 +1,5 @@
+Pods/
+*.xcbkptlist
+*.xcuserstate
+TrackerAppScreenshotTest/__Snapshots__/TrackerAppScreenshotTest/testTrackersViewControllerLight.1.png
+TrackerAppScreenshotTest/__Snapshots__/TrackerAppScreenshotTest/testTrackersViewControllerDark.1.png
