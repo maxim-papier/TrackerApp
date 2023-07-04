@@ -2,10 +2,10 @@ import UIKit
 
 final class StatisticVC: UITableViewController {
     
-    let placeholder = PlaceholderType.noStats.placeholder
+    private let placeholder = PlaceholderType.noStats.placeholder
     
-    let stores: DependencyContainer
-    let viewModel: StatisticsViewModel
+    private let stores: DependencyContainer
+    private let viewModel: StatisticsViewModel
     
     // Так как кол-во завершённый трекеров — основа статистики
     // то как только оно становится выше нуля, я показываю данные,

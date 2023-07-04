@@ -7,7 +7,7 @@ target 'TrackerApp' do
 
   pod 'YandexMobileMetrica/Dynamic', '4.5.0'
 
-  target 'TrackerAppScreenshotTest' do
+  target 'TrackerAppTests' do
     inherit! :search_paths
     # Pods for testing
   end
